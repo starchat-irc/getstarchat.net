@@ -53,7 +53,6 @@
             <div class="card doc"><div class="card-body p-4 p-lg-5">
             <h1>Install</h1>
 
-            <div class="alert alert-warning">There is no release yet. Until then StarChat is built from source. The npm package <code>starchat</code> and the desktop downloads come with the first release.</div>
 
             <h2 id="use">Just use it</h2>
 
@@ -65,22 +64,28 @@
 
             <p>The web client is a static page. It needs no server of its own, any web host works (GitHub Pages, Cloudflare Pages, nginx, a shared host).</p>
 
-            <p>Requirements: <a href="https://nodejs.org/">Node.js</a> 22.12 or newer and git.</p>
+            <ol>
+                <li>Download <code>starchat-web-dev.zip</code> (or <code>.tar.gz</code>) from the <a href="https://github.com/starchat-irc/starchat/releases/tag/latest-dev">development build</a>. After the first release it is on the <a href="https://github.com/starchat-irc/starchat/releases">releases page</a>.</li>
+                <li>Unpack it and open <code>starchat-web/config.json</code>. Set at least your network:</li>
+            </ol>
 
-<pre><code>git clone https://github.com/starchat-irc/starchat.git
-cd starchat
-npm install
-npm run build:demo</code></pre>
+<pre><code>{
+    "primaryServer": "irc.example.org",
+    "defaultChannel": "#lobby",
+    "serverList": "default",
+    "appName": "Example Chat",
+    "links": [
+        { "label": "Privacy", "url": "https://example.org/privacy" }
+    ]
+}</code></pre>
 
-            <p>The finished page is in <code>dist-demo/</code>. Upload the contents of that folder. To change the preselected network and channel, edit <code>demo/main.js</code> before building:</p>
+            <ol start="3">
+                <li>Upload the folder to your web host, at the root of a domain or in a subfolder.</li>
+            </ol>
 
-<pre><code>mountChat('#chat', {
-    primaryServer: 'irc.example.org',
-    serverList: 'default',
-    defaultChannel: '#lobby',
-});</code></pre>
+            <p>All keys of <code>config.json</code> are listed under <a href="docs/hosting.html">Hosting the web client</a>. Your IRC server has to accept WebSocket connections from the address of the page, see <a href="#network">For network operators</a>.</p>
 
-            <p>To try it locally first, run <code>npm run demo</code> and open the address it prints.</p>
+            <p>To build it yourself instead (<a href="https://nodejs.org/">Node.js</a> 22.12 or newer): clone the repository, run <code>npm install</code> and <code>npm run build:web</code>. The page is in <code>dist-web/</code>, <code>npm run web</code> starts it locally.</p>
 
             <h2 id="embed">Embed it in your site</h2>
 
