@@ -3,22 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>StarChat Demo</title>
-    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-    <meta name="description" content="Try StarChat, an open source IRCv3 web and desktop client.">
-    <style>html,body{height:100%;margin:0}body{background:var(--chat-bg,#313338);flex-direction:column;display:flex}#chat{flex:auto;min-height:0;display:flex}#chat>.chat-container{flex:auto}.demo-bar{z-index:2100;color:#b5bac1;background:#1e1f22;flex-wrap:wrap;align-items:center;gap:1rem;padding:.35rem 1rem;font-size:.8rem;display:flex;position:relative}.demo-bar a{color:#c9cdfb}.demo-bar .demo-bar-links{gap:1rem;margin-left:auto;display:flex}.demo-error{color:#f2f3f5;max-width:32rem;margin:2rem auto;padding:0 16px}[x-cloak]{display:none!important}</style>
-  <script type="module" crossorigin src="./assets/index-B5hkPHJc.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BKC74IHZ.css">
+    <title>StarChat</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <style>html,body{height:100%;margin:0}body{background:var(--chat-bg,#313338);flex-direction:column;display:flex}#chat{flex:auto;min-height:0;display:flex}#chat>.chat-container{flex:auto}.page-notice{z-index:2100;color:#b5bac1;background:#1e1f22;flex-wrap:wrap;align-items:center;gap:1rem;padding:.35rem 1rem;font-size:.8rem;display:flex;position:relative}.page-notice[hidden]{display:none}.page-notice a{color:#c9cdfb}.page-notice-links{gap:1rem;margin-left:auto;display:flex}.page-error{color:#f2f3f5;max-width:32rem;margin:2rem auto;padding:0 16px;font-family:system-ui,sans-serif}[x-cloak]{display:none!important}</style>
+  <script type="module" crossorigin src="./assets/index-DaZrMbha.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/preload-helper-DVqdrzjW.js">
+  <link rel="stylesheet" crossorigin href="./assets/index-DUfNZi8f.css">
 </head>
 <body>
-    <div class="demo-bar">
-        <span><strong>StarChat</strong> demo. ST-City is preselected, more servers under "Advanced settings". Connecting shares your IP address with the chosen server.</span>
-        <span class="demo-bar-links">
-            <a href="https://github.com/starchat-irc/starchat" target="_blank" rel="noopener">Source</a>
-            <a href="https://st-city.net/datenschutz" target="_blank" rel="noopener">Privacy (ST-City)</a>
-            <a href="https://st-city.net/impressum" target="_blank" rel="noopener">Imprint</a>
-        </span>
-    </div>
+    <div class="page-notice" id="notice" hidden></div>
     <div id="chat"></div>
 </body>
 </html>

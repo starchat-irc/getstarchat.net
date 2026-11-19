@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hosting the web client | StarChat documentation</title>
+    <meta name="description" content="The web client is a static page. It needs no server of its own, any web host works (GitHub Pages, Cloudflare Pages, nginx, a shared host). Download it, set...">
+    <link rel="canonical" href="https://getstarchat.net/docs/hosting.html">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="StarChat">
+    <meta property="og:title" content="Hosting the web client | StarChat documentation">
+    <meta property="og:description" content="The web client is a static page. It needs no server of its own, any web host works (GitHub Pages, Cloudflare Pages, nginx, a shared host). Download it, set...">
+    <meta property="og:url" content="https://getstarchat.net/docs/hosting.html">
+    <meta property="og:image" content="https://getstarchat.net/img/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
+    <link rel="stylesheet" href="../vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="../">StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2">
+            <li class="nav-item"><a class="nav-link" href="../">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="../install.html">Install</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="./">Docs</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row g-4 g-lg-5">
+        <aside class="col-lg-3">
+            <nav class="docs-nav sticky-lg-top">
+                <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="hosting.html">Hosting the web client</a></li>
+                <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
+                <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
+                <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
+                <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
+                <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="col-lg-9">
+            <div class="card doc"><div class="card-body p-4 p-lg-5">
+<h1 id="hosting-the-web-client">Hosting the web client</h1>
+<p>The web client is a static page. It needs no server of its own, any web host works (GitHub Pages, Cloudflare Pages, nginx, a shared host). Download it, set your network in <code>config.json</code> and upload the folder.</p>
+<h2 id="download">Download</h2>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Build</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Release</td>
+<td><code>starchat-web-&lt;version&gt;.zip</code> or <code>.tar.gz</code> on the <a href="https://github.com/starchat-irc/starchat/releases">releases page</a>.</td>
+</tr>
+<tr>
+<td>Development build</td>
+<td><code>starchat-web-dev.zip</code> or <code>.tar.gz</code> under <a href="https://github.com/starchat-irc/starchat/releases/tag/latest-dev">latest-dev</a>. Built from <code>main</code> on every change and replaced each time. For testing, not for production.</td>
+</tr>
+</tbody></table></div>
+<p>The archive contains one folder, <code>starchat-web/</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>File</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>index.html</code></td>
+<td>The page.</td>
+</tr>
+<tr>
+<td><code>config.json</code></td>
+<td>Your settings, see below.</td>
+</tr>
+<tr>
+<td><code>assets/</code></td>
+<td>Scripts, styles and fonts. Voice chat parts load only when used.</td>
+</tr>
+<tr>
+<td><code>push-sw.js</code></td>
+<td>Service worker for push notifications. Must stay next to <code>index.html</code>.</td>
+</tr>
+<tr>
+<td><code>favicon.svg</code></td>
+<td>Replace it with your own icon if you like.</td>
+</tr>
+<tr>
+<td><code>build.json</code></td>
+<td>Version and commit of the build.</td>
+</tr>
+</tbody></table></div>
+<p>Paths are relative, so the folder can live at the root of a domain or in a subfolder such as <code>https://example.org/chat/</code>.</p>
+<h2 id="configjson">config.json</h2>
+<pre><code class="language-json">{
+    &quot;primaryServer&quot;: &quot;irc.example.org&quot;,
+    &quot;defaultChannel&quot;: &quot;#lobby&quot;,
+    &quot;serverList&quot;: &quot;default&quot;,
+    &quot;appName&quot;: &quot;Example Chat&quot;,
+    &quot;notice&quot;: &quot;Connecting shares your IP address with the network.&quot;,
+    &quot;links&quot;: [
+        { &quot;label&quot;: &quot;Privacy&quot;, &quot;url&quot;: &quot;https://example.org/privacy&quot; },
+        { &quot;label&quot;: &quot;Imprint&quot;, &quot;url&quot;: &quot;https://example.org/imprint&quot; }
+    ]
+}
+</code></pre>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>primaryServer</code></td>
+<td></td>
+<td>Required. Domain of your network, preselected in the login dialog. Its WebSocket address comes from the <a href="servers.html">server list</a> or from the network&#39;s <a href="discovery.html">discovery file</a>.</td>
+</tr>
+<tr>
+<td><code>defaultChannel</code></td>
+<td></td>
+<td>Channel joined after login, on the primary server only.</td>
+</tr>
+<tr>
+<td><code>serverList</code></td>
+<td><code>&quot;default&quot;</code></td>
+<td><code>&quot;default&quot;</code> offers the public list too, an <code>https://</code> URL your own list, <code>false</code> only your network.</td>
+</tr>
+<tr>
+<td><code>appName</code></td>
+<td><code>&quot;StarChat&quot;</code></td>
+<td>Name in texts, the page title and push notifications.</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td><code>appName</code></td>
+<td>Page title, if it should differ.</td>
+</tr>
+<tr>
+<td><code>theme</code></td>
+<td><code>&quot;auto&quot;</code></td>
+<td><code>&quot;auto&quot;</code>, <code>&quot;dark&quot;</code> or <code>&quot;light&quot;</code>. Users can change it.</td>
+</tr>
+<tr>
+<td><code>locale</code></td>
+<td>browser</td>
+<td>Language code or list, for example <code>&quot;de&quot;</code>.</td>
+</tr>
+<tr>
+<td><code>overrides</code></td>
+<td></td>
+<td>Texts that replace bundled ones, by key (see <code>src/i18n/en.json</code>).</td>
+</tr>
+<tr>
+<td><code>modules</code></td>
+<td>all</td>
+<td>Names of the <a href="features.html">features</a> to load, for example <code>[&quot;profiles&quot;, &quot;uploads&quot;]</code>. <code>[]</code> gives a plain IRC client.</td>
+</tr>
+<tr>
+<td><code>push</code></td>
+<td><code>true</code></td>
+<td><code>false</code> turns off browser push notifications.</td>
+</tr>
+<tr>
+<td><code>notice</code></td>
+<td></td>
+<td>Text in a bar above the chat.</td>
+</tr>
+<tr>
+<td><code>links</code></td>
+<td></td>
+<td>Links in that bar, <code>{ &quot;label&quot;, &quot;url&quot; }</code>, <code>https</code> only. Put your privacy policy and imprint here if you need them.</td>
+</tr>
+<tr>
+<td><code>ctcpVersion</code></td>
+<td><code>&quot;StarChat&quot;</code></td>
+<td>Answer to CTCP VERSION.</td>
+</tr>
+<tr>
+<td><code>defaultQuitMessage</code></td>
+<td></td>
+<td>Quit message until the user sets one.</td>
+</tr>
+<tr>
+<td><code>urlParameters</code></td>
+<td><code>true</code></td>
+<td>Allow <code>?server=&lt;domain&gt;</code>, <code>?lang=</code> and <code>?theme=</code> in the address, for example to link to another network. <code>false</code> ignores them.</td>
+</tr>
+</tbody></table></div>
+<p>Other keys are ignored. Options that need code, such as login through your site (<code>bearer</code>), are only available when you <a href="embedding.html">embed the chat</a> in your own page.</p>
+<p>The file is fetched without cache on every start, so a change applies as soon as it is uploaded.</p>
+<h2 id="what-your-network-needs">What your network needs</h2>
+<ul>
+<li><strong>IRC over WebSocket</strong> with TLS (<code>wss://</code>). Ergo, UnrealIRCd 6 and InspIRCd (<code>m_websocket</code>) support it.</li>
+<li><strong>Allowed origins:</strong> if your server only accepts listed origins (Ergo: <code>server.websockets.allowed-origins</code>), add the address of the page, for example <code>https://example.org</code>.</li>
+<li><strong>Discovery file</strong> (optional): lets users type your domain and turns on extra <a href="features.html">features</a>.</li>
+</ul>
+<h2 id="updating">Updating</h2>
+<p>Download the new archive and replace everything except <code>config.json</code> (and your <code>favicon.svg</code>). New releases may add keys, older files keep working.</p>
+
+            <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/hosting.md">Edit this page on GitHub</a></p>
+            </div></div>
+        </main>
+    </div>
+</div>
+
+<footer class="border-top py-4 text-body-secondary small">
+    <div class="container d-flex flex-wrap gap-3">
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>.</span>
+        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
+        <a href="https://st-city.net/impressum">Imprint</a>
+    </div>
+</footer>
+</body>
+</html>

@@ -20,7 +20,7 @@
             "type": "array",
             "uniqueItems": true,
             "items": {
-                "enum": ["profiles", "friends", "uploads", "push", "voice", "calls", "reports", "explore", "chatState", "alwaysOn", "events", "gifs"]
+                "enum": ["profiles", "friends", "uploads", "push", "voice", "calls", "reports", "explore", "chatState", "alwaysOn", "events", "gifs", "communities"]
             }
         },
         "branding": {
@@ -28,6 +28,15 @@
             "properties": {
                 "logo": { "type": "string", "pattern": "^https://" },
                 "themeCss": { "type": "string", "pattern": "^https://" }
+            }
+        },
+        "links": {
+            "type": "object",
+            "properties": {
+                "register": { "type": "string", "pattern": "^https://" },
+                "channelInvite": { "type": "string", "pattern": "^https://.*[{]channel[}]" },
+                "communityInvite": { "type": "string", "pattern": "^https://.*[{]community[}]" },
+                "reportPolicy": { "type": "string", "pattern": "^https://" }
             }
         }
     },

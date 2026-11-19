@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Features | StarChat documentation</title>
+    <meta name="description" content="StarChat works on every IRC network with WebSocket. Some functions need more from the network: an IRCv3 capability of the IRC server, or a service the...">
+    <link rel="canonical" href="https://getstarchat.net/docs/features.html">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="StarChat">
+    <meta property="og:title" content="Features | StarChat documentation">
+    <meta property="og:description" content="StarChat works on every IRC network with WebSocket. Some functions need more from the network: an IRCv3 capability of the IRC server, or a service the...">
+    <meta property="og:url" content="https://getstarchat.net/docs/features.html">
+    <meta property="og:image" content="https://getstarchat.net/img/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
+    <link rel="stylesheet" href="../vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="../">StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2">
+            <li class="nav-item"><a class="nav-link" href="../">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="../install.html">Install</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="./">Docs</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row g-4 g-lg-5">
+        <aside class="col-lg-3">
+            <nav class="docs-nav sticky-lg-top">
+                <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="features.html">Features</a></li>
+                <li class="nav-item"><a class="nav-link" href="hosting.html">Hosting the web client</a></li>
+                <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
+                <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
+                <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
+                <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
+                <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="col-lg-9">
+            <div class="card doc"><div class="card-body p-4 p-lg-5">
+<h1 id="features">Features</h1>
+<p>StarChat works on every IRC network with WebSocket. Some functions need more from the network: an IRCv3 capability of the IRC server, or a service the network offers through its <a href="discovery.html">discovery file</a> and API. This page lists what the user gets in each case and what the network has to provide.</p>
+<h2 id="on-every-network">On every network</h2>
+<p>These work without a discovery file, as long as the IRC server offers the capability where one is named. See <a href="ircv3.html">IRCv3 support</a> for the full list.</p>
+<ul>
+<li>Channels, direct messages, nick list, topics and modes, channel list (<code>LIST</code>) with search</li>
+<li>Login with account and password (SASL <code>PLAIN</code>) or as a guest</li>
+<li>History when opening a channel and scrolling up (<code>chathistory</code>)</li>
+<li>Reactions, replies and typing indicators (<code>message-tags</code>)</li>
+<li>Deleting own messages (<code>draft/message-redaction</code>), multiline messages (<code>draft/multiline</code>)</li>
+<li>Read position shared by all sessions of an account (<code>draft/read-marker</code>)</li>
+<li>Avatars and status set by other clients (<code>draft/metadata-3</code> or <code>draft/metadata-2</code>)</li>
+<li>Browser push notifications for logged-in accounts (<code>draft/webpush</code>, needs the <a href="options.html#push-notifications"><code>pushWorker</code></a> option)</li>
+<li>Highlight words, ignore list, quit message, nick colors, autojoin, drafts, message search, <a href="commands.html">commands and shortcuts</a></li>
+<li>Light and dark theme, English and German</li>
+</ul>
+<h2 id="with-a-discovery-file">With a discovery file</h2>
+<p>A network that serves <code>/.well-known/starchat.json</code> can set its name, WebSocket address, logo and theme, and link pages of its website:</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Discovery entry</th>
+<th>What the user gets</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>links.register</code></td>
+<td>&quot;Create account&quot; link in the login dialog.</td>
+</tr>
+<tr>
+<td><code>links.channelInvite</code></td>
+<td>&quot;Copy invite link&quot; in the channel menu.</td>
+</tr>
+<tr>
+<td><code>links.reportPolicy</code></td>
+<td>Link to the rules in the report dialog.</td>
+</tr>
+<tr>
+<td><code>links.communityInvite</code></td>
+<td>&quot;Copy invite link&quot; for a community (feature <code>communities</code>).</td>
+</tr>
+<tr>
+<td><code>auth: [&quot;bearer&quot;]</code></td>
+<td>One login for IRC and the API: the client gets a token from the API and logs in with SASL <code>IRCV3BEARER</code>.</td>
+</tr>
+</tbody></table></div>
+<h2 id="with-an-api">With an API</h2>
+<p>Features below need <code>apiBaseUrl</code> and the feature name in <code>features</code>. Most also need a token, so guests do not see them. The endpoints of each feature are described under <a href="discovery.html#api">API</a>.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Feature</th>
+<th>What the user gets</th>
+<th>Token</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>profiles</code></td>
+<td>Profile cards with avatar, status and member date. Own avatar and status can be changed in the settings.</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>friends</code></td>
+<td>Friend list and requests, a friends section in the sidebar with online state, requests from the profile card.</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>uploads</code></td>
+<td>Images and files in messages: paste, drop or pick, with progress.</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>gifs</code></td>
+<td>GIF search in the message input.</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>reports</code></td>
+<td>Reporting users and messages to the network&#39;s moderators. Guests may report.</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>explore</code></td>
+<td>A directory tab in the channel list: groups of channels the network lists, joined together.</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>chatState</code></td>
+<td>Open conversations and settings synced across devices.</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>alwaysOn</code></td>
+<td>Staying in channels while no client is connected. The client asks once after the first login.</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>events</code></td>
+<td>A calendar button in the sidebar with upcoming events, linked to their channels.</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>communities</code></td>
+<td>An icon per community in the rail. Picking one shows its channels and opens its lobby, Home groups the joined channels by community. With <code>links.communityInvite</code> a &quot;Copy invite link&quot; button.</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>push</code></td>
+<td>Push notifications in app builds, relayed by the network to Firebase Cloud Messaging. Browsers do not need it.</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>voice</code></td>
+<td>Voice chat per channel (experimental, switched on in the settings). Push to talk or voice activation, mic test, volume per participant, optional noise filter. Needs a <a href="https://livekit.io">LiveKit</a> server.</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>calls</code></td>
+<td>Voice calls between friends from the direct message window (experimental). Needs <code>voice</code> and <code>friends</code>.</td>
+<td>yes</td>
+</tr>
+</tbody></table></div>
+<h2 id="client-only">Client only</h2>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Module</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>share</code></td>
+<td>Receives text, links and files shared to an app build and offers to send them.</td>
+</tr>
+</tbody></table></div>
+<p>A page can leave out modules it does not want with the <code>modules</code> option of <a href="options.html"><code>mountChat()</code></a>. A feature is only active when its module is loaded and the network offers it.</p>
+
+            <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/features.md">Edit this page on GitHub</a></p>
+            </div></div>
+        </main>
+    </div>
+</div>
+
+<footer class="border-top py-4 text-body-secondary small">
+    <div class="container d-flex flex-wrap gap-3">
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>.</span>
+        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
+        <a href="https://st-city.net/impressum">Imprint</a>
+    </div>
+</footer>
+</body>
+</html>
