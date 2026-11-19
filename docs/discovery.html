@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Discovery file | StarChat documentation</title>
+    <meta name="description" content="A network can tell StarChat its WebSocket address and the extra services it offers with a small JSON file on its own domain, at this address.">
+    <link rel="canonical" href="https://getstarchat.net/docs/discovery.html">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="StarChat">
+    <meta property="og:title" content="Discovery file | StarChat documentation">
+    <meta property="og:description" content="A network can tell StarChat its WebSocket address and the extra services it offers with a small JSON file on its own domain, at this address.">
+    <meta property="og:url" content="https://getstarchat.net/docs/discovery.html">
+    <meta property="og:image" content="https://getstarchat.net/img/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
+    <link rel="stylesheet" href="../vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="../">StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2">
+            <li class="nav-item"><a class="nav-link" href="../">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="../install.html">Install</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="./">Docs</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row g-4 g-lg-5">
+        <aside class="col-lg-3">
+            <nav class="docs-nav sticky-lg-top">
+                <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
+                <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
+                <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
+                <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="col-lg-9">
+            <div class="card doc"><div class="card-body p-4 p-lg-5">
+<h1 id="discovery-file">Discovery file</h1>
+<p>A network can tell StarChat its WebSocket address and the extra services it offers with a small JSON file on its own domain, at this address:</p>
+<pre><code>https://&lt;domain&gt;/.well-known/starchat.json
+</code></pre>
+<p><code>&lt;domain&gt;</code> is the <code>domain</code> of the network in <a href="https://github.com/starchat-irc/starchat/blob/main/servers/servers.json"><code>servers/servers.json</code></a>, or the domain a user typed in. Networks without this file work as plain IRC servers. The file is optional, and so is every field except <code>schemaVersion</code>.</p>
+<p>Example: <a href="discovery.example.json"><code>discovery.example.json</code></a>. Schema: <a href="discovery.schema.json"><code>discovery.schema.json</code></a>.</p>
+<h2 id="where-the-file-is-looked-up">Where the file is looked up</h2>
+<ul>
+<li>Always over <code>https</code>. The client sends no cookies with the request.</li>
+<li>Redirects are followed only within the domain or its subdomains (<code>example.org</code> to <code>www.example.org</code>), not to another domain.</li>
+<li>A list entry may point to another location with <code>discovery</code>, but only on the same domain or a subdomain of it. Otherwise an entry for a foreign network could hand out its own API and collect its logins.</li>
+<li>Serve it with <code>Access-Control-Allow-Origin: *</code>, otherwise the web build cannot read it.</li>
+</ul>
+<h2 id="fields">Fields</h2>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>schemaVersion</code></td>
+<td><code>1</code></td>
+<td>Required. Clients ignore files with a version they do not know.</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string, max. 60</td>
+<td>Display name of the network. Overrides the name from the server list.</td>
+</tr>
+<tr>
+<td><code>websocketUrl</code></td>
+<td><code>wss://</code> URL</td>
+<td>IRC over WebSocket. Overrides the entry in the server list.</td>
+</tr>
+<tr>
+<td><code>apiBaseUrl</code></td>
+<td><code>https://</code> URL</td>
+<td>Base URL of the API for the features below. Without it no feature is used.</td>
+</tr>
+<tr>
+<td><code>auth</code></td>
+<td>array</td>
+<td>Login methods the network accepts, see below.</td>
+</tr>
+<tr>
+<td><code>features</code></td>
+<td>array</td>
+<td>Extra services, see below. Requires <code>apiBaseUrl</code>.</td>
+</tr>
+<tr>
+<td><code>branding.logo</code></td>
+<td><code>https://</code> URL</td>
+<td>Logo shown for this network.</td>
+</tr>
+<tr>
+<td><code>branding.themeCss</code></td>
+<td><code>https://</code> URL</td>
+<td>Stylesheet with the theme variables of the network.</td>
+</tr>
+</tbody></table></div>
+<p>Endpoints may be on other domains than the network itself, for example an API on a separate host. They must use <code>https</code> or <code>wss</code>. Plain <code>http</code> and <code>ws</code> are dropped.</p>
+<p>Unknown fields and unknown values in <code>auth</code> and <code>features</code> are ignored, so a file written for a newer client still works with an older one. New fields and values are added to this document first.</p>
+<h2 id="login-methods-auth">Login methods (<code>auth</code>)</h2>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sasl-plain</code></td>
+<td>Account name and password, sent over SASL <code>PLAIN</code> on the IRC connection.</td>
+</tr>
+<tr>
+<td><code>bearer</code></td>
+<td>The client gets a token from the API and logs in with SASL <code>IRCV3BEARER</code>.</td>
+</tr>
+<tr>
+<td><code>guest</code></td>
+<td>Connecting without an account is allowed.</td>
+</tr>
+</tbody></table></div>
+<p>Without <code>auth</code> the client assumes <code>sasl-plain</code> and <code>guest</code>, like any IRC server. The API endpoints for <code>bearer</code> are described together with the features.</p>
+<h2 id="features">Features</h2>
+<p>Every connection has its own features and its own token. A token is only sent to the <code>apiBaseUrl</code> of the network it belongs to.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Value</th>
+<th>Service</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>profiles</code></td>
+<td>Profile cards, avatars and status.</td>
+</tr>
+<tr>
+<td><code>friends</code></td>
+<td>Friend list and requests.</td>
+</tr>
+<tr>
+<td><code>uploads</code></td>
+<td>File and image uploads.</td>
+</tr>
+<tr>
+<td><code>push</code></td>
+<td>Push notifications. Only works in builds with their own app ID.</td>
+</tr>
+<tr>
+<td><code>voice</code></td>
+<td>Voice channels.</td>
+</tr>
+<tr>
+<td><code>calls</code></td>
+<td>Voice calls between friends.</td>
+</tr>
+<tr>
+<td><code>reports</code></td>
+<td>Reporting users and messages.</td>
+</tr>
+<tr>
+<td><code>explore</code></td>
+<td>Directory of channels and communities.</td>
+</tr>
+<tr>
+<td><code>chatState</code></td>
+<td>Open conversations and read markers synced across devices.</td>
+</tr>
+<tr>
+<td><code>alwaysOn</code></td>
+<td>Staying connected while the client is closed (bouncer).</td>
+</tr>
+<tr>
+<td><code>events</code></td>
+<td>Community events in the chat.</td>
+</tr>
+</tbody></table></div>
+<p>The API endpoints of each feature are not fixed yet. They follow when the features move into StarChat.</p>
+
+            <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/discovery.md">Edit this page on GitHub</a></p>
+            </div></div>
+        </main>
+    </div>
+</div>
+
+<footer class="border-top py-4 text-body-secondary small">
+    <div class="container d-flex flex-wrap gap-3">
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>.</span>
+        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
+        <a href="https://st-city.net/impressum">Imprint</a>
+    </div>
+</footer>
+</body>
+</html>

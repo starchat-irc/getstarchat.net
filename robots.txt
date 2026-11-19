@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://getstarchat.net/sitemap.xml
+Sitemap: https://getstarchat.net/docs/sitemap.xml

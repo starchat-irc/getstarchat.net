@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Server list | StarChat documentation</title>
+    <meta name="description" content="StarChat offers a list of IRC networks in the login dialog. The public list is servers/servers.json in this repository, checked against...">
+    <link rel="canonical" href="https://getstarchat.net/docs/servers.html">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="StarChat">
+    <meta property="og:title" content="Server list | StarChat documentation">
+    <meta property="og:description" content="StarChat offers a list of IRC networks in the login dialog. The public list is servers/servers.json in this repository, checked against...">
+    <meta property="og:url" content="https://getstarchat.net/docs/servers.html">
+    <meta property="og:image" content="https://getstarchat.net/img/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
+    <link rel="stylesheet" href="../vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="../">StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2">
+            <li class="nav-item"><a class="nav-link" href="../">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="../install.html">Install</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="./">Docs</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row g-4 g-lg-5">
+        <aside class="col-lg-3">
+            <nav class="docs-nav sticky-lg-top">
+                <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
+                <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="servers.html">Server list</a></li>
+                <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
+                <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="col-lg-9">
+            <div class="card doc"><div class="card-body p-4 p-lg-5">
+<h1 id="server-list">Server list</h1>
+<p>StarChat offers a list of IRC networks in the login dialog. The public list is <a href="https://github.com/starchat-irc/starchat/blob/main/servers/servers.json"><code>servers/servers.json</code></a> in this repository, checked against <a href="https://github.com/starchat-irc/starchat/blob/main/servers/servers.schema.json"><code>servers/servers.schema.json</code></a>.</p>
+<h2 id="how-the-list-is-loaded">How the list is loaded</h2>
+<p>With <code>serverList: &#39;default&#39;</code> the client loads the list from GitHub and keeps it in the browser for 24 hours. When the download fails it uses an older cached copy, and as a last resort the copy shipped with the package. So a new network shows up in every StarChat within a day after its pull request is merged, without a new release.</p>
+<p>With <code>serverList: &#39;https://example.org/servers.json&#39;</code> the client loads your own list in the same format. An own list never falls back to the public one.</p>
+<p>With <code>serverList: false</code> only the primary server is offered.</p>
+<h2 id="format">Format</h2>
+<pre><code class="language-json">{
+    &quot;schemaVersion&quot;: 1,
+    &quot;servers&quot;: [
+        {
+            &quot;id&quot;: &quot;example&quot;,
+            &quot;name&quot;: &quot;Example Network&quot;,
+            &quot;domain&quot;: &quot;example.org&quot;,
+            &quot;description&quot;: { &quot;en&quot;: &quot;What your network is about.&quot; },
+            &quot;languages&quot;: [&quot;en&quot;],
+            &quot;websocket&quot;: &quot;wss://irc.example.org/webirc&quot;,
+            &quot;irc&quot;: { &quot;host&quot;: &quot;irc.example.org&quot;, &quot;port&quot;: 6697, &quot;tls&quot;: true }
+        }
+    ]
+}
+</code></pre>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Required</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>yes</td>
+<td>Stable identifier, lower case letters, digits and <code>-</code>. Used for saved connections, never change it.</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>yes</td>
+<td>Display name, up to 60 characters.</td>
+</tr>
+<tr>
+<td><code>domain</code></td>
+<td>yes</td>
+<td>Main domain of the network. The <a href="discovery.html">discovery file</a> is looked up there.</td>
+</tr>
+<tr>
+<td><code>languages</code></td>
+<td>yes</td>
+<td>Language codes of the network, for example <code>[&quot;en&quot;]</code>.</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>no</td>
+<td>Short description per language code, up to 200 characters each.</td>
+</tr>
+<tr>
+<td><code>websocket</code></td>
+<td>one of both</td>
+<td>IRC over WebSocket (<code>wss://</code>). Required for the web build.</td>
+</tr>
+<tr>
+<td><code>irc</code></td>
+<td>one of both</td>
+<td>Plain IRC over TCP with <code>host</code>, <code>port</code> and <code>tls</code>. Only used by the desktop client.</td>
+</tr>
+<tr>
+<td><code>discovery</code></td>
+<td>no</td>
+<td>URL of the discovery file, if it is not at the default location. Must be on <code>domain</code> or a subdomain of it.</td>
+</tr>
+</tbody></table></div>
+<h2 id="adding-a-network-to-the-public-list">Adding a network to the public list</h2>
+<p>Open a pull request that adds an entry to <code>servers/servers.json</code>. Check it locally first:</p>
+<pre><code>npm install
+npm run validate:servers
+</code></pre>
+<p>The same check runs in CI. Networks that only offer TCP are shown in the desktop client only.</p>
+<h2 id="requirements-for-the-web-build">Requirements for the web build</h2>
+<p>Browsers cannot open TCP connections, so the web build needs IRC over WebSocket. Ergo, UnrealIRCd 6 and InspIRCd (module <code>m_websocket</code>) support it. Serve it over TLS, directly or behind a reverse proxy.</p>
+<p>Some servers only accept WebSocket connections from listed origins (Ergo: <code>server.websockets.allowed-origins</code>). If your network sets such a list, add the origins of the pages your users chat from, for example <code>https://getstarchat.net</code>. A server that rejects the origin shows up in the client as a failed connection. After three failed attempts the login dialog explains this instead of retrying forever.</p>
+
+            <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/servers.md">Edit this page on GitHub</a></p>
+            </div></div>
+        </main>
+    </div>
+</div>
+
+<footer class="border-top py-4 text-body-secondary small">
+    <div class="container d-flex flex-wrap gap-3">
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>.</span>
+        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
+        <a href="https://st-city.net/impressum">Imprint</a>
+    </div>
+</footer>
+</body>
+</html>

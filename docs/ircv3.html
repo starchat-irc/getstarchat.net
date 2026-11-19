@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IRCv3 support | StarChat documentation</title>
+    <meta name="description" content="StarChat requests the capabilities below when the server offers them. Without them it falls back to plain IRC, so every server works, but some functions are...">
+    <link rel="canonical" href="https://getstarchat.net/docs/ircv3.html">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="StarChat">
+    <meta property="og:title" content="IRCv3 support | StarChat documentation">
+    <meta property="og:description" content="StarChat requests the capabilities below when the server offers them. Without them it falls back to plain IRC, so every server works, but some functions are...">
+    <meta property="og:url" content="https://getstarchat.net/docs/ircv3.html">
+    <meta property="og:image" content="https://getstarchat.net/img/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
+    <link rel="stylesheet" href="../vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="../">StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2">
+            <li class="nav-item"><a class="nav-link" href="../">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="../install.html">Install</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="./">Docs</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row g-4 g-lg-5">
+        <aside class="col-lg-3">
+            <nav class="docs-nav sticky-lg-top">
+                <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
+                <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
+                <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
+                <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="ircv3.html">IRCv3 support</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="col-lg-9">
+            <div class="card doc"><div class="card-body p-4 p-lg-5">
+<h1 id="ircv3-support">IRCv3 support</h1>
+<p>StarChat requests the capabilities below when the server offers them. Without them it falls back to plain IRC, so every server works, but some functions are only available with the matching capability.</p>
+<h2 id="capabilities">Capabilities</h2>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Capability</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sasl</code></td>
+<td>Login with <code>PLAIN</code> (account and password) or <code>IRCV3BEARER</code> (token, see <a href="embedding.html">Embedding with login</a>).</td>
+</tr>
+<tr>
+<td><code>message-tags</code></td>
+<td>Reactions, replies and typing indicators.</td>
+</tr>
+<tr>
+<td><code>server-time</code></td>
+<td>Correct times for history and delayed messages.</td>
+</tr>
+<tr>
+<td><code>echo-message</code></td>
+<td>Own messages come back with their ID, needed to react to, reply to or delete them.</td>
+</tr>
+<tr>
+<td><code>account-tag</code></td>
+<td>The account of the sender on every message, so a nick alone is never trusted.</td>
+</tr>
+<tr>
+<td><code>batch</code></td>
+<td>Grouping of history and multiline messages.</td>
+</tr>
+<tr>
+<td><code>away-notify</code></td>
+<td>Away state in the nick list without polling.</td>
+</tr>
+<tr>
+<td><code>chathistory</code> or <code>draft/chathistory</code></td>
+<td>Loading earlier messages when opening a channel or scrolling up.</td>
+</tr>
+<tr>
+<td><code>draft/event-playback</code></td>
+<td>Joins, parts and quits in the history as real events.</td>
+</tr>
+<tr>
+<td><code>draft/message-redaction</code></td>
+<td>Deleting messages.</td>
+</tr>
+<tr>
+<td><code>draft/multiline</code></td>
+<td>Messages with several lines.</td>
+</tr>
+<tr>
+<td><code>draft/read-marker</code></td>
+<td>Read position shared by all sessions of an account.</td>
+</tr>
+<tr>
+<td><code>draft/metadata-3</code> or <code>draft/metadata-2</code></td>
+<td>Avatars and status of users.</td>
+</tr>
+<tr>
+<td><code>draft/webpush</code> or <code>soju.im/webpush</code></td>
+<td>Push notifications while no client is connected. Only in builds with their own app ID.</td>
+</tr>
+</tbody></table></div>
+<h2 id="client-tags">Client tags</h2>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Tag</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>+draft/react</code>, <code>+draft/unreact</code></td>
+<td>Emoji reactions to a message.</td>
+</tr>
+<tr>
+<td><code>+draft/reply</code></td>
+<td>Answers to a specific message.</td>
+</tr>
+<tr>
+<td><code>+typing</code></td>
+<td>Shown when other users type.</td>
+</tr>
+</tbody></table></div>
+<p>Reactions and replies are offered only when the server does not deny the tags with <code>CLIENTTAGDENY</code> in <code>ISUPPORT</code>.</p>
+<h2 id="tested-servers">Tested servers</h2>
+<p>StarChat is developed against <a href="https://ergo.chat">Ergo</a>, which supports all of the above. Other servers work with the subset they offer.</p>
+
+            <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/ircv3.md">Edit this page on GitHub</a></p>
+            </div></div>
+        </main>
+    </div>
+</div>
+
+<footer class="border-top py-4 text-body-secondary small">
+    <div class="container d-flex flex-wrap gap-3">
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>.</span>
+        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
+        <a href="https://st-city.net/impressum">Imprint</a>
+    </div>
+</footer>
+</body>
+</html>

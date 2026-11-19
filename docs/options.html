@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mountChat() options | StarChat documentation</title>
+    <meta name="description" content="mountChat() renders the chat into an element of your page and connects to the first server.">
+    <link rel="canonical" href="https://getstarchat.net/docs/options.html">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="StarChat">
+    <meta property="og:title" content="mountChat() options | StarChat documentation">
+    <meta property="og:description" content="mountChat() renders the chat into an element of your page and connects to the first server.">
+    <meta property="og:url" content="https://getstarchat.net/docs/options.html">
+    <meta property="og:image" content="https://getstarchat.net/img/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
+    <link rel="stylesheet" href="../vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="../">StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2">
+            <li class="nav-item"><a class="nav-link" href="../">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="../install.html">Install</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="./">Docs</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row g-4 g-lg-5">
+        <aside class="col-lg-3">
+            <nav class="docs-nav sticky-lg-top">
+                <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="options.html">mountChat() options</a></li>
+                <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
+                <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
+                <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
+                <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="col-lg-9">
+            <div class="card doc"><div class="card-body p-4 p-lg-5">
+<h1 id="mountchat-options">mountChat() options</h1>
+<p><code>mountChat()</code> renders the chat into an element of your page and connects to the first server.</p>
+<pre><code class="language-js">import &#39;bootstrap/dist/css/bootstrap.min.css&#39;;
+import &#39;bootstrap-icons/font/bootstrap-icons.min.css&#39;;
+import &#39;starchat/theme.css&#39;;
+import { mountChat } from &#39;starchat&#39;;
+
+const { connection, servers } = await mountChat(&#39;#chat&#39;, {
+    primaryServer: &#39;irc.example.org&#39;,
+    defaultChannel: &#39;#lobby&#39;,
+});
+</code></pre>
+<p>The first argument is a CSS selector or an element. Its content is replaced. The chat takes all the space the element gives it, so give the element a height or let it fill a flex container.</p>
+<p>The returned promise resolves with the connection of the primary server and the list of servers offered in the login dialog. It rejects when the element is missing or no server could be resolved.</p>
+<h2 id="options">Options</h2>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>primaryServer</code></td>
+<td></td>
+<td>Domain (<code>&#39;irc.example.org&#39;</code>) or a full <a href="servers.html">server list</a> entry. Preselected in the login dialog. A domain that is not in the list becomes an entry of its own, its WebSocket address then comes from the <a href="discovery.html">discovery file</a>.</td>
+</tr>
+<tr>
+<td><code>serverList</code></td>
+<td><code>&#39;default&#39;</code></td>
+<td><code>&#39;default&#39;</code> loads the public list, a URL loads your own list in the same format, <code>false</code> offers only the primary server.</td>
+</tr>
+<tr>
+<td><code>defaultChannel</code></td>
+<td></td>
+<td>Channel joined and shown after login. Only used on the primary server.</td>
+</tr>
+<tr>
+<td><code>nickname</code></td>
+<td></td>
+<td>Connect right away with this nick instead of showing the login dialog.</td>
+</tr>
+<tr>
+<td><code>bearer</code></td>
+<td></td>
+<td>Function that returns a login token, see <a href="embedding.html">Embedding with login</a>.</td>
+</tr>
+<tr>
+<td><code>locale</code></td>
+<td>browser languages</td>
+<td>Language code or list of codes, for example <code>&#39;de-DE&#39;</code>. The first one with bundled texts wins, English otherwise.</td>
+</tr>
+<tr>
+<td><code>theme</code></td>
+<td><code>&#39;auto&#39;</code></td>
+<td><code>&#39;auto&#39;</code> follows the system setting, <code>&#39;dark&#39;</code> or <code>&#39;light&#39;</code> fix it. Users can change it in the settings, their choice is kept in the browser.</td>
+</tr>
+<tr>
+<td><code>overrides</code></td>
+<td><code>{}</code></td>
+<td>Texts that replace bundled ones, by key (see <code>src/i18n/en.json</code>).</td>
+</tr>
+<tr>
+<td><code>appName</code></td>
+<td><code>&#39;StarChat&#39;</code></td>
+<td>Name shown in texts that mention the app.</td>
+</tr>
+<tr>
+<td><code>ctcpVersion</code></td>
+<td><code>&#39;StarChat&#39;</code></td>
+<td>Answer to CTCP VERSION.</td>
+</tr>
+<tr>
+<td><code>defaultQuitMessage</code></td>
+<td></td>
+<td>Quit message until the user sets one.</td>
+</tr>
+<tr>
+<td><code>Alpine</code></td>
+<td>bundled</td>
+<td>An Alpine.js instance your page already runs, for example from Livewire. Without it StarChat starts its own. Never run two.</td>
+</tr>
+<tr>
+<td><code>onHostMessage</code></td>
+<td></td>
+<td><code>(type, data) =&gt; {}</code>. Messages from the chat for the page around it, for example unread counts.</td>
+</tr>
+</tbody></table></div>
+<h2 id="theme">Theme</h2>
+<p><code>starchat/theme.css</code> contains the default theme for dark and light mode. It is built on Bootstrap 5 and Bootstrap Icons, both have to be loaded before it.</p>
+<p>The colors are CSS custom properties on the chat element (<code>--chat-bg</code>, <code>--chat-text</code>, <code>--chat-accent</code> and so on, see <code>src/ui/theme.css</code>). Override them in your own stylesheet to change the look without touching the layout:</p>
+<pre><code class="language-css">#chat {
+    --chat-accent: #2e7d32;
+    --chat-accent-hover: #256628;
+}
+</code></pre>
+<p>The theme is set on the chat element only, so your page keeps its own color scheme.</p>
+<h2 id="notification-sound">Notification sound</h2>
+<p>The chat brings a few synthesized sounds. A site can add its own sound file, which is then offered first and used by default:</p>
+<pre><code class="language-js">import { registerNotificationSound } from &#39;starchat&#39;;
+
+registerNotificationSound(&#39;/sounds/ping.ogg&#39;);
+</code></pre>
+<p>Pass <code>{ makeDefault: false }</code> to only add it to the list.</p>
+<h2 id="own-commands">Own commands</h2>
+<p>Slash commands are a plain object keyed by name. Add your own before mounting:</p>
+<pre><code class="language-js">import { registerCommand } from &#39;starchat&#39;;
+
+registerCommand(&#39;shrug&#39;, (args, ctx) =&gt; {
+    ctx.sendOwnMessage(ctx.currentChannel, `${args.join(&#39; &#39;)} ¯\\_(ツ)_/¯`.trim());
+});
+</code></pre>
+<p>An existing name is replaced. The built-in commands are listed in <a href="commands.html">Commands and shortcuts</a>.</p>
+
+            <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/options.md">Edit this page on GitHub</a></p>
+            </div></div>
+        </main>
+    </div>
+</div>
+
+<footer class="border-top py-4 text-body-secondary small">
+    <div class="container d-flex flex-wrap gap-3">
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>.</span>
+        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
+        <a href="https://st-city.net/impressum">Imprint</a>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Commands and shortcuts | StarChat documentation</title>
+    <meta name="description" content="Commands start with / in the input field. Anything not listed here can be sent to the server with /quote.">
+    <link rel="canonical" href="https://getstarchat.net/docs/commands.html">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="StarChat">
+    <meta property="og:title" content="Commands and shortcuts | StarChat documentation">
+    <meta property="og:description" content="Commands start with / in the input field. Anything not listed here can be sent to the server with /quote.">
+    <meta property="og:url" content="https://getstarchat.net/docs/commands.html">
+    <meta property="og:image" content="https://getstarchat.net/img/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
+    <link rel="stylesheet" href="../vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="../">StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2">
+            <li class="nav-item"><a class="nav-link" href="../">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="../install.html">Install</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="./">Docs</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row g-4 g-lg-5">
+        <aside class="col-lg-3">
+            <nav class="docs-nav sticky-lg-top">
+                <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
+                <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
+                <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
+                <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="commands.html">Commands and shortcuts</a></li>
+                <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="col-lg-9">
+            <div class="card doc"><div class="card-body p-4 p-lg-5">
+<h1 id="commands-and-shortcuts">Commands and shortcuts</h1>
+<h2 id="slash-commands">Slash commands</h2>
+<p>Commands start with <code>/</code> in the input field. Anything not listed here can be sent to the server with <code>/quote</code>.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Command</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/join #channel[,#other]</code></td>
+<td>Join one or more channels. The <code>#</code> can be left out.</td>
+</tr>
+<tr>
+<td><code>/part [#channel[,#other]]</code></td>
+<td>Leave the current channel, or the given ones.</td>
+</tr>
+<tr>
+<td><code>/msg &lt;nick&gt; &lt;text&gt;</code></td>
+<td>Send a direct message and open the conversation. Messages to services (NickServ, ChanServ, ...) go to the server window.</td>
+</tr>
+<tr>
+<td><code>/me &lt;text&gt;</code></td>
+<td>Action message.</td>
+</tr>
+<tr>
+<td><code>/nick &lt;newnick&gt;</code></td>
+<td>Change your nick.</td>
+</tr>
+<tr>
+<td><code>/away [message]</code></td>
+<td>Mark yourself as away.</td>
+</tr>
+<tr>
+<td><code>/back</code></td>
+<td>Remove the away mark.</td>
+</tr>
+<tr>
+<td><code>/whois &lt;nick&gt;</code></td>
+<td>Show information about a user.</td>
+</tr>
+<tr>
+<td><code>/list</code></td>
+<td>List the channels of the network.</td>
+</tr>
+<tr>
+<td><code>/ignore [nick]</code></td>
+<td>Ignore a user. Without a nick, show the ignore list.</td>
+</tr>
+<tr>
+<td><code>/unignore &lt;nick&gt;</code></td>
+<td>Stop ignoring a user.</td>
+</tr>
+<tr>
+<td><code>/highlight</code></td>
+<td>Show your highlight words.</td>
+</tr>
+<tr>
+<td><code>/highlight add &lt;word&gt;[, ...]</code></td>
+<td>Add highlight words, comma separated.</td>
+</tr>
+<tr>
+<td><code>/highlight del &lt;word&gt;</code></td>
+<td>Remove a highlight word.</td>
+</tr>
+<tr>
+<td><code>/highlight clear</code></td>
+<td>Remove all highlight words.</td>
+</tr>
+<tr>
+<td><code>/ns</code>, <code>/cs</code>, <code>/hs</code>, <code>/ms</code>, <code>/os &lt;command&gt;</code></td>
+<td>Send a command to NickServ, ChanServ, HostServ, MemoServ or OperServ.</td>
+</tr>
+<tr>
+<td><code>/ctcp &lt;nick&gt; &lt;command&gt; [text]</code></td>
+<td>Send a CTCP request, for example <code>/ctcp alice PING</code>.</td>
+</tr>
+<tr>
+<td><code>/version [nick]</code></td>
+<td>Version of the server, or of a user&#39;s client.</td>
+</tr>
+<tr>
+<td><code>/server</code></td>
+<td>Open the server window.</td>
+</tr>
+<tr>
+<td><code>/quote &lt;line&gt;</code>, <code>/raw &lt;line&gt;</code></td>
+<td>Send a raw IRC line.</td>
+</tr>
+<tr>
+<td><code>/roll</code></td>
+<td>Roll a d20 in the current channel.</td>
+</tr>
+<tr>
+<td><code>/flip</code></td>
+<td>Flip a coin in the current channel.</td>
+</tr>
+<tr>
+<td><code>/scene [#channel] &lt;text&gt;</code></td>
+<td>Narration line (Ergo roleplay, <code>SCENE</code>).</td>
+</tr>
+<tr>
+<td><code>/npc [#channel] &lt;name&gt; &lt;text&gt;</code></td>
+<td>Line of a non-player character (Ergo roleplay, <code>NPC</code>).</td>
+</tr>
+<tr>
+<td><code>/npca [#channel] &lt;name&gt; &lt;text&gt;</code></td>
+<td>Action of a non-player character (Ergo roleplay, <code>NPCA</code>).</td>
+</tr>
+</tbody></table></div>
+<p>Sites can add their own commands, see <a href="options.html#own-commands">Own commands</a>.</p>
+<h2 id="keyboard-shortcuts">Keyboard shortcuts</h2>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Keys</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl+P</code></td>
+<td>Quick switcher: jump to a channel or conversation.</td>
+</tr>
+<tr>
+<td><code>Ctrl+F</code></td>
+<td>Search in the current channel or conversation.</td>
+</tr>
+<tr>
+<td><code>Alt+Up</code>, <code>Alt+Down</code></td>
+<td>Previous or next entry in the sidebar.</td>
+</tr>
+<tr>
+<td><code>Ctrl+K</code></td>
+<td>Insert a mIRC color.</td>
+</tr>
+<tr>
+<td><code>Ctrl+B</code>, <code>Ctrl+I</code>, <code>Ctrl+U</code></td>
+<td>Bold, italic, underline.</td>
+</tr>
+<tr>
+<td><code>Tab</code></td>
+<td>Complete nicks, channels and commands.</td>
+</tr>
+<tr>
+<td><code>Shift+Enter</code></td>
+<td>New line in the message.</td>
+</tr>
+<tr>
+<td><code>Up</code>, <code>Down</code></td>
+<td>Earlier messages you sent (input history).</td>
+</tr>
+<tr>
+<td><code>Esc</code></td>
+<td>Cancel a reply or close the open window.</td>
+</tr>
+<tr>
+<td><code>?</code> or <code>Ctrl+/</code></td>
+<td>Show all shortcuts.</td>
+</tr>
+</tbody></table></div>
+
+            <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/commands.md">Edit this page on GitHub</a></p>
+            </div></div>
+        </main>
+    </div>
+</div>
+
+<footer class="border-top py-4 text-body-secondary small">
+    <div class="container d-flex flex-wrap gap-3">
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>.</span>
+        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
+        <a href="https://st-city.net/impressum">Imprint</a>
+    </div>
+</footer>
+</body>
+</html>

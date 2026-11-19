@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>StarChat documentation</title>
+    <meta name="description" content="StarChat is an IRCv3 client for the web and the desktop. These pages describe how to put it into a page, how to configure it and what a network can do to...">
+    <link rel="canonical" href="https://getstarchat.net/docs/">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="StarChat">
+    <meta property="og:title" content="StarChat documentation">
+    <meta property="og:description" content="StarChat is an IRCv3 client for the web and the desktop. These pages describe how to put it into a page, how to configure it and what a network can do to...">
+    <meta property="og:url" content="https://getstarchat.net/docs/">
+    <meta property="og:image" content="https://getstarchat.net/img/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
+    <link rel="stylesheet" href="../vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="../">StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2">
+            <li class="nav-item"><a class="nav-link" href="../">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="../install.html">Install</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="./">Docs</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row g-4 g-lg-5">
+        <aside class="col-lg-3">
+            <nav class="docs-nav sticky-lg-top">
+                <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
+                <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
+                <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
+                <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
+                <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="col-lg-9">
+            <div class="card doc"><div class="card-body p-4 p-lg-5">
+<h1 id="documentation">Documentation</h1>
+<p>StarChat is an IRCv3 client for the web and the desktop. These pages describe how to put it into a page, how to configure it and what a network can do to work well with it.</p>
+<p>StarChat is not released yet. Until the first release it is built from source, see <a href="https://getstarchat.net/install.html">Install</a>.</p>
+<h2 id="pages">Pages</h2>
+<ul>
+<li><a href="options.html">mountChat() options</a>: starting the chat in a page and configuring it</li>
+<li><a href="embedding.html">Embedding with login</a>: logging in users of your site with a token</li>
+<li><a href="servers.html">Server list</a>: the public list of networks and how to use your own</li>
+<li><a href="discovery.html">Discovery file</a>: how a network announces its WebSocket address and extra services</li>
+<li><a href="commands.html">Commands and shortcuts</a>: slash commands and keyboard shortcuts</li>
+<li><a href="ircv3.html">IRCv3 support</a>: capabilities and tags StarChat uses</li>
+</ul>
+<h2 id="how-it-is-built">How it is built</h2>
+<p>The package has two layers.</p>
+<p><code>src/core/</code> is the IRC core without any UI: line parser, CAP and SASL negotiation, WebSocket transport, mIRC formatting, slash commands and the state for messages, nick lists and topics. It also loads the server list, reads the discovery file of each server and keeps features, API access and token per connection. The state is written through a small store adapter, so another UI can plug in its own reactive store.</p>
+<p><code>src/ui/</code> is the chat interface, built with Alpine.js and Bootstrap 5. HTML templates live in <code>src/ui/templates/</code>, texts in <code>src/i18n/</code> (English and German). <a href="options.html"><code>mountChat()</code></a> renders the templates into an element and starts everything.</p>
+<p>Both layers are exported from the package entry, so the core can be used on its own:</p>
+<pre><code class="language-js">import { connectWebSocket, parseIrcLine, saslPlain } from &#39;starchat&#39;;
+</code></pre>
+<h2 id="connections-and-networks">Connections and networks</h2>
+<p>There is no central StarChat server. The client connects directly to the IRC network the user picks. Every connection has its own features and its own token, and a token is only sent to the network it belongs to.</p>
+<p>A network without any setup works as a plain IRC server, as long as it offers IRC over WebSocket (the web build cannot open TCP connections). A network that wants to offer more serves a <a href="discovery.html">discovery file</a>.</p>
+<h2 id="license">License</h2>
+<p>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>. If you run a modified version for others, you have to offer them its source code.</p>
+
+            <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/index.md">Edit this page on GitHub</a></p>
+            </div></div>
+        </main>
+    </div>
+</div>
+
+<footer class="border-top py-4 text-body-secondary small">
+    <div class="container d-flex flex-wrap gap-3">
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>.</span>
+        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
+        <a href="https://st-city.net/impressum">Imprint</a>
+    </div>
+</footer>
+</body>
+</html>

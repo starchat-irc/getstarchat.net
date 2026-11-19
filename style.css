@@ -1,0 +1,191 @@
+/* Additions to Bootstrap for getstarchat.net and the docs. */
+
+/* Bootstrap's grays are semi-transparent and too faint for longer text, so both themes
+   get solid colors with more contrast. */
+[data-bs-theme="light"] {
+    --site-surface: #ffffff;
+    --bs-body-bg: #f1f2f4;
+    --bs-body-bg-rgb: 241, 242, 244;
+    --bs-body-color: #16191d;
+    --bs-body-color-rgb: 22, 25, 29;
+    --bs-emphasis-color: #000000;
+    --bs-emphasis-color-rgb: 0, 0, 0;
+    --bs-secondary-color: #454c57;
+    --bs-secondary-color-rgb: 69, 76, 87;
+    --bs-tertiary-bg: #eef0f2;
+    --bs-border-color: #d6dae0;
+    --bs-link-color: #1a4fbf;
+    --bs-link-color-rgb: 26, 79, 191;
+    --bs-link-hover-color: #123a8e;
+    --bs-link-hover-color-rgb: 18, 58, 142;
+}
+
+[data-bs-theme="dark"] {
+    --site-surface: #1b1e23;
+    --bs-body-bg: #111316;
+    --bs-body-bg-rgb: 17, 19, 22;
+    --bs-body-color: #eceef1;
+    --bs-body-color-rgb: 236, 238, 241;
+    --bs-emphasis-color: #ffffff;
+    --bs-emphasis-color-rgb: 255, 255, 255;
+    --bs-secondary-color: #bcc2cc;
+    --bs-secondary-color-rgb: 188, 194, 204;
+    --bs-tertiary-bg: #262a31;
+    --bs-border-color: #33383f;
+    --bs-link-color: #8cb4ff;
+    --bs-link-color-rgb: 140, 180, 255;
+    --bs-link-hover-color: #b5cfff;
+    --bs-link-hover-color-rgb: 181, 207, 255;
+}
+
+body {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+}
+
+.navbar {
+    --bs-navbar-color: var(--bs-secondary-color);
+    --bs-navbar-hover-color: var(--bs-body-color);
+    --bs-navbar-active-color: var(--bs-emphasis-color);
+    --bs-navbar-brand-color: var(--bs-emphasis-color);
+    --bs-navbar-brand-hover-color: var(--bs-emphasis-color);
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: var(--bs-body-color);
+    --bs-btn-border-color: var(--bs-secondary-color);
+    --bs-btn-hover-color: var(--bs-body-bg);
+    --bs-btn-hover-bg: var(--bs-body-color);
+    --bs-btn-hover-border-color: var(--bs-body-color);
+    --bs-btn-active-color: var(--bs-body-bg);
+    --bs-btn-active-bg: var(--bs-body-color);
+    --bs-btn-active-border-color: var(--bs-body-color);
+}
+
+.card {
+    --bs-card-bg: var(--site-surface);
+    --bs-card-border-color: var(--bs-border-color);
+}
+
+.navbar {
+    background: var(--site-surface);
+}
+
+.screenshot {
+    display: block;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+}
+
+.navbar > .container {
+    flex-wrap: wrap;
+    row-gap: .25rem;
+}
+
+.navbar .nav-link.active {
+    font-weight: 600;
+}
+
+.lead {
+    font-size: 1.3rem;
+    font-weight: 400;
+}
+
+.text-measure {
+    max-width: 44rem;
+}
+
+h2[id], h3[id] {
+    scroll-margin-top: 1.5rem;
+}
+
+pre {
+    background: var(--bs-tertiary-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    padding: .85rem 1rem;
+    font-size: .875rem;
+}
+
+:not(pre) > code {
+    color: inherit;
+    background: var(--bs-tertiary-bg);
+    padding: .1em .35em;
+    border-radius: .25rem;
+}
+
+.facts dt {
+    font-weight: 600;
+}
+
+.facts dd {
+    margin-bottom: .75rem;
+}
+
+.feature h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: .35rem;
+}
+
+.feature p {
+    margin-bottom: 0;
+}
+
+.docs-nav {
+    top: 1.5rem;
+    font-size: .95rem;
+}
+
+.docs-nav .nav-link {
+    padding: .3rem .75rem;
+    color: var(--bs-secondary-color);
+    border-left: 2px solid var(--bs-border-color);
+}
+
+.docs-nav .nav-link:hover {
+    color: var(--bs-body-color);
+}
+
+.docs-nav .nav-link.active {
+    color: var(--bs-body-color);
+    border-left-color: var(--bs-body-color);
+    font-weight: 600;
+}
+
+.doc {
+    max-width: 56rem;
+}
+
+.doc h1 {
+    margin-bottom: 1.25rem;
+}
+
+.doc h2 {
+    font-size: 1.5rem;
+    margin-top: 2.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.doc h3 {
+    font-size: 1.15rem;
+    margin-top: 2rem;
+}
+
+.doc h1 + h2 {
+    border-top: 0;
+    padding-top: 0;
+    margin-top: 1.5rem;
+}
+
+.doc .table {
+    --bs-table-bg: transparent;
+    font-size: .95rem;
+}
+
+@media (min-width: 768px) {
+    .doc .table td:first-child {
+        white-space: nowrap;
+    }
+}
