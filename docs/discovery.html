@@ -40,6 +40,7 @@
             <nav class="docs-nav sticky-lg-top">
                 <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
                 <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
                 <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
                 <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
@@ -58,6 +59,7 @@
 <p><code>&lt;domain&gt;</code> is the <code>domain</code> of the network in <a href="https://github.com/starchat-irc/starchat/blob/main/servers/servers.json"><code>servers/servers.json</code></a>, or the domain a user typed in. Networks without this file work as plain IRC servers. The file is optional, and so is every field except <code>schemaVersion</code>.</p>
 <p>Example: <a href="discovery.example.json"><code>discovery.example.json</code></a>. Schema: <a href="discovery.schema.json"><code>discovery.schema.json</code></a>.</p>
 <h2 id="where-the-file-is-looked-up">Where the file is looked up</h2>
+<p>These rules are about the file itself. The addresses inside it (API, WebSocket, logo, links) may be on any domain, see <a href="#fields">Fields</a>.</p>
 <ul>
 <li>Always over <code>https</code>. The client sends no cookies with the request.</li>
 <li>Redirects are followed only within the domain or its subdomains (<code>example.org</code> to <code>www.example.org</code>), not to another domain.</li>
@@ -119,7 +121,7 @@
 <td>Pages of the network, see below. Works without <code>apiBaseUrl</code>.</td>
 </tr>
 </tbody></table></div>
-<p>Endpoints may be on other domains than the network itself, for example an API on a separate host. They must use <code>https</code> or <code>wss</code>. Plain <code>http</code> and <code>ws</code> are dropped.</p>
+<p>Endpoints may be on other domains than the network itself, for example an API on <code>api.example.net</code> or a WebSocket on a separate host. They must use <code>https</code> or <code>wss</code>. Plain <code>http</code> and <code>ws</code> are dropped. The file is trusted for these addresses because it was loaded from the network&#39;s own domain.</p>
 <p>Unknown fields and unknown values in <code>auth</code> and <code>features</code> are ignored, so a file written for a newer client still works with an older one. New fields and values are added to this document first.</p>
 <h2 id="links">Links</h2>
 <p>Pages on the network&#39;s website that the client links to. All <code>https</code>, others are dropped.</p>
@@ -141,6 +143,10 @@
 <tr>
 <td><code>links.reportPolicy</code></td>
 <td>Rules for reports, linked in the report dialog (feature <code>reports</code>).</td>
+</tr>
+<tr>
+<td><code>links.communityInvite</code></td>
+<td>Invite page of a community. Must contain <code>{community}</code>, which is replaced by the community&#39;s <code>slug</code>, URL encoded (<code>https://example.org/invite/{community}</code>). Feature <code>communities</code> then offers &quot;Copy invite link&quot; for the community shown.</td>
 </tr>
 </tbody></table></div>
 <h2 id="login-methods-auth">Login methods (<code>auth</code>)</h2>
@@ -221,6 +227,10 @@
 <tr>
 <td><code>gifs</code></td>
 <td>GIF search in the message input.</td>
+</tr>
+<tr>
+<td><code>communities</code></td>
+<td>Groups of channels the user belongs to, with their own view in the sidebar.</td>
 </tr>
 </tbody></table></div>
 <h2 id="api">API</h2>
@@ -741,7 +751,7 @@
 <td>Group the event belongs to, shown next to it.</td>
 </tr>
 </tbody></table></div>
-<p>The server expands recurring events into single dates and decides how far ahead the list goes. An edition can add filter parameters to the request (<code>eventsQuery()</code>), for example to show only the events of one group.</p>
+<p>The server expands recurring events into single dates and decides how far ahead the list goes. With the <code>communities</code> feature the client asks for <code>chat/events?community=&lt;id&gt;</code> while a community is shown, and the name of the community is then left out.</p>
 <h3 id="push"><code>push</code></h3>
 <p>Needs a token. Only used by app builds (<code>shell: &#39;mobile&#39;</code>): the app cannot receive Web Push itself, so the network relays it to Firebase Cloud Messaging. Browsers register directly with the IRC server and do not call these endpoints.</p>
 <div class="table-responsive"><table class="table">
@@ -796,6 +806,140 @@
 <td>A tapped notification: channel or nick to open.</td>
 </tr>
 </tbody></table></div>
+<h3 id="voice"><code>voice</code></h3>
+<p>Needs a token. Voice chat per channel through a <a href="https://livekit.io">LiveKit</a> server of the network. The user switches it on under Settings → Voice chat (experimental, off by default). Who is in a voice chat is published as IRC metadata <code>voice</code> (value: the channel), so the nick list shows a speaker icon. Leaving the channel on IRC also leaves its voice chat.</p>
+<pre><code>POST chat/voice/token
+</code></pre>
+<p>Body <code>{ &quot;channel&quot;: &quot;#bridge&quot;, &quot;nick&quot;: &quot;alice&quot; }</code>. The server checks that the nick belongs to the account of the token and is in the channel, for example with a WHOIS through the IRC server&#39;s API. Answer:</p>
+<pre><code class="language-json">{ &quot;url&quot;: &quot;wss://voice.example.org&quot;, &quot;token&quot;: &quot;…&quot;, &quot;is_moderator&quot;: false }
+</code></pre>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>url</code></td>
+<td>URL</td>
+<td>LiveKit server.</td>
+</tr>
+<tr>
+<td><code>token</code></td>
+<td>string</td>
+<td>LiveKit access token for the room. The participant identity should be the account name, the participant name the nick.</td>
+</tr>
+<tr>
+<td><code>is_moderator</code></td>
+<td>boolean, optional</td>
+<td>Channel operator: room admin in LiveKit.</td>
+</tr>
+</tbody></table></div>
+<p>Refusals have a status and a <code>reason</code>, the client shows its own text for each:</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Status</th>
+<th><code>reason</code></th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>403</code></td>
+<td><code>not_allowed</code></td>
+<td>Voice is not enabled for this account (for example while testing).</td>
+</tr>
+<tr>
+<td><code>403</code></td>
+<td><code>wrong_account</code></td>
+<td>The nick belongs to another account.</td>
+</tr>
+<tr>
+<td><code>403</code></td>
+<td><code>not_in_channel</code></td>
+<td>The nick is not in the channel.</td>
+</tr>
+<tr>
+<td><code>503</code></td>
+<td><code>whois_failed</code></td>
+<td>The nick could not be checked right now.</td>
+</tr>
+<tr>
+<td><code>404</code></td>
+<td></td>
+<td>Voice is not set up on this server.</td>
+</tr>
+</tbody></table></div>
+<pre><code>GET chat/voice/filters
+</code></pre>
+<p>Optional microphone filters (noise suppression) the client can load. The client ships the AudioWorklet of each filter it knows, the server hosts the WebAssembly files. Unknown ids are ignored, so a new build of a filter gets a new id (<code>rnnoise-v2</code>) and older clients keep loading theirs.</p>
+<pre><code class="language-json">{ &quot;filters&quot;: [{ &quot;id&quot;: &quot;rnnoise-v1&quot;, &quot;wasm&quot;: &quot;https://example.org/voice-filters/rnnoise-v1/rnnoise.wasm&quot;, &quot;wasm_simd&quot;: &quot;https://example.org/voice-filters/rnnoise-v1/rnnoise_simd.wasm&quot; }] }
+</code></pre>
+<p><code>rnnoise-v1</code> pairs with the files of <a href="https://github.com/sapphi-red/web-noise-suppressor"><code>@sapphi-red/web-noise-suppressor</code></a> 0.4.1. An empty list or an error leaves the browser&#39;s own noise suppression.</p>
+<h3 id="calls"><code>calls</code></h3>
+<p>Needs a token and the features <code>voice</code> and <code>friends</code>. Voice calls between two friends from the DM window. Ringing runs over IRC (see <a href="ircv3.html#client-tags">IRCv3 support</a>), the API only hands out the room and rings app builds.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Request</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>POST chat/voice/call-token</code></td>
+<td>Body <code>{ &quot;peer&quot;: &quot;bob&quot;, &quot;nick&quot;: &quot;alice&quot; }</code> (<code>peer</code>: account of the other side). Same answer as <code>chat/voice/token</code>. Both sides have to get the same room, for example <code>dm:</code> plus both account names sorted. <code>403</code> with <code>reason: &quot;not_friends&quot;</code> for anyone who is no friend.</td>
+</tr>
+<tr>
+<td><code>POST chat/voice/call-ring</code></td>
+<td>Body <code>{ &quot;peer&quot;: &quot;bob&quot;, &quot;call_id&quot;: &quot;…&quot;, &quot;nick&quot;: &quot;alice&quot;, &quot;action&quot;: &quot;invite&quot; | &quot;cancel&quot; }</code>. Rings the app builds of the other side (for example through FCM) or takes the notification back. Answer <code>{ &quot;pushed&quot;: 1 }</code>, the number of installs reached; <code>0</code> without a push service.</td>
+</tr>
+</tbody></table></div>
+<p>An app build that receives the ring opens the chat with <code>openPushTarget(&#39;call:id=…&amp;nick=…&amp;account=…&amp;answer=accept|decline&#39;)</code> (<code>answer</code> optional, without it the chat rings). In the background a browser or desktop chat shows a system notification and sends <code>call-incoming</code> with <code>{ nick }</code> to <code>onHostMessage</code>, so a desktop shell can flash its window.</p>
+<h3 id="communities"><code>communities</code></h3>
+<p>Needs a token. Groups of channels the user belongs to. Each one gets an icon in the rail: picking it shows only its channels (the ones not joined yet as joinable) and opens its lobby. Home shows every joined channel, the ones of a community grouped under its name. Creating communities, members and roles are left to the network&#39;s website.</p>
+<pre><code>GET my-communities
+</code></pre>
+<pre><code class="language-json">[
+  { &quot;id&quot;: 1, &quot;name&quot;: &quot;Starfleet&quot;, &quot;slug&quot;: &quot;starfleet&quot;, &quot;lobby_channel&quot;: &quot;#bridge&quot;, &quot;channels&quot;: [&quot;#bridge&quot;, &quot;#engineering&quot;] }
+]
+</code></pre>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>number or string</td>
+<td></td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>Shown in the rail (first letter) and as the group heading.</td>
+</tr>
+<tr>
+<td><code>slug</code></td>
+<td>string, optional</td>
+<td>Letters, digits, <code>_</code> and <code>-</code>. Fills <code>{community}</code> in <code>links.communityInvite</code>.</td>
+</tr>
+<tr>
+<td><code>lobby_channel</code></td>
+<td>string or <code>null</code></td>
+<td>Opened first. Must be one of <code>channels</code>, otherwise the first channel is used.</td>
+</tr>
+<tr>
+<td><code>channels</code></td>
+<td>array of strings</td>
+<td>In the order the community wants them. Compared in lower case.</td>
+</tr>
+</tbody></table></div>
+<p>An empty list for users without communities. The client loads it after every registration. While a community is shown, the <code>events</code> feature asks for <code>chat/events?community=&lt;id&gt;</code> and the server returns only that community&#39;s events.</p>
 <h3 id="other-features">Other features</h3>
 <p>The endpoints of the other features are added here when their modules move into StarChat.</p>
 

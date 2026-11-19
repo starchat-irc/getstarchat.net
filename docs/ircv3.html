@@ -40,6 +40,7 @@
             <nav class="docs-nav sticky-lg-top">
                 <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
                 <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
                 <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
                 <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
@@ -111,7 +112,7 @@
 </tr>
 <tr>
 <td><code>draft/metadata-3</code> or <code>draft/metadata-2</code></td>
-<td>Avatars and status of users.</td>
+<td>Avatars and status of users, the voice chat a user is in (key <code>voice</code>).</td>
 </tr>
 <tr>
 <td><code>draft/webpush</code> or <code>soju.im/webpush</code></td>
@@ -138,8 +139,59 @@
 <td><code>+typing</code></td>
 <td>Shown when other users type.</td>
 </tr>
+<tr>
+<td><code>+getstarchat.net/call</code>, <code>+getstarchat.net/call-id</code></td>
+<td>Ringing for voice calls between friends (feature <code>calls</code>), sent as <code>TAGMSG</code> to the nick.</td>
+</tr>
 </tbody></table></div>
 <p>Reactions and replies are offered only when the server does not deny the tags with <code>CLIENTTAGDENY</code> in <code>ISUPPORT</code>.</p>
+<h3 id="calls">Calls</h3>
+<p><code>+getstarchat.net/call</code> carries the step of the call, <code>+getstarchat.net/call-id</code> a random id of up to 32 letters and digits that keeps two calls apart.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Value</th>
+<th>Sent by</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>invite</code></td>
+<td>caller</td>
+<td>It should ring. The caller is already waiting in the voice room.</td>
+</tr>
+<tr>
+<td><code>ringing</code></td>
+<td>callee</td>
+<td>It rings here. Without it within 6 seconds the caller assumes a client without calls and gives up.</td>
+</tr>
+<tr>
+<td><code>unavailable</code></td>
+<td>callee</td>
+<td>Voice is switched off here.</td>
+</tr>
+<tr>
+<td><code>busy</code></td>
+<td>callee</td>
+<td>Already in a call or another one rings.</td>
+</tr>
+<tr>
+<td><code>accept</code>, <code>decline</code></td>
+<td>callee</td>
+<td>The answer. Other sessions of the same account see it as echo and stop ringing.</td>
+</tr>
+<tr>
+<td><code>cancel</code></td>
+<td>caller</td>
+<td>Gave up before an answer.</td>
+</tr>
+<tr>
+<td><code>end</code></td>
+<td>either</td>
+<td>Hung up.</td>
+</tr>
+</tbody></table></div>
+<p>Only invites from friends ring (by <code>account</code> tag, otherwise by nick). Calls publish no metadata.</p>
 <h2 id="tested-servers">Tested servers</h2>
 <p>StarChat is developed against <a href="https://ergo.chat">Ergo</a>, which supports all of the above. Other servers work with the subset they offer.</p>
 
