@@ -144,6 +144,11 @@ const { connection, servers } = await mountChat(&#39;#chat&#39;, {
 <td></td>
 <td><code>(type, data) =&gt; {}</code>. Messages from the chat for the page around it, for example unread counts.</td>
 </tr>
+<tr>
+<td><code>pushWorker</code></td>
+<td></td>
+<td>URL of the push service worker on your origin, see <a href="#push-notifications">Push notifications</a>. Without it there is no push in the browser.</td>
+</tr>
 </tbody></table></div>
 <h2 id="theme">Theme</h2>
 <p><code>starchat/theme.css</code> contains the default theme for dark and light mode. It is built on Bootstrap 5 and Bootstrap Icons, both have to be loaded before it.</p>
@@ -161,6 +166,40 @@ const { connection, servers } = await mountChat(&#39;#chat&#39;, {
 registerNotificationSound(&#39;/sounds/ping.ogg&#39;);
 </code></pre>
 <p>Pass <code>{ makeDefault: false }</code> to only add it to the list.</p>
+<h2 id="push-notifications">Push notifications</h2>
+<p>On networks with <code>draft/webpush</code> (Ergo, soju) logged-in users can get direct messages and mentions while the chat is closed. The browser needs a service worker on the origin of your page. Copy <code>node_modules/starchat/src/push-sw.js</code> (package path <code>starchat/push-sw.js</code>) to your public folder and pass its URL:</p>
+<pre><code class="language-js">await mountChat(&#39;#chat&#39;, {
+    primaryServer: &#39;irc.example.org&#39;,
+    pushWorker: &#39;/push-sw.js?name=MyNet&amp;chat=/chat&amp;icon=/icon.png&#39;,
+});
+</code></pre>
+<p>The query string configures the worker:</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>name</code></td>
+<td><code>StarChat</code></td>
+<td>Title of notifications without a sender.</td>
+</tr>
+<tr>
+<td><code>chat</code></td>
+<td><code>/</code></td>
+<td>Path of the chat page. A tapped notification focuses a window under this path or opens it with <code>?open=&lt;target&gt;</code>. Can be given more than once, the first is opened.</td>
+</tr>
+<tr>
+<td><code>icon</code></td>
+<td><code>/favicon.ico</code></td>
+<td>Notification icon, a path on your origin.</td>
+</tr>
+</tbody></table></div>
+<p>The user turns push on under Settings → Notifications, which also asks for the browser permission. Muted channels and ignored users stay silent, the chat sends that list to the worker. Logging out unregisters the device.</p>
+<p>No network API is needed for this. Only app builds (FCM) need the network&#39;s relay, the <code>push</code> feature of the <a href="discovery.html#push">discovery file</a>.</p>
 <h2 id="own-commands">Own commands</h2>
 <p>Slash commands are a plain object keyed by name. Add your own before mounting:</p>
 <pre><code class="language-js">import { registerCommand } from &#39;starchat&#39;;

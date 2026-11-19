@@ -113,9 +113,36 @@
 <td><code>https://</code> URL</td>
 <td>Stylesheet with the theme variables of the network.</td>
 </tr>
+<tr>
+<td><code>links</code></td>
+<td>object</td>
+<td>Pages of the network, see below. Works without <code>apiBaseUrl</code>.</td>
+</tr>
 </tbody></table></div>
 <p>Endpoints may be on other domains than the network itself, for example an API on a separate host. They must use <code>https</code> or <code>wss</code>. Plain <code>http</code> and <code>ws</code> are dropped.</p>
 <p>Unknown fields and unknown values in <code>auth</code> and <code>features</code> are ignored, so a file written for a newer client still works with an older one. New fields and values are added to this document first.</p>
+<h2 id="links">Links</h2>
+<p>Pages on the network&#39;s website that the client links to. All <code>https</code>, others are dropped.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>links.register</code></td>
+<td>Creating an account. Linked in the login dialog.</td>
+</tr>
+<tr>
+<td><code>links.channelInvite</code></td>
+<td>Invite link of a channel. Must contain <code>{channel}</code>, which is replaced by the channel name without <code>#</code>, URL encoded (<code>https://example.org/join/{channel}</code>). The channel menu then offers &quot;Copy invite link&quot;.</td>
+</tr>
+<tr>
+<td><code>links.reportPolicy</code></td>
+<td>Rules for reports, linked in the report dialog (feature <code>reports</code>).</td>
+</tr>
+</tbody></table></div>
 <h2 id="login-methods-auth">Login methods (<code>auth</code>)</h2>
 <div class="table-responsive"><table class="table">
 <thead>
@@ -161,7 +188,7 @@
 </tr>
 <tr>
 <td><code>push</code></td>
-<td>Push notifications. Only works in builds with their own app ID.</td>
+<td>Push relay for app builds (FCM). Browser push works without it, see <a href="options.html#push-notifications">Push notifications</a>.</td>
 </tr>
 <tr>
 <td><code>voice</code></td>
@@ -308,6 +335,467 @@
 </tbody></table></div>
 <p>Errors with <code>422</code> carry Laravel style messages (<code>{ &quot;message&quot;: &quot;…&quot;, &quot;errors&quot;: { &quot;avatar&quot;: [&quot;…&quot;] } }</code>), the client shows the first one.</p>
 <p>Avatar and status are also published as IRCv3 metadata (<code>avatar</code>, <code>status</code>), so other clients see them without the API.</p>
+<h3 id="friends"><code>friends</code></h3>
+<p>Needs a token. Requests go to account names. Presence comes from IRC (<code>MONITOR</code>, <code>JOIN</code>, <code>QUIT</code>, <code>AWAY</code>), not from the API.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Request</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET friends</code></td>
+<td><code>{ &quot;friends&quot;: [], &quot;incoming_requests&quot;: [], &quot;outgoing_requests&quot;: [], &quot;blocked&quot;: [] }</code>, lists of entries as below. Polled every 10 seconds while the client is connected.</td>
+</tr>
+<tr>
+<td><code>POST friends/request</code></td>
+<td>Body <code>{ &quot;nick&quot;: &quot;bob&quot; }</code>. A request to someone who already asked us accepts theirs, the answer then has <code>&quot;auto_accepted&quot;: true</code>.</td>
+</tr>
+<tr>
+<td><code>POST friends/{friendship_id}/accept</code></td>
+<td>Accept an incoming request.</td>
+</tr>
+<tr>
+<td><code>POST friends/{friendship_id}/decline</code></td>
+<td>Decline an incoming request.</td>
+</tr>
+<tr>
+<td><code>POST friends/{friendship_id}/block</code></td>
+<td>Block the other side.</td>
+</tr>
+<tr>
+<td><code>DELETE friends/{friendship_id}</code></td>
+<td>End a friendship or withdraw an outgoing request.</td>
+</tr>
+</tbody></table></div>
+<p>An entry:</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>friendship_id</code></td>
+<td>string or number</td>
+<td>Used in the paths above.</td>
+</tr>
+<tr>
+<td><code>user.display</code></td>
+<td>string</td>
+<td>Nick of the other side on IRC. Entries without it are ignored.</td>
+</tr>
+<tr>
+<td><code>user.name</code></td>
+<td>string, optional</td>
+<td>Account name.</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>string, optional</td>
+<td><code>accepted</code>, <code>pending</code> or <code>blocked</code>.</td>
+</tr>
+<tr>
+<td><code>direction</code></td>
+<td>string, optional</td>
+<td><code>incoming</code> or <code>outgoing</code>.</td>
+</tr>
+<tr>
+<td><code>requested_at</code></td>
+<td>ISO 8601 date, optional</td>
+<td></td>
+</tr>
+</tbody></table></div>
+<p>The client shows its own texts after an action. Errors with <code>422</code> carry Laravel style messages, the client shows the first one.</p>
+<h3 id="uploads"><code>uploads</code></h3>
+<p>Needs a token. Images and videos from the file picker, paste or drop are uploaded when the message is sent, the message then carries the link. Links ending in an image or video extension are shown inline, for every user and client.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Request</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>POST chat/media-upload</code></td>
+<td><code>multipart/form-data</code> with the file in <code>media</code> and the message text in <code>caption</code> (optional). Answer <code>{ &quot;id&quot;: …, &quot;url&quot;: &quot;https://…&quot; }</code>.</td>
+</tr>
+<tr>
+<td><code>GET chat/media-upload</code></td>
+<td><code>{ &quot;uploads&quot;: [] }</code>, own uploads, newest first.</td>
+</tr>
+<tr>
+<td><code>DELETE chat/media-upload/{id}</code></td>
+<td>Delete an own upload.</td>
+</tr>
+</tbody></table></div>
+<p>An upload in the list:</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>string or number</td>
+<td>Used in the path above.</td>
+</tr>
+<tr>
+<td><code>url</code></td>
+<td>URL</td>
+<td>Public link to the file.</td>
+</tr>
+<tr>
+<td><code>mime_type</code></td>
+<td>string</td>
+<td>Images and videos get a preview.</td>
+</tr>
+<tr>
+<td><code>original_name</code></td>
+<td>string, optional</td>
+<td></td>
+</tr>
+<tr>
+<td><code>caption</code></td>
+<td>string or <code>null</code>, optional</td>
+<td></td>
+</tr>
+</tbody></table></div>
+<p>Errors: <code>413</code> file too large, <code>422</code> with Laravel style messages (the client shows the first one).</p>
+<h3 id="gifs"><code>gifs</code></h3>
+<p>The token is sent if there is one. A server that wants to limit guests answers them with <code>401</code>.</p>
+<pre><code>GET gifs/search?limit=20&amp;q=cats&amp;page=2
+</code></pre>
+<p>Without <code>q</code> the server returns trending GIFs. <code>page</code> is the <code>next</code> value of the previous answer.</p>
+<pre><code class="language-json">{
+  &quot;results&quot;: [{ &quot;id&quot;: &quot;abc&quot;, &quot;title&quot;: &quot;Cat&quot;, &quot;url&quot;: &quot;https://…/abc.gif&quot;, &quot;preview&quot;: &quot;https://…/abc.webp&quot; }],
+  &quot;next&quot;: 2,
+  &quot;provider&quot;: { &quot;name&quot;: &quot;GIF service&quot;, &quot;url&quot;: &quot;https://…&quot; }
+}
+</code></pre>
+<p><code>url</code> is sent as the message, <code>preview</code> is shown in the picker. Results without <code>https</code> URLs are dropped. <code>next</code> is <code>null</code> on the last page. <code>provider</code> is optional and shown as &quot;Powered by&quot; under the results, as most GIF services require.</p>
+<h3 id="reports"><code>reports</code></h3>
+<p>Guests may report too, the token is sent if there is one. A report goes to the moderators of the network.</p>
+<pre><code>POST chat/reports
+</code></pre>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>reported_nick</code></td>
+<td>string</td>
+<td>Nick of the reported user.</td>
+</tr>
+<tr>
+<td><code>reported_account</code></td>
+<td>string or <code>null</code></td>
+<td>Account from WHOIS, if the profile card was open.</td>
+</tr>
+<tr>
+<td><code>reporter_nick</code></td>
+<td>string</td>
+<td>Own nick, <code>Guest</code> if unknown.</td>
+</tr>
+<tr>
+<td><code>channel</code></td>
+<td>string or <code>null</code></td>
+<td>Channel the report was sent from, <code>null</code> in DMs.</td>
+</tr>
+<tr>
+<td><code>message_text</code></td>
+<td>string or <code>null</code></td>
+<td>Reported message, max. 2000 characters.</td>
+</tr>
+<tr>
+<td><code>message_sent_at</code></td>
+<td>ISO 8601 date or <code>null</code></td>
+<td>Time of the reported message.</td>
+</tr>
+<tr>
+<td><code>reason</code></td>
+<td>string</td>
+<td><code>child_safety</code>, <code>sexual_content</code>, <code>harassment</code>, <code>hate_speech</code>, <code>spam</code> or <code>other</code>.</td>
+</tr>
+<tr>
+<td><code>details</code></td>
+<td>string or <code>null</code></td>
+<td>Note of the reporter, max. 2000 characters.</td>
+</tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>201</code></td>
+<td>Received. The client shows its own text.</td>
+</tr>
+<tr>
+<td><code>422</code></td>
+<td>Invalid fields.</td>
+</tr>
+<tr>
+<td><code>429</code></td>
+<td>Too many reports, the client asks to wait.</td>
+</tr>
+</tbody></table></div>
+<h3 id="explore"><code>explore</code></h3>
+<p>No token needed. The channel list of the IRC server (<code>LIST</code>) is shown on every network, this feature adds a tab with the network&#39;s directory: groups of channels that are joined together.</p>
+<pre><code>GET explore
+</code></pre>
+<pre><code class="language-json">{
+  &quot;communities&quot;: [
+    { &quot;id&quot;: 1, &quot;name&quot;: &quot;Starfleet&quot;, &quot;description&quot;: &quot;Roleplay on the bridge&quot;, &quot;channel_names&quot;: [&quot;#bridge&quot;, &quot;#lounge&quot;] }
+  ]
+}
+</code></pre>
+<p><code>description</code> is optional. Channel names without <code>#</code> and groups without channels are dropped.</p>
+<h3 id="chatstate"><code>chatState</code></h3>
+<p>Needs a token. Open conversations, read positions and the synced settings of an account, so another device (or the next session) continues where the last one stopped.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Request</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET chat-state</code></td>
+<td>The state below. An account without a saved state gets empty lists and <code>&quot;settings&quot;: null</code>.</td>
+</tr>
+<tr>
+<td><code>POST chat-state</code></td>
+<td>Body: the state below, <code>settings_patch</code> instead of <code>settings</code>. Sent at most every 5 seconds, after changes.</td>
+</tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>open_dms</code></td>
+<td>array of strings</td>
+<td>Nicks with an open DM.</td>
+</tr>
+<tr>
+<td><code>joined_channels</code></td>
+<td>array of strings</td>
+<td>Channels to join on the next connect (each starting with <code>#</code>), without the default channel.</td>
+</tr>
+<tr>
+<td><code>active_channel</code></td>
+<td>string or <code>null</code></td>
+<td>Shown after the next connect.</td>
+</tr>
+<tr>
+<td><code>sidebar_mode</code></td>
+<td>string</td>
+<td><code>channels</code>, <code>friends</code> or <code>uploads</code>.</td>
+</tr>
+<tr>
+<td><code>last_read</code></td>
+<td>object</td>
+<td><code>{ target: ISO 8601 date }</code>, read position per channel or DM. Newer local values win.</td>
+</tr>
+<tr>
+<td><code>unread_counts</code></td>
+<td>object</td>
+<td><code>{ target: number }</code>.</td>
+</tr>
+<tr>
+<td><code>settings</code></td>
+<td>object or <code>null</code></td>
+<td>Synced settings, see below. <code>null</code>: the account never synced, the client uploads its own values.</td>
+</tr>
+<tr>
+<td><code>settings_patch</code></td>
+<td>object</td>
+<td>Only in <code>POST</code>: the settings changed on this device. <code>null</code> as value removes a key. The server merges it into the stored document, so changes from another device are kept.</td>
+</tr>
+</tbody></table></div>
+<p>Settings:</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>highlight_words</code></td>
+<td>array of strings, max. 20</td>
+</tr>
+<tr>
+<td><code>ignored_users</code></td>
+<td>array of nicks, max. 100</td>
+</tr>
+<tr>
+<td><code>channel_notifications</code></td>
+<td><code>{ channel: &quot;mentions&quot; | &quot;mute&quot; }</code></td>
+</tr>
+<tr>
+<td><code>quit_message</code></td>
+<td>string, one line, max. 200 characters. Missing: the client&#39;s default.</td>
+</tr>
+<tr>
+<td><code>nick_colors</code></td>
+<td><code>{ nick: hue 0–359 }</code></td>
+</tr>
+<tr>
+<td><code>left_lobbies</code></td>
+<td>array of channels the user left on purpose, they are not joined by default any more</td>
+</tr>
+<tr>
+<td><code>autojoin_channels</code></td>
+<td>array of channels joined on every connect, max. 50</td>
+</tr>
+</tbody></table></div>
+<p>Unknown keys are kept by the client and should be kept by the server, other clients may use them.</p>
+<h3 id="alwayson"><code>alwaysOn</code></h3>
+<p>Needs a token. Keeps the nick in its channels while no client is connected, for example Ergo&#39;s <code>always-on</code>. After the first registration the client asks once per account whether to turn it on.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Request</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET chat/always-on</code></td>
+<td><code>{ &quot;enabled&quot;: false, &quot;ask&quot;: true }</code>. <code>ask</code>: show the question (not answered yet).</td>
+</tr>
+<tr>
+<td><code>PUT chat/always-on</code></td>
+<td>Body <code>{ &quot;enabled&quot;: true }</code>. Answer <code>{ &quot;enabled&quot;: true, &quot;ask&quot;: false }</code>.</td>
+</tr>
+<tr>
+<td><code>POST chat/always-on/dismiss</code></td>
+<td>&quot;No, thanks&quot;: the server stops asking.</td>
+</tr>
+</tbody></table></div>
+<p><code>503</code> when the IRC server cannot be reached, the client then shows the switch disabled.</p>
+<h3 id="events"><code>events</code></h3>
+<p>Needs a token. Upcoming events for the calendar button in the channel sidebar. The button only shows when the list has an event that has not started yet, and is marked when one starts within 24 hours. The client loads the list after every registration and every 15 minutes.</p>
+<pre><code>GET chat/events
+</code></pre>
+<pre><code class="language-json">{
+  &quot;events&quot;: [
+    { &quot;event_id&quot;: 4, &quot;title&quot;: &quot;Bridge meeting&quot;, &quot;starts_at&quot;: &quot;2026-11-20T19:00:00Z&quot;, &quot;recurrence&quot;: &quot;weekly&quot;, &quot;channel&quot;: &quot;#bridge&quot;, &quot;community_name&quot;: &quot;Starfleet&quot; }
+  ]
+}
+</code></pre>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>event_id</code></td>
+<td>string or number</td>
+<td>Recurring events appear once per date with the same id.</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td><code>starts_at</code></td>
+<td>ISO 8601 date</td>
+<td>Shown in the local time zone. Entries without a valid date are dropped.</td>
+</tr>
+<tr>
+<td><code>recurrence</code></td>
+<td>string, optional</td>
+<td><code>none</code>, <code>weekly</code>, <code>biweekly</code> or <code>monthly</code>, shown as a hint.</td>
+</tr>
+<tr>
+<td><code>channel</code></td>
+<td>string or <code>null</code>, optional</td>
+<td>Channel of the event (starting with <code>#</code>), opened or joined from the list.</td>
+</tr>
+<tr>
+<td><code>community_name</code></td>
+<td>string, optional</td>
+<td>Group the event belongs to, shown next to it.</td>
+</tr>
+</tbody></table></div>
+<p>The server expands recurring events into single dates and decides how far ahead the list goes. An edition can add filter parameters to the request (<code>eventsQuery()</code>), for example to show only the events of one group.</p>
+<h3 id="push"><code>push</code></h3>
+<p>Needs a token. Only used by app builds (<code>shell: &#39;mobile&#39;</code>): the app cannot receive Web Push itself, so the network relays it to Firebase Cloud Messaging. Browsers register directly with the IRC server and do not call these endpoints.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Request</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>POST chat/push-devices</code></td>
+<td>Body <code>{ &quot;fcm_token&quot;: &quot;…&quot; }</code>. Answer <code>{ &quot;endpoint&quot;: &quot;https://…&quot; }</code> (<code>201</code> new, <code>200</code> known).</td>
+</tr>
+<tr>
+<td><code>DELETE chat/push-devices</code></td>
+<td>Body <code>{ &quot;fcm_token&quot;: &quot;…&quot; }</code>. Answer <code>204</code>. Sent on logout.</td>
+</tr>
+</tbody></table></div>
+<p>The client hands the endpoint to the IRC server with <code>WEBPUSH REGISTER &lt;endpoint&gt; p256dh=…;auth=…</code>, using the keys the app created. The IRC server then sends encrypted pushes to the endpoint, the network forwards them unchanged to FCM and the app decrypts them. A token belongs to one install: registering it again moves it to the current account.</p>
+<p>App and chat talk through <code>onHostMessage</code> and methods of the chat component:</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Direction</th>
+<th>Message</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>chat → app</td>
+<td><code>push-subscribe</code></td>
+<td>Asks for <code>{ fcmToken, p256dh, auth }</code>.</td>
+</tr>
+<tr>
+<td>app → chat</td>
+<td><code>receivePushSubscription(data)</code></td>
+<td>The answer, or <code>{ error }</code>. Without answer after 15 seconds the attempt fails.</td>
+</tr>
+<tr>
+<td>chat → app</td>
+<td><code>push-filter</code></td>
+<td><code>{ muted, ignored }</code>: channels and nicks whose pushes the app drops.</td>
+</tr>
+<tr>
+<td>chat → app</td>
+<td><code>push-unsubscribe</code></td>
+<td>Logout, the app deletes its keys.</td>
+</tr>
+<tr>
+<td>app → chat</td>
+<td><code>openPushTarget(target)</code></td>
+<td>A tapped notification: channel or nick to open.</td>
+</tr>
+</tbody></table></div>
 <h3 id="other-features">Other features</h3>
 <p>The endpoints of the other features are added here when their modules move into StarChat.</p>
 
