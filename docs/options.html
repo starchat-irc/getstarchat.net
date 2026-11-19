@@ -100,6 +100,11 @@ const { connection, servers } = await mountChat(&#39;#chat&#39;, {
 <td>Function that returns a login token, see <a href="embedding.html">Embedding with login</a>.</td>
 </tr>
 <tr>
+<td><code>modules</code></td>
+<td>all bundled</td>
+<td>Feature modules, for example <code>[profilesModule]</code> (exported by the package). A module only runs on servers that list its feature in the <a href="discovery.html#features">discovery file</a>. Pass <code>[]</code> for a plain IRC client.</td>
+</tr>
+<tr>
 <td><code>locale</code></td>
 <td>browser languages</td>
 <td>Language code or list of codes, for example <code>&#39;de-DE&#39;</code>. The first one with bundled texts wins, English otherwise.</td>

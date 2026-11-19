@@ -137,7 +137,7 @@
 <td>Connecting without an account is allowed.</td>
 </tr>
 </tbody></table></div>
-<p>Without <code>auth</code> the client assumes <code>sasl-plain</code> and <code>guest</code>, like any IRC server. The API endpoints for <code>bearer</code> are described together with the features.</p>
+<p>Without <code>auth</code> the client assumes <code>sasl-plain</code> and <code>guest</code>, like any IRC server. With <code>bearer</code> the client gets its token as described under <a href="#api">API</a>.</p>
 <h2 id="features">Features</h2>
 <p>Every connection has its own features and its own token. A token is only sent to the <code>apiBaseUrl</code> of the network it belongs to.</p>
 <div class="table-responsive"><table class="table">
@@ -196,7 +196,120 @@
 <td>GIF search in the message input.</td>
 </tr>
 </tbody></table></div>
-<p>The API endpoints of each feature are not fixed yet. They follow when the features move into StarChat.</p>
+<h2 id="api">API</h2>
+<p>All paths are relative to <code>apiBaseUrl</code>. Requests and answers are JSON unless noted. The client sends <code>Accept: application/json</code> and no cookies, so the API has to answer cross-origin requests (<code>Access-Control-Allow-Origin: *</code> or the calling origin, <code>Authorization</code> as allowed header).</p>
+<h3 id="token">Token</h3>
+<p>The token is a string the IRC server accepts with SASL <code>IRCV3BEARER</code> and the API accepts as <code>Authorization: Bearer &lt;token&gt;</code>. With <a href="https://ergo.chat">Ergo</a> this is a JWT signed with a key from <code>accounts.jwt-auth</code>, the account name in <code>sub</code>.</p>
+<p>A client gets a token in one of two ways:</p>
+<ul>
+<li>From the page that embeds the chat (<code>mountChat({ bearer })</code>, see the README).</li>
+<li>With <code>bearer</code> in <code>auth</code>, from the login form:</li>
+</ul>
+<pre><code>POST login
+{ &quot;username&quot;: &quot;alice&quot;, &quot;password&quot;: &quot;secret&quot; }
+</code></pre>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Status</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>200</code></td>
+<td><code>{ &quot;token&quot;: &quot;…&quot;, &quot;nickname&quot;: &quot;alice&quot; }</code>. <code>nickname</code> is optional, the client then keeps the one typed in.</td>
+</tr>
+<tr>
+<td><code>401</code></td>
+<td>Wrong name or password.</td>
+</tr>
+</tbody></table></div>
+<p>The client then logs in on IRC with <code>IRCV3BEARER</code> instead of <code>PLAIN</code>. Without <code>bearer</code> in <code>auth</code> a password goes to the IRC server with SASL <code>PLAIN</code> and the client has no token, so features that need one stay hidden. Guests have no token either.</p>
+<p>An API request with a missing or expired token is answered with <code>401</code>.</p>
+<h3 id="profiles"><code>profiles</code></h3>
+<p>Needs a token.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Request</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET chat/profiles/{account}</code></td>
+<td>Profile of an IRC account (<code>330</code> in WHOIS), <code>404</code> if there is none.</td>
+</tr>
+<tr>
+<td><code>GET chat/profile</code></td>
+<td>Own profile. Also loaded after every connect to publish avatar and status.</td>
+</tr>
+<tr>
+<td><code>PUT chat/profile/status</code></td>
+<td>Body <code>{ &quot;status&quot;: &quot;…&quot; }</code> or <code>{ &quot;status&quot;: null }</code>, max. 128 characters. Answer <code>{ &quot;status&quot;: &quot;…&quot; }</code>.</td>
+</tr>
+<tr>
+<td><code>POST chat/profile/avatar</code></td>
+<td><code>multipart/form-data</code> with the image in <code>avatar</code> (JPEG, PNG or GIF, max. 2 MB). Answer <code>{ &quot;avatar_url&quot;: &quot;…&quot; }</code>.</td>
+</tr>
+<tr>
+<td><code>DELETE chat/profile/avatar</code></td>
+<td>Answer <code>{ &quot;avatar_url&quot;: null }</code>.</td>
+</tr>
+</tbody></table></div>
+<p>A profile:</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>Account name.</td>
+</tr>
+<tr>
+<td><code>avatar_url</code></td>
+<td><code>https://</code> URL or <code>null</code></td>
+<td>Shown only if it is on the same origin as <code>apiBaseUrl</code>.</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>string or <code>null</code></td>
+<td>Status text, one line.</td>
+</tr>
+<tr>
+<td><code>member_since</code></td>
+<td>ISO 8601 date or <code>null</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>characters</code></td>
+<td>array, optional</td>
+<td><code>{ name, race, character_class, url }</code>, e.g. roleplay characters.</td>
+</tr>
+<tr>
+<td><code>mutual_communities</code></td>
+<td>array, optional</td>
+<td><code>{ name, slug }</code>, groups the viewer and this account both belong to.</td>
+</tr>
+<tr>
+<td><code>settings_url</code></td>
+<td>URL, optional</td>
+<td>Own profile only: link to further account settings.</td>
+</tr>
+<tr>
+<td><code>delete_account_url</code></td>
+<td>URL, optional</td>
+<td>Own profile only.</td>
+</tr>
+</tbody></table></div>
+<p>Errors with <code>422</code> carry Laravel style messages (<code>{ &quot;message&quot;: &quot;…&quot;, &quot;errors&quot;: { &quot;avatar&quot;: [&quot;…&quot;] } }</code>), the client shows the first one.</p>
+<p>Avatar and status are also published as IRCv3 metadata (<code>avatar</code>, <code>status</code>), so other clients see them without the API.</p>
+<h3 id="other-features">Other features</h3>
+<p>The endpoints of the other features are added here when their modules move into StarChat.</p>
 
             <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/discovery.md">Edit this page on GitHub</a></p>
             </div></div>
