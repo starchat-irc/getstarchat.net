@@ -42,6 +42,7 @@
                 <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
                 <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
                 <li class="nav-item"><a class="nav-link" href="hosting.html">Hosting the web client</a></li>
+                <li class="nav-item"><a class="nav-link" href="desktop.html">Desktop app</a></li>
                 <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
                 <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
                 <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
@@ -232,6 +233,10 @@
 <tr>
 <td><code>communities</code></td>
 <td>Groups of channels the user belongs to, with their own view in the sidebar.</td>
+</tr>
+<tr>
+<td><code>spotify</code></td>
+<td>The track playing on the user&#39;s linked Spotify account as now-playing status (desktop app).</td>
 </tr>
 </tbody></table></div>
 <h2 id="api">API</h2>
@@ -898,6 +903,32 @@
 </tr>
 </tbody></table></div>
 <p>An app build that receives the ring opens the chat with <code>openPushTarget(&#39;call:id=…&amp;nick=…&amp;account=…&amp;answer=accept|decline&#39;)</code> (<code>answer</code> optional, without it the chat rings). In the background a browser or desktop chat shows a system notification and sends <code>call-incoming</code> with <code>{ nick }</code> to <code>onHostMessage</code>, so a desktop shell can flash its window.</p>
+<h3 id="spotify"><code>spotify</code></h3>
+<p>Used by the <a href="desktop.html">desktop app</a>. The network keeps the Spotify link of the account (OAuth with its own Spotify app) and asks Spotify for the user. All requests need the token.</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Request</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET spotify/auth-url</code></td>
+<td><code>{ &quot;url&quot;: &quot;https://…&quot; }</code>, a one-time link the app opens in the browser to link the account.</td>
+</tr>
+<tr>
+<td><code>GET spotify/status</code></td>
+<td><code>{ &quot;connected&quot;: true }</code></td>
+</tr>
+<tr>
+<td><code>GET spotify/current-track</code></td>
+<td><code>{ &quot;title&quot;: &quot;…&quot;, &quot;artist&quot;: &quot;…&quot; }</code>, or <code>null</code> when nothing plays.</td>
+</tr>
+<tr>
+<td><code>DELETE spotify/disconnect</code></td>
+<td><code>{ &quot;ok&quot;: true }</code></td>
+</tr>
+</tbody></table></div>
 <h3 id="communities"><code>communities</code></h3>
 <p>Needs a token. Groups of channels the user belongs to. Each one gets an icon in the rail: picking it shows only its channels (the ones not joined yet as joinable) and opens its lobby. Home shows every joined channel, the ones of a community grouped under its name. Creating communities, members and roles are left to the network&#39;s website.</p>
 <pre><code>GET my-communities

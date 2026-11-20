@@ -42,6 +42,7 @@
                 <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
                 <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
                 <li class="nav-item"><a class="nav-link" href="hosting.html">Hosting the web client</a></li>
+                <li class="nav-item"><a class="nav-link" href="desktop.html">Desktop app</a></li>
                 <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
                 <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="servers.html">Server list</a></li>
@@ -59,6 +60,7 @@
 <p>With <code>serverList: &#39;default&#39;</code> the client loads the list from GitHub and keeps it in the browser for 24 hours. When the download fails it uses an older cached copy, and as a last resort the copy shipped with the package. So a new network shows up in every StarChat within a day after its pull request is merged, without a new release.</p>
 <p>With <code>serverList: &#39;https://example.org/servers.json&#39;</code> the client loads your own list in the same format. An own list never falls back to the public one.</p>
 <p>With <code>serverList: false</code> only the primary server is offered.</p>
+<p>The <a href="desktop.html">desktop app</a> works the same way for its directory of networks: the list is bundled at build time, the app loads newer versions itself and keeps them for 24 hours.</p>
 <h2 id="format">Format</h2>
 <pre><code class="language-json">{
     &quot;schemaVersion&quot;: 1,
