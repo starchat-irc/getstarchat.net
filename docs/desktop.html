@@ -43,10 +43,12 @@
                 <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
                 <li class="nav-item"><a class="nav-link" href="hosting.html">Hosting the web client</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="desktop.html">Desktop app</a></li>
+                <li class="nav-item"><a class="nav-link" href="mobile.html">Mobile app</a></li>
                 <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
                 <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
                 <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
                 <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="api.html">API reference</a></li>
                 <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
                 <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
                 </ul>
@@ -192,7 +194,7 @@ STARCHAT_EDITION=editions/my-network npm run dist -- --linux
 </tbody></table></div>
 <p>All file paths are relative to the edition folder and must stay inside it. The full schema is <code>desktop/edition.schema.json</code>.</p>
 <h3 id="features-of-the-primary-server">Features of the primary server</h3>
-<p>Only for editions with <code>chat.primaryServer</code>. Some parts of the app need an API on the primary server and turn on only when its discovery file offers them. The Spotify link, for example, needs the feature <a href="discovery.html#spotify"><code>spotify</code></a>. Without a discovery file the app is a plain IRC client.</p>
+<p>Only for editions with <code>chat.primaryServer</code>. Some parts of the app need an API on the primary server and turn on only when its discovery file offers them. The Spotify link, for example, needs the feature <a href="api.html#spotify"><code>spotify</code></a>. Without a discovery file the app is a plain IRC client.</p>
 <h2 id="connections">Connections</h2>
 <p>Each tab is a connection profile: the primary server of the edition (if it has one) or another server, over TCP (with or without TLS) or a secure WebSocket. TCP sockets are opened by the app, the chat page reaches them through <code>nativeSocket</code> (see <a href="options.html">mountChat() options</a>). Profiles are managed under Settings, Connections. Passwords and tokens are stored encrypted with the system keychain (Electron <code>safeStorage</code>) and never shown again. They only go to the server they were stored for: a connection to the primary server remembers that server (older connections without it are bound on the first start). In an edition with another or no primary server it becomes a normal connection to its network when the directory knows that network, otherwise it is kept aside unused and the app says so; an edition with that primary server takes it back, and changing the address of another connection, or switching TLS off, drops its stored password and token. &quot;Remember me&quot; in the login dialog keeps the API token of a password login for the next start.</p>
 <h2 id="irc-links">IRC links</h2>
@@ -218,7 +220,7 @@ npm run chat-bundle -- --key ../chat-signing-key.pem --out ../chat-update --edit
 
 <footer class="border-top py-4 text-body-secondary small">
     <div class="container d-flex flex-wrap gap-3">
-        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>.</span>
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">MIT License</a>.</span>
         <a href="https://github.com/starchat-irc/starchat">GitHub</a>
         <a href="https://st-city.net/impressum">Imprint</a>
     </div>

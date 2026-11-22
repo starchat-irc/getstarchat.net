@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>API reference | StarChat documentation</title>
+    <meta name="description" content="Endpoints a network offers so StarChat can use the features it lists in its discovery file. Every feature is optional: a network leaves out the endpoints of...">
+    <link rel="canonical" href="https://getstarchat.net/docs/api.html">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="StarChat">
+    <meta property="og:title" content="API reference | StarChat documentation">
+    <meta property="og:description" content="Endpoints a network offers so StarChat can use the features it lists in its discovery file. Every feature is optional: a network leaves out the endpoints of...">
+    <meta property="og:url" content="https://getstarchat.net/docs/api.html">
+    <meta property="og:image" content="https://getstarchat.net/img/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
+    <link rel="stylesheet" href="../vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="../">StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2">
+            <li class="nav-item"><a class="nav-link" href="../">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="../install.html">Install</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="./">Docs</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row g-4 g-lg-5">
+        <aside class="col-lg-3">
+            <nav class="docs-nav sticky-lg-top">
+                <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
+                <li class="nav-item"><a class="nav-link" href="hosting.html">Hosting the web client</a></li>
+                <li class="nav-item"><a class="nav-link" href="desktop.html">Desktop app</a></li>
+                <li class="nav-item"><a class="nav-link" href="mobile.html">Mobile app</a></li>
+                <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
+                <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
+                <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
+                <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="api.html">API reference</a></li>
+                <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
+                <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="col-lg-9">
+            <div class="card doc"><div class="card-body p-4 p-lg-5">
+<h1 id="api-reference">API reference</h1>
+<p>Endpoints a network offers so StarChat can use the features it lists in its
+<a href="discovery.html">discovery file</a>. Every feature is optional: a network leaves out the
+endpoints of features it does not list, and the client hides them.</p>
+<p>All paths are relative to <code>apiBaseUrl</code> from the discovery file. Requests and answers
+are JSON unless noted. The client sends <code>Accept: application/json</code> and no cookies, so
+the API has to answer cross-origin requests (<code>Access-Control-Allow-Origin: *</code> or the
+calling origin, <code>Authorization</code> as allowed header).</p>
+<p>Times are ISO 8601. Channel names start with <code>#</code> and are compared in lower case.</p>
+<p>Errors with <code>422</code> carry Laravel style messages
+(<code>{ &quot;message&quot;: &quot;…&quot;, &quot;errors&quot;: { &quot;field&quot;: [&quot;…&quot;] } }</code>), the client shows the first one.
+A request with a missing or expired token is answered with <code>401</code>.</p>
+<p>The same as OpenAPI 3.1.0: <a href="openapi.yaml">openapi.yaml</a>. The features and where the API address comes from are described in <a href="discovery.html">Discovery file</a>.</p>
+<ul>
+<li><a href="#login"><code>login</code></a></li>
+<li><a href="#profiles"><code>profiles</code></a></li>
+<li><a href="#friends"><code>friends</code></a></li>
+<li><a href="#uploads"><code>uploads</code></a></li>
+<li><a href="#gifs"><code>gifs</code></a></li>
+<li><a href="#reports"><code>reports</code></a></li>
+<li><a href="#explore"><code>explore</code></a></li>
+<li><a href="#chatstate"><code>chatState</code></a></li>
+<li><a href="#alwayson"><code>alwaysOn</code></a></li>
+<li><a href="#events"><code>events</code></a></li>
+<li><a href="#communities"><code>communities</code></a></li>
+<li><a href="#push"><code>push</code></a></li>
+<li><a href="#voice"><code>voice</code></a></li>
+<li><a href="#calls"><code>calls</code></a></li>
+<li><a href="#spotify"><code>spotify</code></a></li>
+</ul>
+<h2 id="login"><code>login</code></h2>
+<p>Only with <code>bearer</code> in <code>auth</code>. The token is a string the IRC server accepts with SASL
+<code>IRCV3BEARER</code> and the API accepts as <code>Authorization: Bearer &lt;token&gt;</code>. With
+<a href="https://ergo.chat">Ergo</a> this is a JWT signed with a key from <code>accounts.jwt-auth</code>,
+the account name in <code>sub</code>.</p>
+<p>A page that embeds the chat can also hand over a token itself
+(<code>mountChat({ bearer })</code>), then this endpoint is not called. Guests have no token,
+so features that need one stay hidden for them.</p>
+<h3 id="login"><span class="badge text-bg-secondary me-2">POST</span><code>login</code></h3>
+<p><strong>Token for an account.</strong> No token.</p>
+<p>The client then logs in on IRC with <code>IRCV3BEARER</code> instead of <code>PLAIN</code>. Without
+<code>bearer</code> in <code>auth</code> a password goes to the IRC server with SASL <code>PLAIN</code> and this
+endpoint is not used.</p>
+<p>Body:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>username</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>password</code></td><td>string</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;username&quot;: &quot;alice&quot;,
+  &quot;password&quot;: &quot;secret&quot;
+}</code></pre>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Logged in.</td></tr>
+<tr><td><code>401</code></td><td>Wrong name or password.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>token</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>nickname</code></td><td>string</td><td></td><td>Nick to use on IRC. Without it the client keeps the one typed in.</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;token&quot;: &quot;eyJhbGciOiJIUzI1NiJ9…&quot;,
+  &quot;nickname&quot;: &quot;alice&quot;
+}</code></pre>
+<h2 id="profiles"><code>profiles</code></h2>
+<p>Profile cards with avatar, status and member date. Avatar and status are also
+published as IRCv3 metadata (<code>avatar</code>, <code>status</code>), so other clients see them without
+the API.</p>
+<h3 id="getProfile"><span class="badge text-bg-secondary me-2">GET</span><code>chat/profiles/{account}</code></h3>
+<p><strong>Profile of an IRC account.</strong> Needs a token.</p>
+<p>The account comes from WHOIS (<code>330</code>).</p>
+<p>Parameters:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>{account}</code></td><td>string</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>The profile.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>404</code></td><td>The account has no profile.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>name</code></td><td>string</td><td>yes</td><td>Account name.</td></tr>
+<tr><td><code>avatar_url</code></td><td>URL or <code>null</code></td><td></td><td>Shown only if it is on the same origin as <code>apiBaseUrl</code>.</td></tr>
+<tr><td><code>status</code></td><td>string or <code>null</code></td><td></td><td>Status text, one line.</td></tr>
+<tr><td><code>member_since</code></td><td>ISO 8601 date or <code>null</code></td><td></td><td></td></tr>
+<tr><td><code>characters</code></td><td>array of object</td><td></td><td>For example roleplay characters.</td></tr>
+<tr><td><code>characters[].name</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>characters[].race</code></td><td>string or <code>null</code></td><td></td><td></td></tr>
+<tr><td><code>characters[].character_class</code></td><td>string or <code>null</code></td><td></td><td></td></tr>
+<tr><td><code>characters[].url</code></td><td>URL or <code>null</code></td><td></td><td></td></tr>
+<tr><td><code>mutual_communities</code></td><td>array of object</td><td></td><td>Groups the viewer and this account both belong to.</td></tr>
+<tr><td><code>mutual_communities[].name</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>mutual_communities[].slug</code></td><td>string</td><td></td><td></td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;alice&quot;,
+  &quot;avatar_url&quot;: &quot;https://example.org/avatars/alice.png&quot;,
+  &quot;status&quot;: &quot;On the bridge&quot;,
+  &quot;member_since&quot;: &quot;2024-03-01T00:00:00Z&quot;
+}</code></pre>
+<h3 id="getOwnProfile"><span class="badge text-bg-secondary me-2">GET</span><code>chat/profile</code></h3>
+<p><strong>Own profile.</strong> Needs a token.</p>
+<p>Also loaded after every connect to publish avatar and status as metadata.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>The own profile, with the fields only the owner sees.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>name</code></td><td>string</td><td>yes</td><td>Account name.</td></tr>
+<tr><td><code>avatar_url</code></td><td>URL or <code>null</code></td><td></td><td>Shown only if it is on the same origin as <code>apiBaseUrl</code>.</td></tr>
+<tr><td><code>status</code></td><td>string or <code>null</code></td><td></td><td>Status text, one line.</td></tr>
+<tr><td><code>member_since</code></td><td>ISO 8601 date or <code>null</code></td><td></td><td></td></tr>
+<tr><td><code>characters</code></td><td>array of object</td><td></td><td>For example roleplay characters.</td></tr>
+<tr><td><code>characters[].name</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>characters[].race</code></td><td>string or <code>null</code></td><td></td><td></td></tr>
+<tr><td><code>characters[].character_class</code></td><td>string or <code>null</code></td><td></td><td></td></tr>
+<tr><td><code>characters[].url</code></td><td>URL or <code>null</code></td><td></td><td></td></tr>
+<tr><td><code>mutual_communities</code></td><td>array of object</td><td></td><td>Groups the viewer and this account both belong to.</td></tr>
+<tr><td><code>mutual_communities[].name</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>mutual_communities[].slug</code></td><td>string</td><td></td><td></td></tr>
+<tr><td><code>settings_url</code></td><td>URL</td><td></td><td>Further account settings on the network&#39;s website.</td></tr>
+<tr><td><code>delete_account_url</code></td><td>URL</td><td></td><td></td></tr>
+</tbody></table></div>
+<h3 id="setStatus"><span class="badge text-bg-secondary me-2">PUT</span><code>chat/profile/status</code></h3>
+<p><strong>Set or clear the status.</strong> Needs a token.</p>
+<p>Body:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>status</code></td><td>string or <code>null</code></td><td>yes</td><td>One line. <code>null</code> clears it. Max. 128 characters.</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;On the bridge&quot;
+}</code></pre>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>The stored status.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>status</code></td><td>string or <code>null</code></td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<h3 id="uploadAvatar"><span class="badge text-bg-secondary me-2">POST</span><code>chat/profile/avatar</code></h3>
+<p><strong>Upload an avatar.</strong> Needs a token.</p>
+<p>Body:</p>
+<p>Sent as (<code>multipart/form-data</code>).</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>avatar</code></td><td>file</td><td>yes</td><td>JPEG, PNG or GIF, max. 2 MB.</td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>The new avatar.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>avatar_url</code></td><td>URL</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<h3 id="deleteAvatar"><span class="badge text-bg-secondary me-2">DELETE</span><code>chat/profile/avatar</code></h3>
+<p><strong>Remove the avatar.</strong> Needs a token.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Removed.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>avatar_url</code></td><td><code>null</code></td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<h2 id="friends"><code>friends</code></h2>
+<p>Friend list and requests. Requests go to account names. Presence comes from IRC
+(<code>MONITOR</code>, <code>JOIN</code>, <code>QUIT</code>, <code>AWAY</code>), not from the API. The client shows its own
+texts after an action.</p>
+<h3 id="getFriends"><span class="badge text-bg-secondary me-2">GET</span><code>friends</code></h3>
+<p><strong>Friends and requests.</strong> Needs a token.</p>
+<p>Polled every 10 seconds while the client is connected.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>All lists, each possibly empty.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>friends</code></td><td>array of object</td><td>yes</td><td></td></tr>
+<tr><td><code>friends[].friendship_id</code></td><td>string or integer</td><td>yes</td><td></td></tr>
+<tr><td><code>friends[].user</code></td><td>object</td><td>yes</td><td></td></tr>
+<tr><td><code>friends[].user.display</code></td><td>string</td><td>yes</td><td>Nick of the other side on IRC. Entries without it are ignored.</td></tr>
+<tr><td><code>friends[].user.name</code></td><td>string</td><td></td><td>Account name.</td></tr>
+<tr><td><code>friends[].status</code></td><td><code>accepted</code>, <code>pending</code>, <code>blocked</code></td><td></td><td></td></tr>
+<tr><td><code>friends[].direction</code></td><td><code>incoming</code>, <code>outgoing</code></td><td></td><td></td></tr>
+<tr><td><code>friends[].requested_at</code></td><td>ISO 8601 date</td><td></td><td></td></tr>
+<tr><td><code>incoming_requests</code></td><td>array of object</td><td>yes</td><td>Fields as in <code>friends[]</code>.</td></tr>
+<tr><td><code>outgoing_requests</code></td><td>array of object</td><td>yes</td><td>Fields as in <code>friends[]</code>.</td></tr>
+<tr><td><code>blocked</code></td><td>array of object</td><td>yes</td><td>Fields as in <code>friends[]</code>.</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;friends&quot;: [
+    {
+      &quot;friendship_id&quot;: 7,
+      &quot;user&quot;: {
+        &quot;display&quot;: &quot;bob&quot;,
+        &quot;name&quot;: &quot;bob&quot;
+      },
+      &quot;status&quot;: &quot;accepted&quot;
+    }
+  ],
+  &quot;incoming_requests&quot;: [],
+  &quot;outgoing_requests&quot;: [],
+  &quot;blocked&quot;: []
+}</code></pre>
+<h3 id="sendFriendRequest"><span class="badge text-bg-secondary me-2">POST</span><code>friends/request</code></h3>
+<p><strong>Send a friend request.</strong> Needs a token.</p>
+<p>A request to someone who already asked us accepts theirs.</p>
+<p>Body:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>nick</code></td><td>string</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;nick&quot;: &quot;bob&quot;
+}</code></pre>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Sent or accepted.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>auto_accepted</code></td><td>boolean</td><td></td><td><code>true</code> when an incoming request of the other side was accepted instead.</td></tr>
+</tbody></table></div>
+<h3 id="acceptFriendRequest"><span class="badge text-bg-secondary me-2">POST</span><code>friends/{friendship_id}/accept</code></h3>
+<p><strong>Accept an incoming request.</strong> Needs a token.</p>
+<p>Parameters:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>{friendship_id}</code></td><td>string</td><td>yes</td><td><code>friendship_id</code> of an entry in <code>GET friends</code>.</td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Accepted.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+</tbody></table></div>
+<h3 id="declineFriendRequest"><span class="badge text-bg-secondary me-2">POST</span><code>friends/{friendship_id}/decline</code></h3>
+<p><strong>Decline an incoming request.</strong> Needs a token.</p>
+<p>Parameters:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>{friendship_id}</code></td><td>string</td><td>yes</td><td><code>friendship_id</code> of an entry in <code>GET friends</code>.</td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Declined.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+</tbody></table></div>
+<h3 id="blockFriend"><span class="badge text-bg-secondary me-2">POST</span><code>friends/{friendship_id}/block</code></h3>
+<p><strong>Block the other side.</strong> Needs a token.</p>
+<p>Parameters:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>{friendship_id}</code></td><td>string</td><td>yes</td><td><code>friendship_id</code> of an entry in <code>GET friends</code>.</td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Blocked.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+</tbody></table></div>
+<h3 id="removeFriend"><span class="badge text-bg-secondary me-2">DELETE</span><code>friends/{friendship_id}</code></h3>
+<p><strong>End a friendship or withdraw a request.</strong> Needs a token.</p>
+<p>Parameters:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>{friendship_id}</code></td><td>string</td><td>yes</td><td><code>friendship_id</code> of an entry in <code>GET friends</code>.</td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Removed.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+</tbody></table></div>
+<h2 id="uploads"><code>uploads</code></h2>
+<p>Images and files in messages. Uploads happen when the message is sent, the message
+then carries the link. Links ending in an image or video extension are shown inline,
+for every user and client.</p>
+<h3 id="getUploads"><span class="badge text-bg-secondary me-2">GET</span><code>chat/media-upload</code></h3>
+<p><strong>Own uploads.</strong> Needs a token.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Newest first.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>uploads</code></td><td>array of object</td><td>yes</td><td></td></tr>
+<tr><td><code>uploads[].id</code></td><td>string or integer</td><td>yes</td><td></td></tr>
+<tr><td><code>uploads[].url</code></td><td>URL</td><td>yes</td><td>Public link to the file.</td></tr>
+<tr><td><code>uploads[].mime_type</code></td><td>string</td><td>yes</td><td>Images and videos get a preview.</td></tr>
+<tr><td><code>uploads[].original_name</code></td><td>string</td><td></td><td></td></tr>
+<tr><td><code>uploads[].caption</code></td><td>string or <code>null</code></td><td></td><td></td></tr>
+</tbody></table></div>
+<h3 id="upload"><span class="badge text-bg-secondary me-2">POST</span><code>chat/media-upload</code></h3>
+<p><strong>Upload a file.</strong> Needs a token.</p>
+<p>Body:</p>
+<p>Sent as (<code>multipart/form-data</code>).</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>media</code></td><td>file</td><td>yes</td><td></td></tr>
+<tr><td><code>caption</code></td><td>string</td><td></td><td>Text of the message the file is sent with.</td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Uploaded. The client sends <code>url</code> with the message.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>413</code></td><td>The file is too large.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>id</code></td><td>string or integer</td><td>yes</td><td></td></tr>
+<tr><td><code>url</code></td><td>URL</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;id&quot;: 12,
+  &quot;url&quot;: &quot;https://example.org/u/abc.png&quot;
+}</code></pre>
+<h3 id="deleteUpload"><span class="badge text-bg-secondary me-2">DELETE</span><code>chat/media-upload/{id}</code></h3>
+<p><strong>Delete an own upload.</strong> Needs a token.</p>
+<p>Parameters:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>{id}</code></td><td>string</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Deleted.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>404</code></td><td>No such upload of this account.</td></tr>
+</tbody></table></div>
+<h2 id="gifs"><code>gifs</code></h2>
+<p>GIF search in the message input. The token is sent if there is one. A network that
+wants to limit guests answers them with <code>401</code>.</p>
+<h3 id="searchGifs"><span class="badge text-bg-secondary me-2">GET</span><code>gifs/search</code></h3>
+<p><strong>Search or trending GIFs.</strong> Token optional, sent if there is one.</p>
+<p>Parameters:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>?q</code></td><td>string</td><td></td><td>Search words. Without it the network returns trending GIFs.</td></tr>
+<tr><td><code>?limit</code></td><td>integer</td><td></td><td></td></tr>
+<tr><td><code>?page</code></td><td>string or integer</td><td></td><td>The <code>next</code> value of the previous answer.</td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>One page of results.</td></tr>
+<tr><td><code>401</code></td><td>The network does not serve guests.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>results</code></td><td>array of object</td><td>yes</td><td></td></tr>
+<tr><td><code>results[].id</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>results[].title</code></td><td>string</td><td></td><td></td></tr>
+<tr><td><code>results[].url</code></td><td>URL</td><td>yes</td><td>Sent as the message.</td></tr>
+<tr><td><code>results[].preview</code></td><td>URL</td><td>yes</td><td>Shown in the picker.</td></tr>
+<tr><td><code>next</code></td><td>string or integer or <code>null</code></td><td>yes</td><td><code>null</code> on the last page.</td></tr>
+<tr><td><code>provider</code></td><td>object</td><td></td><td>Shown as &quot;Powered by&quot; under the results, as most GIF services require.</td></tr>
+<tr><td><code>provider.name</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>provider.url</code></td><td>URL</td><td></td><td></td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;results&quot;: [
+    {
+      &quot;id&quot;: &quot;abc&quot;,
+      &quot;title&quot;: &quot;Cat&quot;,
+      &quot;url&quot;: &quot;https://media.example.org/abc.gif&quot;,
+      &quot;preview&quot;: &quot;https://media.example.org/abc.webp&quot;
+    }
+  ],
+  &quot;next&quot;: 2,
+  &quot;provider&quot;: {
+    &quot;name&quot;: &quot;GIF service&quot;,
+    &quot;url&quot;: &quot;https://gifs.example.org&quot;
+  }
+}</code></pre>
+<h2 id="reports"><code>reports</code></h2>
+<p>Reporting users and messages to the moderators of the network. Guests may report
+too, the token is sent if there is one. <code>links.reportPolicy</code> in the discovery file
+is linked in the report dialog.</p>
+<h3 id="report"><span class="badge text-bg-secondary me-2">POST</span><code>chat/reports</code></h3>
+<p><strong>Report a user or a message.</strong> Token optional, sent if there is one.</p>
+<p>Body:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>reported_nick</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>reported_account</code></td><td>string or <code>null</code></td><td></td><td>Account from WHOIS, if the profile card was open.</td></tr>
+<tr><td><code>reporter_nick</code></td><td>string</td><td>yes</td><td>Own nick, <code>Guest</code> if unknown.</td></tr>
+<tr><td><code>channel</code></td><td>string or <code>null</code></td><td></td><td>Channel the report was sent from, <code>null</code> in DMs.</td></tr>
+<tr><td><code>message_text</code></td><td>string or <code>null</code></td><td></td><td>The reported message. Max. 2000 characters.</td></tr>
+<tr><td><code>message_sent_at</code></td><td>ISO 8601 date or <code>null</code></td><td></td><td></td></tr>
+<tr><td><code>reason</code></td><td><code>child_safety</code>, <code>sexual_content</code>, <code>harassment</code>, <code>hate_speech</code>, <code>spam</code>, <code>other</code></td><td>yes</td><td></td></tr>
+<tr><td><code>details</code></td><td>string or <code>null</code></td><td></td><td>Note of the reporter. Max. 2000 characters.</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;reported_nick&quot;: &quot;troll&quot;,
+  &quot;reported_account&quot;: null,
+  &quot;reporter_nick&quot;: &quot;alice&quot;,
+  &quot;channel&quot;: &quot;#bridge&quot;,
+  &quot;message_text&quot;: &quot;Buy cheap stuff&quot;,
+  &quot;message_sent_at&quot;: &quot;2026-11-20T18:02:11Z&quot;,
+  &quot;reason&quot;: &quot;spam&quot;,
+  &quot;details&quot;: null
+}</code></pre>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>201</code></td><td>Received. The client shows its own text.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+<tr><td><code>429</code></td><td>Too many reports, the client asks to wait.</td></tr>
+</tbody></table></div>
+<h2 id="explore"><code>explore</code></h2>
+<p>A directory tab in the channel list: groups of channels the network lists, joined
+together. The channel list of the IRC server (<code>LIST</code>) is shown on every network
+without this feature.</p>
+<h3 id="explore"><span class="badge text-bg-secondary me-2">GET</span><code>explore</code></h3>
+<p><strong>Directory of channel groups.</strong> Token optional, sent if there is one.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Groups in the order to show. Channel names without <code>#</code> and groups without
+channels are dropped.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>communities</code></td><td>array of object</td><td>yes</td><td></td></tr>
+<tr><td><code>communities[].id</code></td><td>string or integer</td><td></td><td></td></tr>
+<tr><td><code>communities[].name</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>communities[].description</code></td><td>string</td><td></td><td></td></tr>
+<tr><td><code>communities[].channel_names</code></td><td>array of string</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<h2 id="chatstate"><code>chatState</code></h2>
+<p>Open conversations, read positions and synced settings of an account, so another
+device (or the next session) continues where the last one stopped.</p>
+<h3 id="getChatState"><span class="badge text-bg-secondary me-2">GET</span><code>chat-state</code></h3>
+<p><strong>Saved state of the account.</strong> Needs a token.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>An account without a saved state gets empty lists and <code>&quot;settings&quot;: null</code>.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>open_dms</code></td><td>array of string</td><td></td><td>Nicks with an open DM.</td></tr>
+<tr><td><code>joined_channels</code></td><td>array of string</td><td></td><td>Channels to join on the next connect, without the default channel.</td></tr>
+<tr><td><code>active_channel</code></td><td>string or <code>null</code></td><td></td><td>Shown after the next connect.</td></tr>
+<tr><td><code>sidebar_mode</code></td><td><code>channels</code>, <code>friends</code>, <code>uploads</code></td><td></td><td></td></tr>
+<tr><td><code>last_read</code></td><td>map of ISO 8601 date</td><td></td><td>Read position per channel or DM. Newer local values win.</td></tr>
+<tr><td><code>unread_counts</code></td><td>map of integer</td><td></td><td></td></tr>
+<tr><td><code>settings</code></td><td><code>null</code> or object</td><td>yes</td><td><code>null</code>: the account never synced, the client uploads its own values.</td></tr>
+<tr><td><code>settings.highlight_words</code></td><td>array of string</td><td></td><td>Max. 20 entries.</td></tr>
+<tr><td><code>settings.ignored_users</code></td><td>array of string</td><td></td><td>Max. 100 entries.</td></tr>
+<tr><td><code>settings.channel_notifications</code></td><td>map of <code>mentions</code>, <code>mute</code></td><td></td><td></td></tr>
+<tr><td><code>settings.quit_message</code></td><td>string</td><td></td><td>One line. Missing means the client&#39;s default. Max. 200 characters.</td></tr>
+<tr><td><code>settings.nick_colors</code></td><td>map of integer</td><td></td><td>Hue per nick.</td></tr>
+<tr><td><code>settings.left_lobbies</code></td><td>array of string</td><td></td><td>Channels the user left on purpose, they are not joined by default any more.</td></tr>
+<tr><td><code>settings.autojoin_channels</code></td><td>array of string</td><td></td><td>Joined on every connect. Max. 50 entries.</td></tr>
+</tbody></table></div>
+<h3 id="saveChatState"><span class="badge text-bg-secondary me-2">POST</span><code>chat-state</code></h3>
+<p><strong>Save the state.</strong> Needs a token.</p>
+<p>Sent at most every 5 seconds, after changes.</p>
+<p>Body:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>open_dms</code></td><td>array of string</td><td></td><td>Nicks with an open DM.</td></tr>
+<tr><td><code>joined_channels</code></td><td>array of string</td><td></td><td>Channels to join on the next connect, without the default channel.</td></tr>
+<tr><td><code>active_channel</code></td><td>string or <code>null</code></td><td></td><td>Shown after the next connect.</td></tr>
+<tr><td><code>sidebar_mode</code></td><td><code>channels</code>, <code>friends</code>, <code>uploads</code></td><td></td><td></td></tr>
+<tr><td><code>last_read</code></td><td>map of ISO 8601 date</td><td></td><td>Read position per channel or DM. Newer local values win.</td></tr>
+<tr><td><code>unread_counts</code></td><td>map of integer</td><td></td><td></td></tr>
+<tr><td><code>settings_patch</code></td><td>object</td><td></td><td>The settings changed on this device, keys as in <code>settings</code> of <code>GET chat-state</code>. <code>null</code> as
+value removes a key. The network merges it into the stored document, so
+changes from another device are kept.</td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Saved.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+</tbody></table></div>
+<h2 id="alwayson"><code>alwaysOn</code></h2>
+<p>Keeps the nick in its channels while no client is connected, for example Ergo&#39;s
+<code>always-on</code>. After the first registration the client asks once per account whether
+to turn it on.</p>
+<h3 id="getAlwaysOn"><span class="badge text-bg-secondary me-2">GET</span><code>chat/always-on</code></h3>
+<p><strong>Current setting.</strong> Needs a token.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>The setting.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>503</code></td><td>The IRC server cannot be reached, the client shows the switch disabled.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>enabled</code></td><td>boolean</td><td>yes</td><td></td></tr>
+<tr><td><code>ask</code></td><td>boolean</td><td>yes</td><td>Show the question (not answered yet).</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;enabled&quot;: false,
+  &quot;ask&quot;: true
+}</code></pre>
+<h3 id="setAlwaysOn"><span class="badge text-bg-secondary me-2">PUT</span><code>chat/always-on</code></h3>
+<p><strong>Turn it on or off.</strong> Needs a token.</p>
+<p>Body:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>enabled</code></td><td>boolean</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>The new setting, <code>ask</code> is now <code>false</code>.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>503</code></td><td>The IRC server cannot be reached, the client shows the switch disabled.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>enabled</code></td><td>boolean</td><td>yes</td><td></td></tr>
+<tr><td><code>ask</code></td><td>boolean</td><td>yes</td><td>Show the question (not answered yet).</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;enabled&quot;: true,
+  &quot;ask&quot;: false
+}</code></pre>
+<h3 id="dismissAlwaysOn"><span class="badge text-bg-secondary me-2">POST</span><code>chat/always-on/dismiss</code></h3>
+<p><strong>Stop asking.</strong> Needs a token.</p>
+<p>&quot;No, thanks&quot; in the question.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>The network will not ask again.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<h2 id="events"><code>events</code></h2>
+<p>Upcoming events for the calendar button in the channel sidebar. The button only
+shows when the list has an event that has not started yet, and is marked when one
+starts within 24 hours. The client loads the list after every registration and
+every 15 minutes.</p>
+<h3 id="getEvents"><span class="badge text-bg-secondary me-2">GET</span><code>chat/events</code></h3>
+<p><strong>Upcoming events.</strong> Needs a token.</p>
+<p>The network expands recurring events into single dates and decides how far ahead
+the list goes. Entries without a valid <code>starts_at</code> are dropped.</p>
+<p>Parameters:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>?community</code></td><td>string or integer</td><td></td><td>Only events of this community (feature <code>communities</code>, sent while a community is
+shown). <code>community_name</code> is then left out in the list.</td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Sorted by start.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>events</code></td><td>array of object</td><td>yes</td><td></td></tr>
+<tr><td><code>events[].event_id</code></td><td>string or integer</td><td>yes</td><td>Recurring events appear once per date with the same id.</td></tr>
+<tr><td><code>events[].title</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>events[].starts_at</code></td><td>ISO 8601 date</td><td>yes</td><td>Shown in the local time zone.</td></tr>
+<tr><td><code>events[].recurrence</code></td><td><code>none</code>, <code>weekly</code>, <code>biweekly</code>, <code>monthly</code></td><td></td><td>Shown as a hint.</td></tr>
+<tr><td><code>events[].channel</code></td><td>string or <code>null</code></td><td></td><td>Channel of the event, opened or joined from the list.</td></tr>
+<tr><td><code>events[].community_name</code></td><td>string</td><td></td><td>Group the event belongs to, shown next to it.</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;events&quot;: [
+    {
+      &quot;event_id&quot;: 4,
+      &quot;title&quot;: &quot;Bridge meeting&quot;,
+      &quot;starts_at&quot;: &quot;2026-11-20T19:00:00Z&quot;,
+      &quot;recurrence&quot;: &quot;weekly&quot;,
+      &quot;channel&quot;: &quot;#bridge&quot;,
+      &quot;community_name&quot;: &quot;Starfleet&quot;
+    }
+  ]
+}</code></pre>
+<h2 id="communities"><code>communities</code></h2>
+<p>Groups of channels the user belongs to, each with an icon in the rail. Creating
+communities, members and roles are left to the network&#39;s website. With
+<code>links.communityInvite</code> the client offers &quot;Copy invite link&quot;.</p>
+<h3 id="getCommunities"><span class="badge text-bg-secondary me-2">GET</span><code>my-communities</code></h3>
+<p><strong>Communities of the user.</strong> Needs a token.</p>
+<p>Loaded after every registration.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Empty for users without communities.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>[].id</code></td><td>string or integer</td><td>yes</td><td></td></tr>
+<tr><td><code>[].name</code></td><td>string</td><td>yes</td><td>Shown in the rail (first letter) and as the group heading.</td></tr>
+<tr><td><code>[].slug</code></td><td>string</td><td></td><td>Fills <code>{community}</code> in <code>links.communityInvite</code>. Pattern <code>^[A-Za-z0-9_-]+$</code>.</td></tr>
+<tr><td><code>[].lobby_channel</code></td><td>string or <code>null</code></td><td></td><td>Opened first. Must be one of <code>channels</code>, otherwise the first channel is used.</td></tr>
+<tr><td><code>[].channels</code></td><td>array of string</td><td>yes</td><td>In the order the community wants them.</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: 1,
+    &quot;name&quot;: &quot;Starfleet&quot;,
+    &quot;slug&quot;: &quot;starfleet&quot;,
+    &quot;lobby_channel&quot;: &quot;#bridge&quot;,
+    &quot;channels&quot;: [
+      &quot;#bridge&quot;,
+      &quot;#engineering&quot;
+    ]
+  }
+]</code></pre>
+<h2 id="push"><code>push</code></h2>
+<p>Only used by app builds (<code>shell: &#39;mobile&#39;</code>): the app cannot receive Web Push itself,
+so the network relays it to Firebase Cloud Messaging. Browsers register directly
+with the IRC server (<code>draft/webpush</code>) and do not call these endpoints.</p>
+<p>The client hands the endpoint to the IRC server with
+<code>WEBPUSH REGISTER &lt;endpoint&gt; p256dh=…;auth=…</code>, using the keys the app created. The
+IRC server sends encrypted pushes to the endpoint, the network forwards them
+unchanged to FCM and the app decrypts them. How app and chat talk to each other is
+described in <a href="features.html#push">Features</a>.</p>
+<h3 id="registerPushDevice"><span class="badge text-bg-secondary me-2">POST</span><code>chat/push-devices</code></h3>
+<p><strong>Register an app install.</strong> Needs a token.</p>
+<p>A token belongs to one install: registering it again moves it to the current
+account.</p>
+<p>Body:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>fcm_token</code></td><td>string</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Known install.</td></tr>
+<tr><td><code>201</code></td><td>New install.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>endpoint</code></td><td>URL</td><td>yes</td><td>Web Push endpoint the client registers with the IRC server.</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;endpoint&quot;: &quot;https://example.org/api/push/3f9c…&quot;
+}</code></pre>
+<p>Answer <code>201</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>endpoint</code></td><td>URL</td><td>yes</td><td>Web Push endpoint the client registers with the IRC server.</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;endpoint&quot;: &quot;https://example.org/api/push/3f9c…&quot;
+}</code></pre>
+<h3 id="removePushDevice"><span class="badge text-bg-secondary me-2">DELETE</span><code>chat/push-devices</code></h3>
+<p><strong>Remove an app install.</strong> Needs a token.</p>
+<p>Sent on logout.</p>
+<p>Body:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>fcm_token</code></td><td>string</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>204</code></td><td>Removed.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<h2 id="voice"><code>voice</code></h2>
+<p>Voice chat per channel through a <a href="https://livekit.io">LiveKit</a> server of the
+network. Who is in a voice chat is published as IRC metadata <code>voice</code> (value: the
+channel), so the nick list shows a speaker icon. Leaving the channel on IRC also
+leaves its voice chat.</p>
+<h3 id="voiceToken"><span class="badge text-bg-secondary me-2">POST</span><code>chat/voice/token</code></h3>
+<p><strong>Token for the voice room of a channel.</strong> Needs a token.</p>
+<p>The network checks that the nick belongs to the account of the token and is in the
+channel, for example with a WHOIS through the IRC server&#39;s API.</p>
+<p>Body:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>channel</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>nick</code></td><td>string</td><td>yes</td><td>Own IRC nick.</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;channel&quot;: &quot;#bridge&quot;,
+  &quot;nick&quot;: &quot;alice&quot;
+}</code></pre>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Token for the room.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>403</code></td><td>The client shows its own text for each <code>reason</code>: <code>not_allowed</code> (voice is not
+enabled for this account, for example while testing), <code>wrong_account</code> (the nick
+belongs to another account), <code>not_in_channel</code>.</td></tr>
+<tr><td><code>404</code></td><td>Voice is not set up on this network.</td></tr>
+<tr><td><code>503</code></td><td>The nick could not be checked right now (<code>reason</code> <code>whois_failed</code>).</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>url</code></td><td>URL</td><td>yes</td><td>LiveKit server (<code>wss://</code>).</td></tr>
+<tr><td><code>token</code></td><td>string</td><td>yes</td><td>LiveKit access token for the room. The participant identity should be the
+account name, the participant name the nick.</td></tr>
+<tr><td><code>is_moderator</code></td><td>boolean</td><td></td><td>Channel operator, room admin in LiveKit.</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;url&quot;: &quot;wss://voice.example.org&quot;,
+  &quot;token&quot;: &quot;eyJhbGciOiJIUzI1NiJ9…&quot;,
+  &quot;is_moderator&quot;: false
+}</code></pre>
+<h3 id="voiceFilters"><span class="badge text-bg-secondary me-2">GET</span><code>chat/voice/filters</code></h3>
+<p><strong>Microphone filters.</strong> Needs a token.</p>
+<p>Optional noise filters the client can load. The client ships the AudioWorklet of
+each filter it knows, the network hosts the WebAssembly files with
+<code>Access-Control-Allow-Origin: *</code> (the desktop app loads them from <code>file://</code>).
+Unknown ids are ignored, so a new build of a filter gets a new id (<code>rnnoise-v2</code>)
+and older clients keep loading theirs. <code>rnnoise-v1</code> pairs with the files of
+<a href="https://github.com/sapphi-red/web-noise-suppressor"><code>@sapphi-red/web-noise-suppressor</code></a>
+0.4.1. An empty list or an error leaves the browser&#39;s own noise suppression.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Offered filters, possibly none.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>404</code></td><td>Voice is not set up on this network.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>filters</code></td><td>array of object</td><td>yes</td><td></td></tr>
+<tr><td><code>filters[].id</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>filters[].wasm</code></td><td>URL</td><td>yes</td><td></td></tr>
+<tr><td><code>filters[].wasm_simd</code></td><td>URL</td><td></td><td>Build for CPUs with WebAssembly SIMD, used when available.</td></tr>
+</tbody></table></div>
+<h2 id="calls"><code>calls</code></h2>
+<p>Voice calls between two friends from the DM window. Needs the features <code>voice</code> and
+<code>friends</code>. Ringing runs over IRC (see <a href="ircv3.html#client-tags">IRCv3 support</a>), the
+API only hands out the room and rings app builds.</p>
+<h3 id="callToken"><span class="badge text-bg-secondary me-2">POST</span><code>chat/voice/call-token</code></h3>
+<p><strong>Token for a call with a friend.</strong> Needs a token.</p>
+<p>Both sides have to get the same room, for example <code>dm:</code> plus both account names in
+lower case and sorted (<code>dm:alice:bob</code>).</p>
+<p>Body:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>peer</code></td><td>string</td><td>yes</td><td>Account of the other side.</td></tr>
+<tr><td><code>nick</code></td><td>string</td><td>yes</td><td>Own IRC nick, shown to the other side.</td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;peer&quot;: &quot;bob&quot;,
+  &quot;nick&quot;: &quot;alice&quot;
+}</code></pre>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Token for the call room.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>403</code></td><td>Not friends (<code>reason</code> <code>not_friends</code>) or voice not allowed (<code>not_allowed</code>).</td></tr>
+<tr><td><code>404</code></td><td>Voice is not set up on this network.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>url</code></td><td>URL</td><td>yes</td><td>LiveKit server (<code>wss://</code>).</td></tr>
+<tr><td><code>token</code></td><td>string</td><td>yes</td><td>LiveKit access token for the room. The participant identity should be the
+account name, the participant name the nick.</td></tr>
+<tr><td><code>is_moderator</code></td><td>boolean</td><td></td><td>Channel operator, room admin in LiveKit.</td></tr>
+</tbody></table></div>
+<h3 id="callRing"><span class="badge text-bg-secondary me-2">POST</span><code>chat/voice/call-ring</code></h3>
+<p><strong>Ring the app builds of a friend.</strong> Needs a token.</p>
+<p>Optional next to the ringing over IRC, so an app in the background rings too, for
+example through FCM. <code>cancel</code> takes the notification back. The caller treats
+<code>pushed</code> &gt; 0 like a <code>ringing</code> answer. How the app opens the call is described in
+<a href="features.html#calls">Features</a>.</p>
+<p>Body:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>peer</code></td><td>string</td><td>yes</td><td>Account of the other side.</td></tr>
+<tr><td><code>call_id</code></td><td>string</td><td>yes</td><td>Pattern <code>^[A-Za-z0-9]{1,32}$</code>.</td></tr>
+<tr><td><code>nick</code></td><td>string</td><td>yes</td><td>Own IRC nick, shown in the notification.</td></tr>
+<tr><td><code>action</code></td><td><code>invite</code>, <code>cancel</code></td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Number of installs reached, <code>0</code> without a push service.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+<tr><td><code>403</code></td><td>Not friends.</td></tr>
+<tr><td><code>404</code></td><td>Voice is not set up on this network.</td></tr>
+<tr><td><code>422</code></td><td>Invalid fields. The client shows the first message.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>pushed</code></td><td>integer</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;pushed&quot;: 1
+}</code></pre>
+<h2 id="spotify"><code>spotify</code></h2>
+<p>Used by the <a href="desktop.html">desktop app</a>. The network keeps the Spotify link of the
+account (OAuth with its own Spotify app) and asks Spotify for the user.</p>
+<h3 id="spotifyAuthUrl"><span class="badge text-bg-secondary me-2">GET</span><code>spotify/auth-url</code></h3>
+<p><strong>Link to connect Spotify.</strong> Needs a token.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>A one-time link the app opens in the browser.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>url</code></td><td>URL</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<h3 id="spotifyStatus"><span class="badge text-bg-secondary me-2">GET</span><code>spotify/status</code></h3>
+<p><strong>Whether Spotify is linked.</strong> Needs a token.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>The link state.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>connected</code></td><td>boolean</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<h3 id="spotifyCurrentTrack"><span class="badge text-bg-secondary me-2">GET</span><code>spotify/current-track</code></h3>
+<p><strong>Track playing now.</strong> Needs a token.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>The track, or <code>null</code> when nothing plays.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>title</code></td><td>string</td><td>yes</td><td></td></tr>
+<tr><td><code>artist</code></td><td>string</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+<pre><code class="language-json">{
+  &quot;title&quot;: &quot;Clair de Lune&quot;,
+  &quot;artist&quot;: &quot;Claude Debussy&quot;
+}</code></pre>
+<h3 id="spotifyDisconnect"><span class="badge text-bg-secondary me-2">DELETE</span><code>spotify/disconnect</code></h3>
+<p><strong>Unlink Spotify.</strong> Needs a token.</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Unlinked.</td></tr>
+<tr><td><code>401</code></td><td>No token, or the token is invalid or expired.</td></tr>
+</tbody></table></div>
+<p>Answer <code>200</code>:</p>
+<div class="table-responsive"><table class="table">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>ok</code></td><td>boolean</td><td>yes</td><td></td></tr>
+</tbody></table></div>
+
+            <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/openapi.yaml">Edit this page on GitHub</a></p>
+            </div></div>
+        </main>
+    </div>
+</div>
+
+<footer class="border-top py-4 text-body-secondary small">
+    <div class="container d-flex flex-wrap gap-3">
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">MIT License</a>.</span>
+        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
+        <a href="https://st-city.net/impressum">Imprint</a>
+    </div>
+</footer>
+</body>
+</html>

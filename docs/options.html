@@ -43,10 +43,12 @@
                 <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
                 <li class="nav-item"><a class="nav-link" href="hosting.html">Hosting the web client</a></li>
                 <li class="nav-item"><a class="nav-link" href="desktop.html">Desktop app</a></li>
+                <li class="nav-item"><a class="nav-link" href="mobile.html">Mobile app</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="options.html">mountChat() options</a></li>
                 <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
                 <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
                 <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="api.html">API reference</a></li>
                 <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
                 <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
                 </ul>
@@ -237,7 +239,7 @@ registerNotificationSound(&#39;/sounds/ping.ogg&#39;);
 </tr>
 </tbody></table></div>
 <p>The user turns push on under Settings → Notifications, which also asks for the browser permission. Muted channels and ignored users stay silent, the chat sends that list to the worker. Logging out unregisters the device.</p>
-<p>No network API is needed for this. Only app builds (FCM) need the network&#39;s relay, the <code>push</code> feature of the <a href="discovery.html#push">discovery file</a>.</p>
+<p>No network API is needed for this. Only app builds (FCM) need the network&#39;s relay, the feature <a href="features.html#push"><code>push</code></a>.</p>
 <h2 id="own-commands">Own commands</h2>
 <p>Slash commands are a plain object keyed by name. Add your own before mounting:</p>
 <pre><code class="language-js">import { registerCommand } from &#39;starchat&#39;;
@@ -256,7 +258,7 @@ registerCommand(&#39;shrug&#39;, (args, ctx) =&gt; {
 
 <footer class="border-top py-4 text-body-secondary small">
     <div class="container d-flex flex-wrap gap-3">
-        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>.</span>
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">MIT License</a>.</span>
         <a href="https://github.com/starchat-irc/starchat">GitHub</a>
         <a href="https://st-city.net/impressum">Imprint</a>
     </div>

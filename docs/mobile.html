@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mobile app | StarChat documentation</title>
+    <meta name="description" content="The mobile app lives in mobile/. It is a Capacitor shell around the chat, like the desktop app is an Electron shell. Android is in mobile/android/, iOS will...">
+    <link rel="canonical" href="https://getstarchat.net/docs/mobile.html">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="StarChat">
+    <meta property="og:title" content="Mobile app | StarChat documentation">
+    <meta property="og:description" content="The mobile app lives in mobile/. It is a Capacitor shell around the chat, like the desktop app is an Electron shell. Android is in mobile/android/, iOS will...">
+    <meta property="og:url" content="https://getstarchat.net/docs/mobile.html">
+    <meta property="og:image" content="https://getstarchat.net/img/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
+    <link rel="stylesheet" href="../vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="../">StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2">
+            <li class="nav-item"><a class="nav-link" href="../">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="../install.html">Install</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="./">Docs</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row g-4 g-lg-5">
+        <aside class="col-lg-3">
+            <nav class="docs-nav sticky-lg-top">
+                <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
+                <li class="nav-item"><a class="nav-link" href="hosting.html">Hosting the web client</a></li>
+                <li class="nav-item"><a class="nav-link" href="desktop.html">Desktop app</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="mobile.html">Mobile app</a></li>
+                <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
+                <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
+                <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
+                <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="api.html">API reference</a></li>
+                <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
+                <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="col-lg-9">
+            <div class="card doc"><div class="card-body p-4 p-lg-5">
+<h1 id="mobile-app">Mobile app</h1>
+<p>The mobile app lives in <code>mobile/</code>. It is a Capacitor shell around the chat, like the <a href="desktop.html">desktop app</a> is an Electron shell. Android is in <code>mobile/android/</code>, iOS will follow in <code>mobile/ios/</code>.</p>
+<p>The shell (<code>mobile/shell/</code>) runs the chat page (<code>mobile/chat/</code>) of the connection on screen in an iframe and talks to it through <code>postMessage</code>. Everything close to the device is native (<code>mobile/android/app/src/main/java/net/getstarchat/app/</code>): IRC over TCP and TLS, the encrypted store for passwords and tokens (Android Keystore), push notifications, sharing from other apps and the back button.</p>
+<h2 id="building">Building</h2>
+<p>Needed once: JDK 21, the Android SDK and Node.js 22. Paths that are not in the environment go into <code>mobile/build.local.json</code> (not in git):</p>
+<pre><code class="language-json">{
+    &quot;javaHome&quot;: &quot;C:/Java/jdk-21&quot;,
+    &quot;androidHome&quot;: &quot;C:/Android/Sdk&quot;,
+    &quot;gradleUserHome&quot;: &quot;C:/gradle-home&quot;
+}
+</code></pre>
+<pre><code>npm install
+cd mobile
+npm install
+npm run apk          # debug APK in mobile/dist/
+npm run aab          # signed App Bundle for Google Play in mobile/dist/
+npm test             # shell and edition
+npm run test:android # Java unit tests (after a build)
+</code></pre>
+<p><code>npm run apk</code> first runs <code>npm run prepare:app</code>. It checks the edition, writes <code>mobile/generated/</code> (edition, server list, Android resources), builds shell and chat page with Vite into <code>mobile/www/</code> and copies them into the Android project. <code>npm run open</code> opens the project in Android Studio.</p>
+<h2 id="editions">Editions</h2>
+<p>Name, id, icons, servers and texts are set at build time by an edition, as for the desktop app. The bundled edition in <code>mobile/edition/</code> builds StarChat. For your own app, create a folder with an <code>edition.json</code> and your icons and point the build to it:</p>
+<pre><code>node scripts/build.mjs apk --edition ../my-edition
+STARCHAT_EDITION=editions/my-network npm run aab
+</code></pre>
+<p>If you fork this repository, keep your edition in its own folder (for example <code>mobile/editions/my-network/</code>), so merging upstream changes stays free of conflicts.</p>
+<h3 id="editionjson">edition.json</h3>
+<pre><code class="language-json">{
+    &quot;$schema&quot;: &quot;../edition.schema.json&quot;,
+    &quot;appName&quot;: &quot;Example Chat&quot;,
+    &quot;appId&quot;: &quot;org.example.chat&quot;,
+    &quot;icon&quot;: &quot;icon.png&quot;,
+    &quot;adaptiveIcon&quot;: { &quot;foreground&quot;: &quot;icon-foreground.png&quot;, &quot;background&quot;: &quot;#20232a&quot; },
+    &quot;chat&quot;: {
+        &quot;primaryServer&quot;: &quot;irc.example.org&quot;,
+        &quot;defaultChannel&quot;: &quot;#lobby&quot;
+    },
+    &quot;push&quot;: { &quot;googleServices&quot;: &quot;google-services.json&quot; }
+}
+</code></pre>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Required</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>appName</code></td>
+<td>yes</td>
+<td>Name under the launcher icon and in chat texts (<code>:app</code>), at most 30 characters.</td>
+</tr>
+<tr>
+<td><code>appId</code></td>
+<td>yes</td>
+<td>Android application id, for example <code>org.example.chat</code>. Never change it after the first release: Google Play and the stored data of the users are bound to it.</td>
+</tr>
+<tr>
+<td><code>icon</code></td>
+<td>yes</td>
+<td>Square PNG with at least 512x512 pixels: launcher icon on Android 7, start screen, connection list.</td>
+</tr>
+<tr>
+<td><code>adaptiveIcon</code></td>
+<td>no</td>
+<td>Launcher icon from Android 8 on: <code>foreground</code> (transparent PNG of at least 432x432 pixels or an Android vector drawable <code>.xml</code>, motif inside the middle 66 percent) and <code>background</code> (<code>#rrggbb</code>). Without it the icon is shown smaller on a white background.</td>
+</tr>
+<tr>
+<td><code>splashBackground</code></td>
+<td>no</td>
+<td>Colour of the start screen, <code>#rrggbb</code>.</td>
+</tr>
+<tr>
+<td><code>chat.primaryServer</code></td>
+<td>no</td>
+<td>Domain of your network. The app then starts with a connection to it and takes login, API and features from its <a href="discovery.html">discovery file</a>. Without it (the StarChat app) the first start shows a nickname field and the server list.</td>
+</tr>
+<tr>
+<td><code>chat.networkName</code></td>
+<td>no</td>
+<td>Name of the primary network in the connection list, the domain by default.</td>
+</tr>
+<tr>
+<td><code>chat.serverList</code></td>
+<td>no</td>
+<td>Directory of networks: <code>&#39;default&#39;</code> (the public list), an https URL of your own list, or <code>false</code>. The build bundles the list, the app loads newer versions once a day. Your own list must be served with <code>Access-Control-Allow-Origin: *</code>.</td>
+</tr>
+<tr>
+<td><code>chat.defaultChannel</code>, <code>chat.theme</code>, <code>chat.themeCss</code>, <code>chat.modules</code>, <code>chat.ctcpVersion</code>, <code>chat.defaultQuitMessage</code></td>
+<td>no</td>
+<td>As for the <a href="desktop.html#editionjson">desktop app</a>.</td>
+</tr>
+<tr>
+<td><code>texts</code></td>
+<td>no</td>
+<td>Texts that replace bundled ones, per language: <code>{ &quot;de&quot;: { &quot;key&quot;: &quot;Text&quot; } }</code>. Keys of the chat (<code>src/i18n/</code>) and of the shell (<code>mobile/locales/</code>).</td>
+</tr>
+<tr>
+<td><code>push</code></td>
+<td>no</td>
+<td><code>googleServices</code>: the <code>google-services.json</code> of your Firebase project. Its Android app must have <code>appId</code> as package name, the build checks that. Without it the app has no push.</td>
+</tr>
+</tbody></table></div>
+<p>All file paths are relative to the edition folder and must stay inside it. The full schema is <code>mobile/edition.schema.json</code>.</p>
+<h2 id="connections">Connections</h2>
+<p>Like in the desktop app, every connection is a profile: the primary server of the edition or any other server, over TCP (with or without TLS) or a secure WebSocket. The chat on screen runs one connection; the icon at the top of its channel drawer opens the list of connections, where the user switches between them or opens Settings, Connections to add, edit and delete them. Switching closes the connection on screen. Push keeps notifying for every connection that has it on.</p>
+<p>Passwords and API tokens are encrypted with a key in the Android Keystore and only go to the server they were stored for: changing the address of a connection drops them. A backup restored on another device cannot decrypt them, the user signs in again.</p>
+<h2 id="push-notifications">Push notifications</h2>
+<p>The IRC server sends Web Push (<code>draft/webpush</code>) for the connection. Apps cannot receive Web Push directly, so the network relays it to Firebase Cloud Messaging, see the feature <a href="features.html#push"><code>push</code></a>. The app creates its own Web Push keys per connection and decrypts the pushes itself; a push is matched to its connection by the keys that decrypt it.</p>
+<p>A network can only relay to apps of the Firebase project whose service account it holds. Push therefore works where the network relays for your edition&#39;s project, typically your own network.</p>
+<h2 id="releases">Releases</h2>
+<ol>
+<li><p>Raise the version in <code>mobile/package.json</code> (or set <code>STARCHAT_VERSION</code>). <code>1.2.3</code> becomes versionCode <code>10203</code>; Google Play takes every versionCode once.</p>
+</li>
+<li><p>Create an upload key once and keep it out of the repository:</p>
+<pre><code>keytool -genkeypair -v -keystore upload.jks -alias upload -keyalg RSA -keysize 4096 -validity 10000
+</code></pre>
+<p>and <code>mobile/android/keystore.properties</code> (not in git):</p>
+<pre><code class="language-properties">storeFile=C:/keys/upload.jks
+storePassword=...
+keyAlias=upload
+keyPassword=...
+</code></pre>
+</li>
+<li><p><code>npm run aab</code> and upload <code>mobile/dist/&lt;appId&gt;-&lt;version&gt;.aab</code> in the Play Console.</p>
+</li>
+</ol>
+
+            <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/mobile.md">Edit this page on GitHub</a></p>
+            </div></div>
+        </main>
+    </div>
+</div>
+
+<footer class="border-top py-4 text-body-secondary small">
+    <div class="container d-flex flex-wrap gap-3">
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">MIT License</a>.</span>
+        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
+        <a href="https://st-city.net/impressum">Imprint</a>
+    </div>
+</footer>
+</body>
+</html>
