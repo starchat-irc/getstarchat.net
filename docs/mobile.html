@@ -177,9 +177,34 @@ STARCHAT_EDITION=editions/my-network npm run aab
 <td>Directory of networks: <code>&#39;default&#39;</code> (the public list), an https URL of your own list, or <code>false</code>. The build bundles the list, the app loads newer versions once a day. Your own list must be served with <code>Access-Control-Allow-Origin: *</code>.</td>
 </tr>
 <tr>
-<td><code>chat.defaultChannel</code>, <code>chat.theme</code>, <code>chat.themeCss</code>, <code>chat.modules</code>, <code>chat.ctcpVersion</code>, <code>chat.defaultQuitMessage</code></td>
+<td><code>chat.defaultChannel</code></td>
 <td>no</td>
-<td>As for the <a href="desktop.html#editionjson">desktop app</a>.</td>
+<td>Channel joined after login on the primary server.</td>
+</tr>
+<tr>
+<td><code>chat.theme</code></td>
+<td>no</td>
+<td><code>auto</code>, <code>dark</code> or <code>light</code>.</td>
+</tr>
+<tr>
+<td><code>chat.themeCss</code></td>
+<td>no</td>
+<td>CSS file loaded after the bundled theme, see <a href="options.html#theme">Theme</a>.</td>
+</tr>
+<tr>
+<td><code>chat.modules</code></td>
+<td>no</td>
+<td>Names of the feature modules to ship, all by default.</td>
+</tr>
+<tr>
+<td><code>chat.ctcpVersion</code></td>
+<td>no</td>
+<td>As in <a href="options.html">mountChat()</a>.</td>
+</tr>
+<tr>
+<td><code>chat.defaultQuitMessage</code></td>
+<td>no</td>
+<td>As in <a href="options.html">mountChat()</a>.</td>
 </tr>
 <tr>
 <td><code>texts</code></td>
