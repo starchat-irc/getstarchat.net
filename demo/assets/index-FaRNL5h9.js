@@ -1513,7 +1513,7 @@ import{a as e,i as t,o as n,s as r,t as i}from"./preload-helper-DVqdrzjW.js";(fu
                 <span class="flex-grow-1"></span>
                 <button type="button" class="btn btn-sm"
                         :class="connectionsPage.deleteConfirm ? 'btn-danger' : 'btn-outline-danger'"
-                        x-show="connectionsPage.view === 'edit' && connectionsPage.profiles.length > 1"
+                        x-show="connectionsPage.view === 'edit'"
                         @click="deleteConnection()"
                         x-text="connectionsPage.deleteConfirm ? t('connections_delete_confirm') : t('connections_delete')"></button>
             </div>
