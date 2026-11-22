@@ -76,6 +76,33 @@ npm test             # shell and edition
 npm run test:android # Java unit tests (after a build)
 </code></pre>
 <p><code>npm run apk</code> first runs <code>npm run prepare:app</code>. It checks the edition, writes <code>mobile/generated/</code> (edition, server list, Android resources), builds shell and chat page with Vite into <code>mobile/www/</code> and copies them into the Android project. <code>npm run open</code> opens the project in Android Studio.</p>
+<p><code>node scripts/build.mjs apk-release</code> builds a signed APK to pass around, with the key from <code>keystore.properties</code> (see <a href="#releases">Releases</a>).</p>
+<h3 id="development-builds">Development builds</h3>
+<p><code>--dev</code> builds the development app: it gets the id <code>devAppId</code> of the edition (<code>appId</code> plus <code>.dev</code> by default) and the name &quot;StarChat Dev&quot;, so it installs next to the released app. Development versions are <code>0.0.0-dev.&lt;number&gt;</code>, the number is the versionCode:</p>
+<pre><code>STARCHAT_VERSION=0.0.0-dev.7 node scripts/build.mjs apk-release --dev
+</code></pre>
+<p>The workflow <code>.github/workflows/android.yml</code> does this on every push to <code>main</code> and attaches the APK as <code>starchat-android-dev.apk</code> to the pre-release <code>latest-dev</code>. Every build installs over the one before, as long as it is signed with the same key. The workflow needs these repository secrets:</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Secret</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ANDROID_KEYSTORE</code></td>
+<td>The signing key, base64 encoded: <code>base64 -w0 dev.jks</code></td>
+</tr>
+<tr>
+<td><code>ANDROID_KEYSTORE_PASSWORD</code></td>
+<td>Its password. Key and store need the same one, which <code>keytool</code> sets up by default.</td>
+</tr>
+<tr>
+<td><code>GOOGLE_SERVICES_JSON</code></td>
+<td>Optional: the content of <code>google-services.json</code>. It must contain the Android app <code>devAppId</code>. Without it the app has no push.</td>
+</tr>
+</tbody></table></div>
+<p>Use a key of its own for development builds, not the upload key for Google Play. Without <code>ANDROID_KEYSTORE</code> the workflow builds nothing, so forks without keys stay green. A fork picks its edition with the repository variable <code>STARCHAT_MOBILE_EDITION</code>.</p>
 <h2 id="editions">Editions</h2>
 <p>Name, id, icons, servers and texts are set at build time by an edition, as for the desktop app. The bundled edition in <code>mobile/edition/</code> builds StarChat. For your own app, create a folder with an <code>edition.json</code> and your icons and point the build to it:</p>
 <pre><code>node scripts/build.mjs apk --edition ../my-edition
@@ -113,6 +140,11 @@ STARCHAT_EDITION=editions/my-network npm run aab
 <td><code>appId</code></td>
 <td>yes</td>
 <td>Android application id, for example <code>org.example.chat</code>. Never change it after the first release: Google Play and the stored data of the users are bound to it.</td>
+</tr>
+<tr>
+<td><code>devAppId</code></td>
+<td>no</td>
+<td>Id of the development build (<code>--dev</code>), <code>appId</code> plus <code>.dev</code> by default.</td>
 </tr>
 <tr>
 <td><code>icon</code></td>
@@ -157,7 +189,7 @@ STARCHAT_EDITION=editions/my-network npm run aab
 <tr>
 <td><code>push</code></td>
 <td>no</td>
-<td><code>googleServices</code>: the <code>google-services.json</code> of your Firebase project. Its Android app must have <code>appId</code> as package name, the build checks that. Without it the app has no push.</td>
+<td><code>googleServices</code>: the <code>google-services.json</code> of your Firebase project. Its Android app must have <code>appId</code> as package name, the build checks that. A file named <code>google-services.json</code> in the edition folder is used without this entry. Without the file the app has no push.</td>
 </tr>
 </tbody></table></div>
 <p>All file paths are relative to the edition folder and must stay inside it. The full schema is <code>mobile/edition.schema.json</code>.</p>
