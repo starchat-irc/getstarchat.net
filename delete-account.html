@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Konto löschen / Delete account | StarChat</title>
+    <meta name="description" content="How to delete an account you use with StarChat, and what happens to your data.">
+    <link rel="canonical" href="https://getstarchat.net/delete-account.html">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
+    <link rel="stylesheet" href="vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="./">StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2">
+            <li class="nav-item"><a class="nav-link" href="./">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="install.html">Install</a></li>
+            <li class="nav-item"><a class="nav-link" href="docs/">Docs</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="container py-5">
+    <div class="card doc">
+        <div class="card-body p-4 p-lg-5">
+            <h1>Konto löschen</h1>
+            <p>Für die App StarChat · <a href="#english">English version below</a></p>
+
+            <p>StarChat ist ein IRC-Client und legt selbst keine Konten an. Ein Konto gehört immer zu dem IRC-Netzwerk, bei dem du es angelegt hast, zum Beispiel über „Jetzt registrieren“ im Login-Dialog oder mit <code>/ns register</code>. Gelöscht wird es deshalb auch dort, und was dabei mit deinen Daten passiert, regelt der Betreiber des Netzwerks.</p>
+
+            <h2>Konto bei einem Netzwerk löschen</h2>
+            <ul>
+                <li>Viele Netzwerke haben dafür eine Seite auf ihrer Website.</li>
+                <li>Auf vielen Netzwerken löscht <code>/ns drop</code> in der App dein Konto bei NickServ.</li>
+                <li>Sonst wende dich an den Betreiber des Netzwerks.</li>
+            </ul>
+            <p>Ein Beispiel ist ST-City, wo die Demo verbindet: Dort löschst du dein Konto unter <a href="https://st-city.net/settings/delete-account">Einstellungen, Konto löschen</a>.</p>
+
+            <h2>Daten in der App</h2>
+            <p>Verbindungen, Einstellungen und gespeicherte Anmeldedaten liegen nur auf deinem Gerät. Du entfernst sie, indem du die Verbindung in der App löschst oder die App deinstallierst. Unser Push-Gateway speichert nichts, siehe <a href="privacy.html">Datenschutzerklärung</a>.</p>
+
+            <hr class="my-5">
+
+            <div lang="en">
+                <h1 id="english">Delete your account</h1>
+                <p>For the app StarChat.</p>
+
+                <p>StarChat is an IRC client and creates no accounts of its own. An account always belongs to the IRC network you created it on, for example through "Sign up now" in the login dialog or with <code>/ns register</code>. That is also where it is deleted, and the operator of the network decides what happens to your data.</p>
+
+                <h2>Deleting an account on a network</h2>
+                <ul>
+                    <li>Many networks have a page for this on their website.</li>
+                    <li>On many networks <code>/ns drop</code> in the app deletes your NickServ account.</li>
+                    <li>Otherwise contact the operator of the network.</li>
+                </ul>
+                <p>One example is ST-City, where the demo connects: there you delete your account under <a href="https://st-city.net/settings/delete-account">Settings, Delete account</a>.</p>
+
+                <h2>Data in the app</h2>
+                <p>Connections, settings and saved logins are only stored on your device. Delete the connection in the app or uninstall the app to remove them. Our push gateway stores nothing, see the <a href="privacy.html">privacy policy</a>.</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="border-top py-4 text-body-secondary small">
+    <div class="container d-flex flex-wrap gap-3">
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">MIT License</a>.</span>
+        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
+        <a href="imprint.html">Imprint</a>
+        <a href="privacy.html">Privacy</a>
+    </div>
+</footer>
+</body>
+</html>
