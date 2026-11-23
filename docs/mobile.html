@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mobile app | StarChat documentation</title>
-    <meta name="description" content="The mobile app lives in mobile/. It is a Capacitor shell around the chat, like the desktop app is an Electron shell. Android is in mobile/android/, iOS will...">
+    <meta name="description" content="The Android app lives in mobile/. It is a Capacitor shell around the chat, like the desktop app is an Electron shell. IRC over TCP, the encrypted store for...">
     <link rel="canonical" href="https://getstarchat.net/docs/mobile.html">
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="StarChat">
     <meta property="og:title" content="Mobile app | StarChat documentation">
-    <meta property="og:description" content="The mobile app lives in mobile/. It is a Capacitor shell around the chat, like the desktop app is an Electron shell. Android is in mobile/android/, iOS will...">
+    <meta property="og:description" content="The Android app lives in mobile/. It is a Capacitor shell around the chat, like the desktop app is an Electron shell. IRC over TCP, the encrypted store for...">
     <meta property="og:url" content="https://getstarchat.net/docs/mobile.html">
     <meta property="og:image" content="https://getstarchat.net/img/og.png">
     <meta property="og:image:width" content="1200">
@@ -57,31 +57,26 @@
         <main class="col-lg-9">
             <div class="card doc"><div class="card-body p-4 p-lg-5">
 <h1 id="mobile-app">Mobile app</h1>
-<p>The mobile app lives in <code>mobile/</code>. It is a Capacitor shell around the chat, like the <a href="desktop.html">desktop app</a> is an Electron shell. Android is in <code>mobile/android/</code>, iOS will follow in <code>mobile/ios/</code>.</p>
-<p>The shell (<code>mobile/shell/</code>) runs the chat page (<code>mobile/chat/</code>) of the connection on screen in an iframe and talks to it through <code>postMessage</code>. Everything close to the device is native (<code>mobile/android/app/src/main/java/net/getstarchat/app/</code>): IRC over TCP and TLS, the encrypted store for passwords and tokens (Android Keystore), push notifications, sharing from other apps and the back button.</p>
+<p>The Android app lives in <code>mobile/</code>. It is a Capacitor shell around the chat, like the <a href="desktop.html">desktop app</a> is an Electron shell. IRC over TCP, the encrypted store for passwords, push and sharing are native code in <code>mobile/android/</code>. iOS may follow.</p>
 <h2 id="building">Building</h2>
-<p>Needed once: JDK 21, the Android SDK and Node.js 22. Paths that are not in the environment go into <code>mobile/build.local.json</code> (not in git):</p>
+<p>You need JDK 21, the Android SDK and Node.js 22. Paths that are not in the environment go into <code>mobile/build.local.json</code> (not in git):</p>
 <pre><code class="language-json">{
     &quot;javaHome&quot;: &quot;C:/Java/jdk-21&quot;,
-    &quot;androidHome&quot;: &quot;C:/Android/Sdk&quot;,
-    &quot;gradleUserHome&quot;: &quot;C:/gradle-home&quot;
+    &quot;androidHome&quot;: &quot;C:/Android/Sdk&quot;
 }
 </code></pre>
 <pre><code>npm install
 cd mobile
 npm install
 npm run apk          # debug APK in mobile/dist/
-npm run aab          # signed App Bundle for Google Play in mobile/dist/
-npm test             # shell and edition
-npm run test:android # Java unit tests (after a build)
+npm run aab          # signed App Bundle for Google Play
+npm test
+npm run test:android # Java unit tests, after a build
 </code></pre>
-<p><code>npm run apk</code> first runs <code>npm run prepare:app</code>. It checks the edition, writes <code>mobile/generated/</code> (edition, server list, Android resources), builds shell and chat page with Vite into <code>mobile/www/</code> and copies them into the Android project. <code>npm run open</code> opens the project in Android Studio.</p>
-<p><code>node scripts/build.mjs apk-release</code> builds a signed APK to pass around, with the key from <code>keystore.properties</code> (see <a href="#releases">Releases</a>).</p>
-<h3 id="development-builds">Development builds</h3>
-<p><code>--dev</code> builds the development app: it gets the id <code>devAppId</code> of the edition (<code>appId</code> plus <code>.dev</code> by default) and the name &quot;StarChat Dev&quot;, so it installs next to the released app. Development versions are <code>0.0.0-dev.&lt;number&gt;</code>, the number is the versionCode:</p>
+<p><code>--dev</code> builds a development app with the id <code>devAppId</code> and the name &quot;StarChat Dev&quot;, so it installs next to the released one:</p>
 <pre><code>STARCHAT_VERSION=0.0.0-dev.7 node scripts/build.mjs apk-release --dev
 </code></pre>
-<p>The workflow <code>.github/workflows/android.yml</code> does this on every push to <code>main</code> and attaches the APK as <code>starchat-android-dev.apk</code> to the pre-release <code>latest-dev</code>. Every build installs over the one before, as long as it is signed with the same key. The workflow needs these repository secrets:</p>
+<p><code>.github/workflows/android.yml</code> does this on every push to <code>main</code> and attaches <code>starchat-android-dev.apk</code> to the pre-release <code>latest-dev</code>. Repository secrets:</p>
 <div class="table-responsive"><table class="table">
 <thead>
 <tr>
@@ -91,35 +86,29 @@ npm run test:android # Java unit tests (after a build)
 </thead>
 <tbody><tr>
 <td><code>ANDROID_KEYSTORE</code></td>
-<td>The signing key, base64 encoded: <code>base64 -w0 dev.jks</code></td>
+<td>Signing key for development builds, <code>base64 -w0 dev.jks</code></td>
 </tr>
 <tr>
 <td><code>ANDROID_KEYSTORE_PASSWORD</code></td>
-<td>Its password. Key and store need the same one, which <code>keytool</code> sets up by default.</td>
+<td>Its password (same for key and store)</td>
 </tr>
 <tr>
 <td><code>GOOGLE_SERVICES_JSON</code></td>
-<td>Optional: the content of <code>google-services.json</code>. It must contain the Android app <code>devAppId</code>. Without it the app has no push.</td>
+<td>Optional, <code>google-services.json</code> with <code>appId</code> and <code>devAppId</code>. Without it there is no push.</td>
 </tr>
 </tbody></table></div>
-<p>Use a key of its own for development builds, not the upload key for Google Play. Without <code>ANDROID_KEYSTORE</code> the workflow builds nothing, so forks without keys stay green. A fork picks its edition with the repository variable <code>STARCHAT_MOBILE_EDITION</code>.</p>
+<p>Without <code>ANDROID_KEYSTORE</code> the workflow builds nothing, so forks stay green. A fork picks its edition with the variable <code>STARCHAT_MOBILE_EDITION</code>.</p>
 <h2 id="editions">Editions</h2>
-<p>Name, id, icons, servers and texts are set at build time by an edition, as for the desktop app. The bundled edition in <code>mobile/edition/</code> builds StarChat. For your own app, create a folder with an <code>edition.json</code> and your icons and point the build to it:</p>
+<p>As for the <a href="desktop.html#editions">desktop app</a>, name, id, icons and servers come from an edition. <code>mobile/edition/</code> builds StarChat. For your own app:</p>
 <pre><code>node scripts/build.mjs apk --edition ../my-edition
-STARCHAT_EDITION=editions/my-network npm run aab
 </code></pre>
-<p>If you fork this repository, keep your edition in its own folder (for example <code>mobile/editions/my-network/</code>), so merging upstream changes stays free of conflicts.</p>
-<h3 id="editionjson">edition.json</h3>
 <pre><code class="language-json">{
     &quot;$schema&quot;: &quot;../edition.schema.json&quot;,
     &quot;appName&quot;: &quot;Example Chat&quot;,
     &quot;appId&quot;: &quot;org.example.chat&quot;,
     &quot;icon&quot;: &quot;icon.png&quot;,
     &quot;adaptiveIcon&quot;: { &quot;foreground&quot;: &quot;icon-foreground.png&quot;, &quot;background&quot;: &quot;#20232a&quot; },
-    &quot;chat&quot;: {
-        &quot;primaryServer&quot;: &quot;irc.example.org&quot;,
-        &quot;defaultChannel&quot;: &quot;#lobby&quot;
-    },
+    &quot;chat&quot;: { &quot;primaryServer&quot;: &quot;irc.example.org&quot;, &quot;defaultChannel&quot;: &quot;#lobby&quot; },
     &quot;push&quot;: { &quot;googleServices&quot;: &quot;google-services.json&quot; }
 }
 </code></pre>
@@ -134,117 +123,65 @@ STARCHAT_EDITION=editions/my-network npm run aab
 <tbody><tr>
 <td><code>appName</code></td>
 <td>yes</td>
-<td>Name under the launcher icon and in chat texts (<code>:app</code>), at most 30 characters.</td>
+<td>Name under the icon, at most 30 characters.</td>
 </tr>
 <tr>
 <td><code>appId</code></td>
 <td>yes</td>
-<td>Android application id, for example <code>org.example.chat</code>. Never change it after the first release: Google Play and the stored data of the users are bound to it.</td>
+<td>Android application id. Never change it after the first release.</td>
 </tr>
 <tr>
 <td><code>devAppId</code></td>
 <td>no</td>
-<td>Id of the development build (<code>--dev</code>), <code>appId</code> plus <code>.dev</code> by default.</td>
+<td>Id of <code>--dev</code> builds, <code>appId</code> plus <code>.dev</code> by default.</td>
 </tr>
 <tr>
 <td><code>icon</code></td>
 <td>yes</td>
-<td>Square PNG with at least 512x512 pixels: launcher icon on Android 7, start screen, connection list.</td>
+<td>Square PNG, at least 512x512.</td>
 </tr>
 <tr>
 <td><code>adaptiveIcon</code></td>
 <td>no</td>
-<td>Launcher icon from Android 8 on: <code>foreground</code> (transparent PNG of at least 432x432 pixels or an Android vector drawable <code>.xml</code>, motif inside the middle 66 percent) and <code>background</code> (<code>#rrggbb</code>). Without it the icon is shown smaller on a white background.</td>
+<td><code>foreground</code> (transparent PNG of at least 432x432 or a vector <code>.xml</code>, motif in the middle 66 percent) and <code>background</code> (<code>#rrggbb</code>).</td>
 </tr>
 <tr>
 <td><code>splashBackground</code></td>
 <td>no</td>
-<td>Colour of the start screen, <code>#rrggbb</code>.</td>
+<td>Colour of the start screen.</td>
 </tr>
 <tr>
-<td><code>chat.primaryServer</code></td>
+<td><code>chat.*</code></td>
 <td>no</td>
-<td>Domain of your network. The app then starts with a connection to it and takes login, API and features from its <a href="discovery.html">discovery file</a>. Without it (the StarChat app) the first start offers the server list and a form for an own server; the chat then asks for the login (account or guest).</td>
-</tr>
-<tr>
-<td><code>chat.networkName</code></td>
-<td>no</td>
-<td>Name of the primary network in the connection list, the domain by default.</td>
-</tr>
-<tr>
-<td><code>chat.serverList</code></td>
-<td>no</td>
-<td>Directory of networks: <code>&#39;default&#39;</code> (the public list), an https URL of your own list, or <code>false</code>. The build bundles the list, the app loads newer versions once a day. Your own list must be served with <code>Access-Control-Allow-Origin: *</code>.</td>
-</tr>
-<tr>
-<td><code>chat.defaultChannel</code></td>
-<td>no</td>
-<td>Channel joined after login on the primary server.</td>
-</tr>
-<tr>
-<td><code>chat.theme</code></td>
-<td>no</td>
-<td><code>auto</code>, <code>dark</code> or <code>light</code>.</td>
-</tr>
-<tr>
-<td><code>chat.themeCss</code></td>
-<td>no</td>
-<td>CSS file loaded after the bundled theme, see <a href="options.html#theme">Theme</a>.</td>
-</tr>
-<tr>
-<td><code>chat.modules</code></td>
-<td>no</td>
-<td>Names of the feature modules to ship, all by default.</td>
-</tr>
-<tr>
-<td><code>chat.ctcpVersion</code></td>
-<td>no</td>
-<td>As in <a href="options.html">mountChat()</a>.</td>
-</tr>
-<tr>
-<td><code>chat.defaultQuitMessage</code></td>
-<td>no</td>
-<td>As in <a href="options.html">mountChat()</a>.</td>
+<td>As in the <a href="desktop.html#editionjson">desktop edition</a>.</td>
 </tr>
 <tr>
 <td><code>texts</code></td>
 <td>no</td>
-<td>Texts that replace bundled ones, per language: <code>{ &quot;de&quot;: { &quot;key&quot;: &quot;Text&quot; } }</code>. Keys of the chat (<code>src/i18n/</code>) and of the shell (<code>mobile/locales/</code>).</td>
+<td>Replaced texts per language, keys from <code>src/i18n/</code> and <code>mobile/locales/</code>.</td>
 </tr>
 <tr>
 <td><code>push</code></td>
 <td>no</td>
-<td><code>googleServices</code>: the <code>google-services.json</code> of your Firebase project. Its Android app must have <code>appId</code> as package name, the build checks that. A file named <code>google-services.json</code> in the edition folder is used without this entry. Without the file the app has no push. <code>gateway</code>: https URL of a push gateway for the same Firebase project, used on networks without their own relay. It may stay in the edition when the Firebase file is missing, push is then just off.</td>
+<td><code>googleServices</code>: <code>google-services.json</code> of your Firebase project, with <code>appId</code> as package name. <code>gateway</code>: URL of a <a href="https://github.com/starchat-irc/push-gateway">push gateway</a> for that project.</td>
 </tr>
 </tbody></table></div>
-<p>All file paths are relative to the edition folder and must stay inside it. The full schema is <code>mobile/edition.schema.json</code>.</p>
+<p>Paths are relative to the edition folder. The schema is <code>mobile/edition.schema.json</code>.</p>
 <h2 id="connections">Connections</h2>
-<p>Like in the desktop app, every connection is a profile: the primary server of the edition or any other server, over TCP (with or without TLS) or a secure WebSocket. The chat on screen runs one connection; the icon at the top of its channel drawer opens the list of connections, where the user switches between them or opens Settings, Connections to add, edit and delete them. Deleting the last one starts over: the StarChat app shows its start screen again, an edition a fresh connection to its network. Switching closes the connection on screen. Push keeps notifying for every connection that has it on.</p>
-<p>Passwords and API tokens are encrypted with a key in the Android Keystore and only go to the server they were stored for: changing the address of a connection drops them. A backup restored on another device cannot decrypt them, the user signs in again.</p>
+<p>Every connection is a profile, over TCP, TLS or WebSocket. The icon at the top of the channel drawer switches between them. Passwords and tokens are encrypted with the Android Keystore and only go to the server they were stored for. After restoring a backup on another device the user signs in again.</p>
 <h2 id="push-notifications">Push notifications</h2>
-<p>The IRC server sends Web Push (<code>draft/webpush</code>) for the connection. Apps cannot receive Web Push directly, so the network relays it to Firebase Cloud Messaging, see the feature <a href="features.html#push"><code>push</code></a>. The app creates its own Web Push keys per connection and decrypts the pushes itself; a push is matched to its connection by the keys that decrypt it. When the user reads a conversation in another session, Ergo pushes a <code>MARKREAD</code>; the app then removes the notification of that conversation, unless it already shows a newer message.</p>
-<p>A network can only relay to apps of the Firebase project whose service account it holds. FCM refuses tokens of other projects, so a network relaying for another app does not help yours. An edition with a push gateway (<code>push.gateway</code>, see <a href="https://github.com/starchat-irc/push-gateway">starchat-irc/push-gateway</a>) that holds the service account of its own Firebase project therefore always uses the gateway, on every network with <code>draft/webpush</code>, even where the network has a relay. Without a gateway, push only works where the network relays for your edition&#39;s project, typically your own network.</p>
+<p>The IRC server sends Web Push, the network relays it to FCM (feature <a href="features.html#push"><code>push</code></a>) and the app decrypts it with its own keys. When the user reads a conversation elsewhere, the notification goes away.</p>
+<p>FCM only delivers to apps of the Firebase project whose key the sender holds. So a network&#39;s relay only helps the apps it was set up for, usually its own. An edition with <code>push.gateway</code> uses its gateway on every network with <code>draft/webpush</code>.</p>
 <h2 id="releases">Releases</h2>
-<ol>
-<li><p>Raise the version in <code>mobile/package.json</code> (or set <code>STARCHAT_VERSION</code>). <code>1.2.3</code> becomes versionCode <code>10203</code>; Google Play takes every versionCode once.</p>
-</li>
-<li><p>Create an upload key once and keep it out of the repository:</p>
-<pre><code>keytool -genkeypair -v -keystore upload.jks -alias upload -keyalg RSA -keysize 4096 -validity 10000
-</code></pre>
-<p>and <code>mobile/android/keystore.properties</code> (not in git):</p>
+<p>The version comes from <code>mobile/package.json</code> or <code>STARCHAT_VERSION</code>. <code>1.2.3</code> becomes versionCode <code>10203</code>.</p>
+<p>Locally, put the upload key into <code>mobile/android/keystore.properties</code> (not in git):</p>
 <pre><code class="language-properties">storeFile=C:/keys/upload.jks
 storePassword=...
 keyAlias=upload
 keyPassword=...
 </code></pre>
-</li>
-<li><p><code>npm run aab</code> and upload <code>mobile/dist/&lt;appId&gt;-&lt;version&gt;.aab</code> in the Play Console.</p>
-</li>
-</ol>
-<p>Google Play App Signing keeps the key the app is signed with, the upload key only proves that a bundle comes from you. If it gets lost or leaks, Google can reset it.</p>
-<h3 id="release-builds-in-github-actions">Release builds in GitHub Actions</h3>
-<p>On a tag <code>v*</code>, <code>.github/workflows/android.yml</code> builds the App Bundle with the version of the tag and attaches it to the release as <code>starchat-android-&lt;version&gt;-play.aab</code>. Download it there and upload it in the Play Console. Users cannot install an <code>.aab</code> directly, the release notes should point them to the store.</p>
-<p>The upload key lives in a GitHub environment named <code>play</code>, not in the repository secrets, so only tag builds can use it. Settings → Environments → New environment <code>play</code>, under &quot;Deployment branches and tags&quot; allow only tags <code>v*</code>, optionally with required reviewers. Its secrets:</p>
+<p>and run <code>npm run aab</code>.</p>
+<p>On a tag <code>v*</code>, <code>android.yml</code> builds the bundle and attaches it to the release as <code>starchat-android-&lt;version&gt;-play.aab</code>, for upload in the Play Console. The upload key lives in the GitHub environment <code>play</code>, which only tags <code>v*</code> may use:</p>
 <div class="table-responsive"><table class="table">
 <thead>
 <tr>
@@ -254,14 +191,14 @@ keyPassword=...
 </thead>
 <tbody><tr>
 <td><code>ANDROID_UPLOAD_KEYSTORE</code></td>
-<td>The upload key, base64 encoded: <code>base64 -w0 upload.jks</code></td>
+<td><code>base64 -w0 upload.jks</code></td>
 </tr>
 <tr>
 <td><code>ANDROID_UPLOAD_KEYSTORE_PASSWORD</code></td>
-<td>Its password. Key and store need the same one.</td>
+<td>Its password</td>
 </tr>
 </tbody></table></div>
-<p>The repository secret <code>GOOGLE_SERVICES_JSON</code> must then contain the Android app <code>appId</code> as well as <code>devAppId</code>. Firebase puts every Android app of a project into one <code>google-services.json</code>. Without the upload key the job is skipped.</p>
+<p>With Play App Signing, Google keeps the signing key. If the upload key gets lost, Google can reset it.</p>
 
             <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/mobile.md">Edit this page on GitHub</a></p>
             </div></div>

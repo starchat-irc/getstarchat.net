@@ -87,18 +87,20 @@ A request with a missing or expired token is answered with <code>401</code>.</p>
 <li><a href="#spotify"><code>spotify</code></a></li>
 </ul>
 <h2 id="login"><code>login</code></h2>
-<p>Only with <code>bearer</code> in <code>auth</code>. The token is a string the IRC server accepts with SASL
-<code>IRCV3BEARER</code> and the API accepts as <code>Authorization: Bearer &lt;token&gt;</code>. With
-<a href="https://ergo.chat">Ergo</a> this is a JWT signed with a key from <code>accounts.jwt-auth</code>,
-the account name in <code>sub</code>.</p>
+<p>Only with <code>bearer</code> or <code>api-login</code> in <code>auth</code>. The API accepts the token as
+<code>Authorization: Bearer &lt;token&gt;</code>. With <code>bearer</code> the IRC server also accepts it with
+SASL <code>IRCV3BEARER</code>. With <a href="https://ergo.chat">Ergo</a> this is a JWT signed with a key
+from <code>accounts.jwt-auth</code>, the account name in <code>sub</code>. With <code>api-login</code> the token is
+only for the API and the client logs in on IRC with SASL <code>PLAIN</code>, so any string the
+API recognizes works.</p>
 <p>A page that embeds the chat can also hand over a token itself
 (<code>mountChat({ bearer })</code>), then this endpoint is not called. Guests have no token,
 so features that need one stay hidden for them.</p>
 <h3 id="login"><span class="badge text-bg-secondary me-2">POST</span><code>login</code></h3>
 <p><strong>Token for an account.</strong> No token.</p>
-<p>The client then logs in on IRC with <code>IRCV3BEARER</code> instead of <code>PLAIN</code>. Without
-<code>bearer</code> in <code>auth</code> a password goes to the IRC server with SASL <code>PLAIN</code> and this
-endpoint is not used.</p>
+<p>With <code>bearer</code> in <code>auth</code> the client then logs in on IRC with <code>IRCV3BEARER</code> instead
+of <code>PLAIN</code>. With <code>api-login</code> it keeps <code>PLAIN</code> on IRC and uses the token only for
+the API. Without either, this endpoint is not used.</p>
 <p>Body:</p>
 <div class="table-responsive"><table class="table">
 <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>

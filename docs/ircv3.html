@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>IRCv3 support | StarChat documentation</title>
-    <meta name="description" content="StarChat requests the capabilities below when the server offers them. Without them it falls back to plain IRC, so every server works, but some functions are...">
+    <meta name="description" content="StarChat requests these capabilities when the server offers them and falls back to plain IRC otherwise. It is developed against Ergo, which supports all of...">
     <link rel="canonical" href="https://getstarchat.net/docs/ircv3.html">
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="StarChat">
     <meta property="og:title" content="IRCv3 support | StarChat documentation">
-    <meta property="og:description" content="StarChat requests the capabilities below when the server offers them. Without them it falls back to plain IRC, so every server works, but some functions are...">
+    <meta property="og:description" content="StarChat requests these capabilities when the server offers them and falls back to plain IRC otherwise. It is developed against Ergo, which supports all of...">
     <meta property="og:url" content="https://getstarchat.net/docs/ircv3.html">
     <meta property="og:image" content="https://getstarchat.net/img/og.png">
     <meta property="og:image:width" content="1200">
@@ -57,7 +57,7 @@
         <main class="col-lg-9">
             <div class="card doc"><div class="card-body p-4 p-lg-5">
 <h1 id="ircv3-support">IRCv3 support</h1>
-<p>StarChat requests the capabilities below when the server offers them. Without them it falls back to plain IRC, so every server works, but some functions are only available with the matching capability.</p>
+<p>StarChat requests these capabilities when the server offers them and falls back to plain IRC otherwise. It is developed against <a href="https://ergo.chat">Ergo</a>, which supports all of them.</p>
 <h2 id="capabilities">Capabilities</h2>
 <div class="table-responsive"><table class="table">
 <thead>
@@ -68,39 +68,39 @@
 </thead>
 <tbody><tr>
 <td><code>sasl</code></td>
-<td>Login with <code>PLAIN</code> (account and password) or <code>IRCV3BEARER</code> (token, see <a href="embedding.html">Embedding with login</a>).</td>
+<td>Login with <code>PLAIN</code> or <code>IRCV3BEARER</code> (<a href="embedding.html">token</a>).</td>
 </tr>
 <tr>
 <td><code>message-tags</code></td>
-<td>Reactions, replies and typing indicators.</td>
+<td>Reactions, replies, typing indicators.</td>
 </tr>
 <tr>
 <td><code>server-time</code></td>
-<td>Correct times for history and delayed messages.</td>
+<td>Correct times in history.</td>
 </tr>
 <tr>
 <td><code>echo-message</code></td>
-<td>Own messages come back with their ID, needed to react to, reply to or delete them.</td>
+<td>Message IDs of own messages, to react, reply or delete.</td>
 </tr>
 <tr>
 <td><code>account-tag</code></td>
-<td>The account of the sender on every message, so a nick alone is never trusted.</td>
+<td>The sender&#39;s account, so a nick alone is never trusted.</td>
 </tr>
 <tr>
 <td><code>batch</code></td>
-<td>Grouping of history and multiline messages.</td>
+<td>History and multiline messages.</td>
 </tr>
 <tr>
 <td><code>away-notify</code></td>
-<td>Away state in the nick list without polling.</td>
+<td>Away state in the nick list.</td>
 </tr>
 <tr>
-<td><code>chathistory</code> or <code>draft/chathistory</code></td>
-<td>Loading earlier messages when opening a channel or scrolling up.</td>
+<td><code>chathistory</code>, <code>draft/chathistory</code></td>
+<td>Earlier messages.</td>
 </tr>
 <tr>
 <td><code>draft/event-playback</code></td>
-<td>Joins, parts and quits in the history as real events.</td>
+<td>Joins, parts and quits in the history.</td>
 </tr>
 <tr>
 <td><code>draft/message-redaction</code></td>
@@ -112,15 +112,15 @@
 </tr>
 <tr>
 <td><code>draft/read-marker</code></td>
-<td>Read position shared by all sessions of an account.</td>
+<td>Read position shared across sessions.</td>
 </tr>
 <tr>
-<td><code>draft/metadata-3</code> or <code>draft/metadata-2</code></td>
-<td>Avatars and status of users, the voice chat a user is in (key <code>voice</code>).</td>
+<td><code>draft/metadata-3</code>, <code>draft/metadata-2</code></td>
+<td>Avatars, status and the voice chat a user is in (key <code>voice</code>).</td>
 </tr>
 <tr>
-<td><code>draft/webpush</code> or <code>soju.im/webpush</code></td>
-<td>Push notifications for logged-in accounts while no client is connected. In the browser it needs the <code>pushWorker</code> option (<a href="options.html#push-notifications">Push notifications</a>), apps need the <code>push</code> feature of the network.</td>
+<td><code>draft/webpush</code>, <code>soju.im/webpush</code></td>
+<td>Push while no client is connected. Browsers need <a href="options.html#push-notifications"><code>pushWorker</code></a>, apps the network feature <code>push</code>.</td>
 </tr>
 </tbody></table></div>
 <h2 id="client-tags">Client tags</h2>
@@ -133,24 +133,24 @@
 </thead>
 <tbody><tr>
 <td><code>+draft/react</code>, <code>+draft/unreact</code></td>
-<td>Emoji reactions to a message.</td>
+<td>Reactions.</td>
 </tr>
 <tr>
 <td><code>+draft/reply</code></td>
-<td>Answers to a specific message.</td>
+<td>Replies.</td>
 </tr>
 <tr>
 <td><code>+typing</code></td>
-<td>Shown when other users type.</td>
+<td>Typing indicators.</td>
 </tr>
 <tr>
 <td><code>+getstarchat.net/call</code>, <code>+getstarchat.net/call-id</code></td>
-<td>Ringing for voice calls between friends (feature <code>calls</code>), sent as <code>TAGMSG</code> to the nick.</td>
+<td>Ringing for calls between friends, as <code>TAGMSG</code> to the nick.</td>
 </tr>
 </tbody></table></div>
-<p>Reactions and replies are offered only when the server does not deny the tags with <code>CLIENTTAGDENY</code> in <code>ISUPPORT</code>.</p>
+<p>Reactions and replies are hidden when the server denies the tags with <code>CLIENTTAGDENY</code>.</p>
 <h3 id="calls">Calls</h3>
-<p><code>+getstarchat.net/call</code> carries the step of the call, <code>+getstarchat.net/call-id</code> a random id of up to 32 letters and digits that keeps two calls apart.</p>
+<p><code>+getstarchat.net/call-id</code> is a random id of up to 32 letters and digits. <code>+getstarchat.net/call</code> is one of:</p>
 <div class="table-responsive"><table class="table">
 <thead>
 <tr>
@@ -162,27 +162,27 @@
 <tbody><tr>
 <td><code>invite</code></td>
 <td>caller</td>
-<td>It should ring. The caller is already waiting in the voice room.</td>
+<td>Ring. The caller is already in the voice room.</td>
 </tr>
 <tr>
 <td><code>ringing</code></td>
 <td>callee</td>
-<td>It rings here. Without it within 6 seconds the caller assumes a client without calls and gives up.</td>
+<td>It rings. Without it within 6 seconds the caller gives up.</td>
 </tr>
 <tr>
 <td><code>unavailable</code></td>
 <td>callee</td>
-<td>This client takes no calls (switched off in the settings, guest, or no WebRTC).</td>
+<td>This client takes no calls.</td>
 </tr>
 <tr>
 <td><code>busy</code></td>
 <td>callee</td>
-<td>Already in a call or another one rings.</td>
+<td>Already in a call.</td>
 </tr>
 <tr>
 <td><code>accept</code>, <code>decline</code></td>
 <td>callee</td>
-<td>The answer. Other sessions of the same account see it as echo and stop ringing.</td>
+<td>The answer. Other sessions of the account stop ringing.</td>
 </tr>
 <tr>
 <td><code>cancel</code></td>
@@ -195,9 +195,7 @@
 <td>Hung up.</td>
 </tr>
 </tbody></table></div>
-<p>Only invites from friends ring (by <code>account</code> tag, otherwise by nick). Calls publish no metadata.</p>
-<h2 id="tested-servers">Tested servers</h2>
-<p>StarChat is developed against <a href="https://ergo.chat">Ergo</a>, which supports all of the above. Other servers work with the subset they offer.</p>
+<p>Only invites from friends ring.</p>
 
             <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/ircv3.md">Edit this page on GitHub</a></p>
             </div></div>

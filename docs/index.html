@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>StarChat documentation</title>
-    <meta name="description" content="StarChat is an IRCv3 client for the web and the desktop. These pages describe how to put it into a page, how to configure it and what a network can do to...">
+    <meta name="description" content="StarChat is an IRCv3 client for the web, the desktop and Android. Downloads are on the releases page, the library is on npm as starchat, changes are in the...">
     <link rel="canonical" href="https://getstarchat.net/docs/">
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="StarChat">
     <meta property="og:title" content="StarChat documentation">
-    <meta property="og:description" content="StarChat is an IRCv3 client for the web and the desktop. These pages describe how to put it into a page, how to configure it and what a network can do to...">
+    <meta property="og:description" content="StarChat is an IRCv3 client for the web, the desktop and Android. Downloads are on the releases page, the library is on npm as starchat, changes are in the...">
     <meta property="og:url" content="https://getstarchat.net/docs/">
     <meta property="og:image" content="https://getstarchat.net/img/og.png">
     <meta property="og:image:width" content="1200">
@@ -57,32 +57,15 @@
         <main class="col-lg-9">
             <div class="card doc"><div class="card-body p-4 p-lg-5">
 <h1 id="documentation">Documentation</h1>
-<p>StarChat is an IRCv3 client for the web and the desktop. These pages describe how to put it into a page, how to configure it and what a network can do to work well with it.</p>
-<p>StarChat is not released yet. The web client is available as a <a href="hosting.html">development build</a>, the npm package and desktop downloads come with the first release.</p>
-<h2 id="pages">Pages</h2>
-<ul>
-<li><a href="features.html">Features</a>: what works on every network and what a network can add</li>
-<li><a href="hosting.html">Hosting the web client</a>: the ready-made page, configured with <code>config.json</code></li>
-<li><a href="desktop.html">Desktop app</a>: building the Electron app, also as your own edition</li>
-<li><a href="mobile.html">Mobile app</a>: building the Android app, also as your own edition</li>
-<li><a href="options.html">mountChat() options</a>: starting the chat in a page and configuring it</li>
-<li><a href="embedding.html">Embedding with login</a>: logging in users of your site with a token</li>
-<li><a href="servers.html">Server list</a>: the public list of networks and how to use your own</li>
-<li><a href="discovery.html">Discovery file</a>: how a network announces its WebSocket address and extra services</li>
-<li><a href="commands.html">Commands and shortcuts</a>: slash commands and keyboard shortcuts</li>
-<li><a href="ircv3.html">IRCv3 support</a>: capabilities and tags StarChat uses</li>
-</ul>
+<p>StarChat is an IRCv3 client for the web, the desktop and Android. Downloads are on the <a href="https://github.com/starchat-irc/starchat/releases/latest">releases page</a>, the library is on npm as <code>starchat</code>, changes are in the <a href="https://github.com/starchat-irc/starchat/blob/main/CHANGELOG.md">changelog</a>.</p>
+<p>There is no central StarChat server. The client connects directly to the network the user picks. A network without any setup works as a plain IRC server, as long as it offers IRC over WebSocket. A network that wants to offer more serves a <a href="discovery.html">discovery file</a>.</p>
 <h2 id="how-it-is-built">How it is built</h2>
-<p>The package has two layers.</p>
-<p><code>src/core/</code> is the IRC core without any UI: line parser, CAP and SASL negotiation, WebSocket transport, mIRC formatting, slash commands and the state for messages, nick lists and topics. It also loads the server list, reads the discovery file of each server and keeps features, API access and token per connection. The state is written through a small store adapter, so another UI can plug in its own reactive store.</p>
-<p><code>src/ui/</code> is the chat interface, built with Alpine.js and Bootstrap 5. HTML templates live in <code>src/ui/templates/</code>, texts in <code>src/i18n/</code> (English and German). <a href="options.html"><code>mountChat()</code></a> renders the templates into an element and starts everything.</p>
-<p>Both layers are exported from the package entry, so the core can be used on its own:</p>
+<p><code>src/core/</code> is the IRC core without UI: parser, CAP and SASL, WebSocket transport, mIRC formatting, slash commands, server list, discovery and the state of messages, nick lists and topics. The state goes through a small store adapter, so another UI can plug in its own store.</p>
+<p><code>src/ui/</code> is the interface, built with Alpine.js and Bootstrap 5. Templates are in <code>src/ui/templates/</code>, texts in <code>src/i18n/</code>. <a href="options.html"><code>mountChat()</code></a> renders it into an element.</p>
+<p>Both are exported from the package, so the core can be used on its own:</p>
 <pre><code class="language-js">import { connectWebSocket, parseIrcLine, saslPlain } from &#39;starchat&#39;;
 </code></pre>
-<h2 id="connections-and-networks">Connections and networks</h2>
-<p>There is no central StarChat server. The client connects directly to the IRC network the user picks. Every connection has its own features and its own token, and a token is only sent to the network it belongs to.</p>
-<p>A network without any setup works as a plain IRC server, as long as it offers IRC over WebSocket (the web build cannot open TCP connections). A network that wants to offer more serves a <a href="discovery.html">discovery file</a>.</p>
-<h2 id="license">License</h2>
+<p><code>desktop/</code> and <code>mobile/</code> are the <a href="desktop.html">desktop</a> and <a href="mobile.html">Android</a> apps around the same chat.</p>
 <p>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">MIT License</a>.</p>
 
             <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/index.md">Edit this page on GitHub</a></p>

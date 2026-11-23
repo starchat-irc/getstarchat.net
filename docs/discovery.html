@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Discovery file | StarChat documentation</title>
-    <meta name="description" content="A network can tell StarChat its WebSocket address and the extra services it offers with a small JSON file on its own domain, at this address.">
+    <meta name="description" content="A network tells StarChat its WebSocket address and extra services with a JSON file on its own domain.">
     <link rel="canonical" href="https://getstarchat.net/docs/discovery.html">
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="StarChat">
     <meta property="og:title" content="Discovery file | StarChat documentation">
-    <meta property="og:description" content="A network can tell StarChat its WebSocket address and the extra services it offers with a small JSON file on its own domain, at this address.">
+    <meta property="og:description" content="A network tells StarChat its WebSocket address and extra services with a JSON file on its own domain.">
     <meta property="og:url" content="https://getstarchat.net/docs/discovery.html">
     <meta property="og:image" content="https://getstarchat.net/img/og.png">
     <meta property="og:image:width" content="1200">
@@ -57,78 +57,63 @@
         <main class="col-lg-9">
             <div class="card doc"><div class="card-body p-4 p-lg-5">
 <h1 id="discovery-file">Discovery file</h1>
-<p>A network can tell StarChat its WebSocket address and the extra services it offers with a small JSON file on its own domain, at this address:</p>
+<p>A network tells StarChat its WebSocket address and extra services with a JSON file on its own domain:</p>
 <pre><code>https://&lt;domain&gt;/.well-known/starchat.json
 </code></pre>
-<p><code>&lt;domain&gt;</code> is the <code>domain</code> of the network in <a href="https://github.com/starchat-irc/starchat/blob/main/servers/servers.json"><code>servers/servers.json</code></a>, or the domain a user typed in. Networks without this file work as plain IRC servers. The file is optional, and so is every field except <code>schemaVersion</code>.</p>
-<p>Example: <a href="discovery.example.json"><code>discovery.example.json</code></a>. Schema: <a href="discovery.schema.json"><code>discovery.schema.json</code></a>.</p>
-<h2 id="where-the-file-is-looked-up">Where the file is looked up</h2>
-<p>These rules are about the file itself. The addresses inside it (API, WebSocket, logo, links) may be on any domain, see <a href="#fields">Fields</a>.</p>
+<p><code>&lt;domain&gt;</code> is the <code>domain</code> from the <a href="servers.html">server list</a> or what the user typed. Every field except <code>schemaVersion</code> is optional. Example: <a href="discovery.example.json"><code>discovery.example.json</code></a>, schema: <a href="discovery.schema.json"><code>discovery.schema.json</code></a>.</p>
+<h2 id="rules">Rules</h2>
 <ul>
-<li>Always over <code>https</code>. The client sends no cookies with the request.</li>
-<li>Redirects are followed only within the domain or its subdomains (<code>example.org</code> to <code>www.example.org</code>), not to another domain.</li>
-<li>A list entry may point to another location with <code>discovery</code>, but only on the same domain or a subdomain of it. Otherwise an entry for a foreign network could hand out its own API and collect its logins.</li>
-<li>Serve it with <code>Access-Control-Allow-Origin: *</code>, otherwise the web build cannot read it.</li>
+<li>The file is fetched over <code>https</code> without cookies. Serve it with <code>Access-Control-Allow-Origin: *</code>.</li>
+<li>Redirects and a <code>discovery</code> URL in the server list must stay on the domain or its subdomains. Otherwise a list entry could hand out a foreign API and collect logins.</li>
+<li>Addresses inside the file may be on any domain, but must be <code>https</code> or <code>wss</code>. Others are dropped.</li>
+<li>Unknown fields and values are ignored, so newer files work with older clients.</li>
 </ul>
 <h2 id="fields">Fields</h2>
 <div class="table-responsive"><table class="table">
 <thead>
 <tr>
 <th>Field</th>
-<th>Type</th>
 <th>Meaning</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><code>schemaVersion</code></td>
-<td><code>1</code></td>
-<td>Required. Clients ignore files with a version they do not know.</td>
+<td><code>1</code>. Required.</td>
 </tr>
 <tr>
 <td><code>name</code></td>
-<td>string, max. 60</td>
-<td>Display name of the network. Overrides the name from the server list.</td>
+<td>Name of the network, max. 60 characters.</td>
 </tr>
 <tr>
 <td><code>websocketUrl</code></td>
-<td><code>wss://</code> URL</td>
-<td>IRC over WebSocket. Overrides the entry in the server list.</td>
+<td><code>wss://</code> address of IRC over WebSocket.</td>
 </tr>
 <tr>
 <td><code>apiBaseUrl</code></td>
-<td><code>https://</code> URL</td>
-<td>Base URL of the API for the features below. Without it no feature is used.</td>
+<td>Base URL of the API. Needed for <code>features</code>.</td>
 </tr>
 <tr>
 <td><code>auth</code></td>
-<td>array</td>
-<td>Login methods the network accepts, see below.</td>
+<td>Login methods, see below.</td>
 </tr>
 <tr>
 <td><code>features</code></td>
-<td>array</td>
-<td>Extra services, see below. Requires <code>apiBaseUrl</code>.</td>
+<td>Services of the API, see below.</td>
 </tr>
 <tr>
 <td><code>branding.logo</code></td>
-<td><code>https://</code> URL</td>
-<td>Logo shown for this network.</td>
+<td>Logo URL.</td>
 </tr>
 <tr>
 <td><code>branding.themeCss</code></td>
-<td><code>https://</code> URL</td>
-<td>Stylesheet with the theme variables of the network.</td>
+<td>Stylesheet with the network&#39;s theme variables.</td>
 </tr>
 <tr>
 <td><code>links</code></td>
-<td>object</td>
-<td>Pages of the network, see below. Works without <code>apiBaseUrl</code>.</td>
+<td>Pages of the network&#39;s website, see below.</td>
 </tr>
 </tbody></table></div>
-<p>Endpoints may be on other domains than the network itself, for example an API on <code>api.example.net</code> or a WebSocket on a separate host. They must use <code>https</code> or <code>wss</code>. Plain <code>http</code> and <code>ws</code> are dropped. The file is trusted for these addresses because it was loaded from the network&#39;s own domain.</p>
-<p>Unknown fields and unknown values in <code>auth</code> and <code>features</code> are ignored, so a file written for a newer client still works with an older one. New fields and values are added to this document first.</p>
 <h2 id="links">Links</h2>
-<p>Pages on the network&#39;s website that the client links to. All <code>https</code>, others are dropped.</p>
 <div class="table-responsive"><table class="table">
 <thead>
 <tr>
@@ -138,19 +123,19 @@
 </thead>
 <tbody><tr>
 <td><code>links.register</code></td>
-<td>Creating an account. Linked in the login dialog.</td>
+<td>Creating an account.</td>
 </tr>
 <tr>
 <td><code>links.channelInvite</code></td>
-<td>Invite link of a channel. Must contain <code>{channel}</code>, which is replaced by the channel name without <code>#</code>, URL encoded (<code>https://example.org/join/{channel}</code>). The channel menu then offers &quot;Copy invite link&quot;.</td>
+<td>Invite page of a channel, with <code>{channel}</code> for the name without <code>#</code>, for example <code>https://example.org/join/{channel}</code>.</td>
 </tr>
 <tr>
 <td><code>links.reportPolicy</code></td>
-<td>Rules for reports, linked in the report dialog (feature <code>reports</code>).</td>
+<td>Rules for reports.</td>
 </tr>
 <tr>
 <td><code>links.communityInvite</code></td>
-<td>Invite page of a community. Must contain <code>{community}</code>, which is replaced by the community&#39;s <code>slug</code>, URL encoded (<code>https://example.org/invite/{community}</code>). Feature <code>communities</code> then offers &quot;Copy invite link&quot; for the community shown.</td>
+<td>Invite page of a community, with <code>{community}</code> for its <code>slug</code>.</td>
 </tr>
 </tbody></table></div>
 <h2 id="login-methods-auth">Login methods (<code>auth</code>)</h2>
@@ -163,111 +148,40 @@
 </thead>
 <tbody><tr>
 <td><code>sasl-plain</code></td>
-<td>Account name and password, sent over SASL <code>PLAIN</code> on the IRC connection.</td>
+<td>Account and password over SASL <code>PLAIN</code>.</td>
 </tr>
 <tr>
 <td><code>bearer</code></td>
-<td>The client gets a token from the API and logs in with SASL <code>IRCV3BEARER</code>.</td>
+<td>Name and password go to the API, the token it returns logs in on IRC with SASL <code>IRCV3BEARER</code>.</td>
+</tr>
+<tr>
+<td><code>api-login</code></td>
+<td>Name and password go to the API for a token and to IRC with SASL <code>PLAIN</code>. For IRC servers without token login, for example with Anope.</td>
 </tr>
 <tr>
 <td><code>guest</code></td>
-<td>Connecting without an account is allowed.</td>
+<td>Connecting without an account.</td>
 </tr>
 </tbody></table></div>
-<p>Without <code>auth</code> the client assumes <code>sasl-plain</code> and <code>guest</code>, like any IRC server. With <code>bearer</code> the client gets its token as described under <a href="#api">API</a>.</p>
+<p>Without <code>auth</code> the client assumes <code>sasl-plain</code> and <code>guest</code>. With both <code>bearer</code> and <code>api-login</code>, <code>bearer</code> wins.</p>
 <h2 id="features">Features</h2>
-<p>Every connection has its own features and its own token. A token is only sent to the <code>apiBaseUrl</code> of the network it belongs to.</p>
+<p>What each feature shows the user is in <a href="features.html">Features</a>. Endpoints are in the <a href="api.html">API reference</a>.</p>
 <div class="table-responsive"><table class="table">
 <thead>
 <tr>
 <th>Value</th>
-<th>Service</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>profiles</code></td>
-<td>Profile cards, avatars and status.</td>
-</tr>
-<tr>
-<td><code>friends</code></td>
-<td>Friend list and requests.</td>
-</tr>
-<tr>
-<td><code>uploads</code></td>
-<td>File and image uploads.</td>
-</tr>
-<tr>
-<td><code>push</code></td>
-<td>Push relay for app builds (FCM). Browser push works without it, see <a href="options.html#push-notifications">Push notifications</a>.</td>
-</tr>
-<tr>
-<td><code>voice</code></td>
-<td>Voice channels.</td>
-</tr>
-<tr>
-<td><code>calls</code></td>
-<td>Voice calls between friends.</td>
-</tr>
-<tr>
-<td><code>reports</code></td>
-<td>Reporting users and messages.</td>
-</tr>
-<tr>
-<td><code>explore</code></td>
-<td>Directory of channels and communities.</td>
-</tr>
-<tr>
-<td><code>chatState</code></td>
-<td>Open conversations and read markers synced across devices.</td>
-</tr>
-<tr>
-<td><code>alwaysOn</code></td>
-<td>Staying connected while the client is closed (bouncer).</td>
-</tr>
-<tr>
-<td><code>events</code></td>
-<td>Community events in the chat.</td>
-</tr>
-<tr>
-<td><code>gifs</code></td>
-<td>GIF search in the message input.</td>
-</tr>
-<tr>
-<td><code>communities</code></td>
-<td>Groups of channels the user belongs to, with their own view in the sidebar.</td>
-</tr>
-<tr>
-<td><code>spotify</code></td>
-<td>The track playing on the user&#39;s linked Spotify account as now-playing status (desktop app).</td>
-</tr>
-</tbody></table></div>
-<h2 id="api">API</h2>
-<p>All paths are relative to <code>apiBaseUrl</code>. The endpoints, fields and answers of every feature are in the <a href="api.html">API reference</a> (OpenAPI 3.1). The client sends <code>Accept: application/json</code> and no cookies, so the API has to answer cross-origin requests (<code>Access-Control-Allow-Origin: *</code> or the calling origin, <code>Authorization</code> as allowed header).</p>
-<h3 id="token">Token</h3>
-<p>The token is a string the IRC server accepts with SASL <code>IRCV3BEARER</code> and the API accepts as <code>Authorization: Bearer &lt;token&gt;</code>. With <a href="https://ergo.chat">Ergo</a> this is a JWT signed with a key from <code>accounts.jwt-auth</code>, the account name in <code>sub</code>. See <a href="features.html#one-login-for-irc-and-the-api">Features</a> for an example.</p>
-<p>A client gets a token in one of two ways:</p>
-<ul>
-<li>From the page that embeds the chat (<code>mountChat({ bearer })</code>, see <a href="embedding.html">Embedding with login</a>).</li>
-<li>With <code>bearer</code> in <code>auth</code>, from the login form: <a href="api.html#login"><code>POST login</code></a> with name and password.</li>
-</ul>
-<p>The client then logs in on IRC with <code>IRCV3BEARER</code> instead of <code>PLAIN</code>. Without <code>bearer</code> in <code>auth</code> a password goes to the IRC server with SASL <code>PLAIN</code> and the client has no token, so features that need one stay hidden. Guests have no token either. An API request with a missing or expired token is answered with <code>401</code>.</p>
-<h3 id="endpoints-per-feature">Endpoints per feature</h3>
-<div class="table-responsive"><table class="table">
-<thead>
-<tr>
-<th>Feature</th>
 <th>Endpoints</th>
 <th>Token</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><code>profiles</code></td>
-<td><a href="api.html#profiles"><code>chat/profiles/{account}</code>, <code>chat/profile</code>, <code>chat/profile/status</code>, <code>chat/profile/avatar</code></a></td>
+<td><a href="api.html#profiles"><code>chat/profiles/{account}</code>, <code>chat/profile</code>, …</a></td>
 <td>yes</td>
 </tr>
 <tr>
 <td><code>friends</code></td>
-<td><a href="api.html#friends"><code>friends</code>, <code>friends/request</code>, <code>friends/{id}/…</code></a></td>
+<td><a href="api.html#friends"><code>friends</code>, …</a></td>
 <td>yes</td>
 </tr>
 <tr>
@@ -331,7 +245,11 @@
 <td>yes</td>
 </tr>
 </tbody></table></div>
-<p>&quot;Optional&quot; means the token is sent if there is one, so guests can use the feature unless the network answers them with <code>401</code>. How a network can offer each feature, for example with Ergo or LiveKit, is described in <a href="features.html#setting-up-the-features">Features</a>.</p>
+<p>&quot;Optional&quot; means the token is sent when there is one.</p>
+<h2 id="api">API</h2>
+<p>Paths are relative to <code>apiBaseUrl</code>. The client sends <code>Accept: application/json</code> and no cookies, so the API must allow cross-origin requests (<code>Access-Control-Allow-Origin</code> and <code>Authorization</code> as allowed header).</p>
+<p>The API accepts the token as <code>Authorization: Bearer &lt;token&gt;</code>. With <code>bearer</code> the IRC server accepts it too, with SASL <code>IRCV3BEARER</code>. The client gets it from the page that embeds the chat (<a href="embedding.html">Embedding with login</a>) or, with <code>bearer</code> or <code>api-login</code> in <code>auth</code>, from <a href="api.html#login"><code>POST login</code></a>. A token only goes to the network it belongs to. Without a token, features that need one stay hidden. Answer <code>401</code> for a missing or expired token.</p>
+<p>How to set it up with Ergo: <a href="features.html#one-login-for-irc-and-the-api">One login for IRC and the API</a>.</p>
 
             <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/discovery.md">Edit this page on GitHub</a></p>
             </div></div>

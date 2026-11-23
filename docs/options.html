@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>mountChat() options | StarChat documentation</title>
-    <meta name="description" content="mountChat() renders the chat into an element of your page and connects to the first server.">
+    <meta name="description" content="The first argument is a selector or an element. The chat fills it, so give it a height. The promise resolves with the connection of the primary server and...">
     <link rel="canonical" href="https://getstarchat.net/docs/options.html">
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="StarChat">
     <meta property="og:title" content="mountChat() options | StarChat documentation">
-    <meta property="og:description" content="mountChat() renders the chat into an element of your page and connects to the first server.">
+    <meta property="og:description" content="The first argument is a selector or an element. The chat fills it, so give it a height. The promise resolves with the connection of the primary server and...">
     <meta property="og:url" content="https://getstarchat.net/docs/options.html">
     <meta property="og:image" content="https://getstarchat.net/img/og.png">
     <meta property="og:image:width" content="1200">
@@ -57,7 +57,6 @@
         <main class="col-lg-9">
             <div class="card doc"><div class="card-body p-4 p-lg-5">
 <h1 id="mountchat-options">mountChat() options</h1>
-<p><code>mountChat()</code> renders the chat into an element of your page and connects to the first server.</p>
 <pre><code class="language-js">import &#39;bootstrap/dist/css/bootstrap.min.css&#39;;
 import &#39;bootstrap-icons/font/bootstrap-icons.min.css&#39;;
 import &#39;starchat/theme.css&#39;;
@@ -68,8 +67,7 @@ const { connection, servers } = await mountChat(&#39;#chat&#39;, {
     defaultChannel: &#39;#lobby&#39;,
 });
 </code></pre>
-<p>The first argument is a CSS selector or an element. Its content is replaced. The chat takes all the space the element gives it, so give the element a height or let it fill a flex container.</p>
-<p>The returned promise resolves with the connection of the primary server and the list of servers offered in the login dialog. It rejects when the element is missing or no server could be resolved.</p>
+<p>The first argument is a selector or an element. The chat fills it, so give it a height. The promise resolves with the connection of the primary server and the server list, and rejects when the element is missing or no server could be resolved.</p>
 <h2 id="options">Options</h2>
 <div class="table-responsive"><table class="table">
 <thead>
@@ -82,67 +80,67 @@ const { connection, servers } = await mountChat(&#39;#chat&#39;, {
 <tbody><tr>
 <td><code>primaryServer</code></td>
 <td></td>
-<td>Domain (<code>&#39;irc.example.org&#39;</code>) or a full <a href="servers.html">server list</a> entry. Preselected in the login dialog. A domain that is not in the list becomes an entry of its own, its WebSocket address then comes from the <a href="discovery.html">discovery file</a>.</td>
+<td>Domain or a <a href="servers.html">server list</a> entry, preselected in the login dialog.</td>
 </tr>
 <tr>
 <td><code>serverList</code></td>
 <td><code>&#39;default&#39;</code></td>
-<td><code>&#39;default&#39;</code> loads the public list, a URL loads your own list in the same format, <code>false</code> offers only the primary server.</td>
+<td><code>&#39;default&#39;</code> (the public list), a URL of your own list, or <code>false</code>.</td>
 </tr>
 <tr>
 <td><code>defaultChannel</code></td>
 <td></td>
-<td>Channel joined and shown after login. Only used on the primary server.</td>
+<td>Channel joined after login on the primary server.</td>
 </tr>
 <tr>
 <td><code>nickname</code></td>
 <td></td>
-<td>Connect right away with this nick instead of showing the login dialog.</td>
+<td>Connect right away with this nick, without the login dialog.</td>
 </tr>
 <tr>
 <td><code>password</code></td>
 <td></td>
-<td>SASL PLAIN password used with <code>nickname</code>.</td>
+<td>SASL password for <code>nickname</code>.</td>
 </tr>
 <tr>
 <td><code>saslAccount</code></td>
 <td>the nick</td>
-<td>Account name for SASL PLAIN when it differs from the nick.</td>
+<td>Account name, if it differs from the nick.</td>
 </tr>
 <tr>
 <td><code>bearer</code></td>
 <td></td>
-<td>Function that returns a login token, see <a href="embedding.html">Embedding with login</a>.</td>
+<td>Function that returns a token, see <a href="embedding.html">Embedding with login</a>.</td>
 </tr>
 <tr>
 <td><code>modules</code></td>
-<td>all bundled</td>
-<td>Feature modules, for example <code>[profilesModule]</code> (exported by the package). A module only runs on servers that list its feature in the <a href="discovery.html#features">discovery file</a>. Pass <code>[]</code> for a plain IRC client.</td>
+<td>all</td>
+<td>Feature modules, for example <code>[profilesModule]</code>. A module runs only where the network lists its <a href="discovery.html#features">feature</a>. <code>[]</code> gives a plain IRC client.</td>
 </tr>
 <tr>
 <td><code>locale</code></td>
-<td>browser languages</td>
-<td>Language code or list of codes, for example <code>&#39;de-DE&#39;</code>. The first one with bundled texts wins, English otherwise.</td>
+<td>browser</td>
+<td>Language code or list. English if none matches.</td>
 </tr>
 <tr>
 <td><code>theme</code></td>
 <td><code>&#39;auto&#39;</code></td>
-<td><code>&#39;auto&#39;</code> follows the system setting, <code>&#39;dark&#39;</code> or <code>&#39;light&#39;</code> fix it. Users can change it in the settings, their choice is kept in the browser.</td>
+<td><code>&#39;auto&#39;</code>, <code>&#39;dark&#39;</code> or <code>&#39;light&#39;</code>. Users can change it.</td>
 </tr>
 <tr>
 <td><code>overrides</code></td>
 <td><code>{}</code></td>
-<td>Texts that replace bundled ones, by key (see <code>src/i18n/en.json</code>).</td>
+<td>Replaced texts by key (see <code>src/i18n/en.json</code>).</td>
 </tr>
 <tr>
 <td><code>layout</code></td>
 <td><code>&#39;full&#39;</code></td>
-<td>Parts of the chat that are shown. <code>&#39;headless&#39;</code> leaves only the messages and the input line, see <a href="#chat-box-without-frame">Chat box without frame</a>.</td>
+<td><code>&#39;headless&#39;</code> or an object, see <a href="#chat-box-without-frame">below</a>.</td>
 </tr>
 <tr>
 <td><code>appName</code></td>
 <td><code>&#39;StarChat&#39;</code></td>
-<td>Name shown in texts that mention the app.</td>
+<td>Name in texts.</td>
 </tr>
 <tr>
 <td><code>ctcpVersion</code></td>
@@ -157,46 +155,22 @@ const { connection, servers } = await mountChat(&#39;#chat&#39;, {
 <tr>
 <td><code>Alpine</code></td>
 <td>bundled</td>
-<td>An Alpine.js instance your page already runs, for example from Livewire. Without it StarChat starts its own. Never run two.</td>
+<td>Your page&#39;s Alpine.js instance, for example from Livewire. Never run two.</td>
 </tr>
 <tr>
 <td><code>onHostMessage</code></td>
 <td></td>
-<td><code>(type, data) =&gt; {}</code>. Messages from the chat for the page around it, for example unread counts.</td>
-</tr>
-<tr>
-<td><code>shellMessages</code></td>
-<td></td>
-<td><code>(listener) =&gt; {}</code>. Called once with a <code>listener(type, data)</code> for messages from the app around the chat: <code>settings-state</code>, <code>set-theme</code>, <code>open-settings</code>, <code>tab-activated</code>, <code>set-playing</code>, <code>app-resumed</code>. Other types go to the modules (hook <code>shellMessage</code>). Used by the <a href="desktop.html">desktop app</a>.</td>
-</tr>
-<tr>
-<td><code>shell</code></td>
-<td></td>
-<td><code>&#39;desktop&#39;</code> or <code>&#39;mobile&#39;</code> when the chat runs inside an app that keeps some settings itself.</td>
-</tr>
-<tr>
-<td><code>allowInsecureWebsocket</code></td>
-<td><code>false</code></td>
-<td>Only inside a <code>primaryServer</code> entry: accept a <code>ws://</code> address (no TLS) for this server. Server lists cannot switch it on. The desktop app sets it for servers the user set up with <code>ws://</code>.</td>
-</tr>
-<tr>
-<td><code>storageScope</code></td>
-<td>server id</td>
-<td>Suffix of the keys under which settings and drafts of this connection are stored in the browser. The desktop app passes the id of the connection profile, so two connections to one server keep their own settings.</td>
-</tr>
-<tr>
-<td><code>nativeSocket</code></td>
-<td></td>
-<td>IRC over TCP for apps that can open sockets: <code>nativeSocketConnector({ send, listen })</code>, see <code>src/core/native-socket.js</code>. Used for servers that have <code>irc</code> but no <code>websocket</code> in their entry.</td>
+<td><code>(type, data) =&gt; {}</code>, messages from the chat to the page, for example unread counts.</td>
 </tr>
 <tr>
 <td><code>pushWorker</code></td>
 <td></td>
-<td>URL of the push service worker on your origin, see <a href="#push-notifications">Push notifications</a>. Without it there is no push in the browser.</td>
+<td>URL of the push service worker, see <a href="#push-notifications">below</a>.</td>
 </tr>
 </tbody></table></div>
+<p>Options for app shells (<code>shell</code>, <code>shellMessages</code>, <code>nativeSocket</code>, <code>storageScope</code>, <code>allowInsecureWebsocket</code>) are used by the desktop and mobile apps, see <code>src/ui/mount.js</code>.</p>
 <h2 id="chat-box-without-frame">Chat box without frame</h2>
-<p>A game or app that only wants a chat box passes <code>layout: &#39;headless&#39;</code>. Then only the messages of the current channel and the input line are shown: no header, no channel list, no user list, no join and part lines, no logout button. The chat also leaves the keys of the page alone (Ctrl+P, Ctrl+F, Alt+Up/Down and <code>?</code> are not taken).</p>
+<p><code>layout: &#39;headless&#39;</code> shows only the messages and the input line, for a game or an app that wants a chat box. The chat then leaves the page&#39;s keys alone.</p>
 <pre><code class="language-js">await mountChat(&#39;#chatbox&#39;, {
     primaryServer: &#39;irc.example.org&#39;,
     defaultChannel: &#39;#village&#39;,
@@ -204,66 +178,30 @@ const { connection, servers } = await mountChat(&#39;#chat&#39;, {
     bearer: async () =&gt; ({ token: await fetchChatToken() }),
 });
 </code></pre>
-<p>An object switches single parts off, everything not named stays:</p>
+<p>An object switches single parts off: <code>header</code>, <code>channelList</code>, <code>userList</code>, <code>joinPart</code>, <code>logout</code>, <code>shortcuts</code>.</p>
 <pre><code class="language-js">layout: { userList: false, joinPart: false }
 </code></pre>
-<div class="table-responsive"><table class="table">
-<thead>
-<tr>
-<th>Part</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>header</code></td>
-<td>Channel name, topic, buttons and the message search. The reconnect notice stays.</td>
-</tr>
-<tr>
-<td><code>channelList</code></td>
-<td>Icon rail and channel list, with them the friends and upload views.</td>
-</tr>
-<tr>
-<td><code>userList</code></td>
-<td>Nick list of the channel.</td>
-</tr>
-<tr>
-<td><code>joinPart</code></td>
-<td>Join and part lines. Kicks, nick changes and topics stay.</td>
-</tr>
-<tr>
-<td><code>logout</code></td>
-<td>Logout button of the input line.</td>
-</tr>
-<tr>
-<td><code>shortcuts</code></td>
-<td>Keyboard shortcuts on the whole page.</td>
-</tr>
-</tbody></table></div>
-<p>Without the channel list the user stays in the channel they see. <code>/join</code> and <code>/query</code> still switch to the new window, but there is no way back other than another command. Direct messages from others arrive without being shown, so a chat box should set a <code>defaultChannel</code>. Settings for hidden parts are not offered.</p>
+<p>Without the channel list there is no way back from <code>/join</code> or <code>/query</code> other than another command, so set a <code>defaultChannel</code>.</p>
 <h2 id="theme">Theme</h2>
-<p><code>starchat/theme.css</code> contains the default theme for dark and light mode. It is built on Bootstrap 5 and Bootstrap Icons, both have to be loaded before it.</p>
-<p>The colors are CSS custom properties on the chat element (<code>--chat-bg</code>, <code>--chat-text</code>, <code>--chat-accent</code> and so on, see <code>src/ui/theme.css</code>). Override them in your own stylesheet to change the look without touching the layout:</p>
+<p><code>starchat/theme.css</code> needs Bootstrap 5 and Bootstrap Icons loaded before it. Colors are custom properties on the chat element (see <code>src/ui/theme.css</code>):</p>
 <pre><code class="language-css">#chat {
     --chat-accent: #2e7d32;
     --chat-accent-hover: #256628;
 }
 </code></pre>
-<p>The theme is set on the chat element only, so your page keeps its own color scheme.</p>
 <h2 id="notification-sound">Notification sound</h2>
-<p>The chat brings a few synthesized sounds. A site can add its own sound file, which is then offered first and used by default:</p>
 <pre><code class="language-js">import { registerNotificationSound } from &#39;starchat&#39;;
 
 registerNotificationSound(&#39;/sounds/ping.ogg&#39;);
 </code></pre>
-<p>Pass <code>{ makeDefault: false }</code> to only add it to the list.</p>
+<p>The sound becomes the default. Pass <code>{ makeDefault: false }</code> to only offer it.</p>
 <h2 id="push-notifications">Push notifications</h2>
-<p>On networks with <code>draft/webpush</code> (Ergo, soju) logged-in users can get direct messages and mentions while the chat is closed. The browser needs a service worker on the origin of your page. Copy <code>node_modules/starchat/src/push-sw.js</code> (package path <code>starchat/push-sw.js</code>) to your public folder and pass its URL:</p>
+<p>On networks with <code>draft/webpush</code> logged-in users get messages while the chat is closed. Copy <code>starchat/push-sw.js</code> to your public folder and pass its URL:</p>
 <pre><code class="language-js">await mountChat(&#39;#chat&#39;, {
     primaryServer: &#39;irc.example.org&#39;,
     pushWorker: &#39;/push-sw.js?name=MyNet&amp;chat=/chat&amp;icon=/icon.png&#39;,
 });
 </code></pre>
-<p>The query string configures the worker:</p>
 <div class="table-responsive"><table class="table">
 <thead>
 <tr>
@@ -280,25 +218,23 @@ registerNotificationSound(&#39;/sounds/ping.ogg&#39;);
 <tr>
 <td><code>chat</code></td>
 <td><code>/</code></td>
-<td>Path of the chat page. A tapped notification focuses a window under this path or opens it with <code>?open=&lt;target&gt;</code>. Can be given more than once, the first is opened.</td>
+<td>Path of the chat page, opened with <code>?open=&lt;target&gt;</code> on tap.</td>
 </tr>
 <tr>
 <td><code>icon</code></td>
 <td><code>/favicon.ico</code></td>
-<td>Notification icon, a path on your origin.</td>
+<td>Notification icon.</td>
 </tr>
 </tbody></table></div>
-<p>The user turns push on under Settings → Notifications, which also asks for the browser permission. Muted channels and ignored users stay silent, the chat sends that list to the worker. Logging out unregisters the device.</p>
-<p>No network API is needed for this. Only app builds (FCM) need the network&#39;s relay, the feature <a href="features.html#push"><code>push</code></a>.</p>
+<p>Users turn it on under Settings, Notifications. No network API is needed, only apps need the feature <a href="features.html#push"><code>push</code></a>.</p>
 <h2 id="own-commands">Own commands</h2>
-<p>Slash commands are a plain object keyed by name. Add your own before mounting:</p>
 <pre><code class="language-js">import { registerCommand } from &#39;starchat&#39;;
 
 registerCommand(&#39;shrug&#39;, (args, ctx) =&gt; {
     ctx.sendOwnMessage(ctx.currentChannel, `${args.join(&#39; &#39;)} ¯\\_(ツ)_/¯`.trim());
 });
 </code></pre>
-<p>An existing name is replaced. The built-in commands are listed in <a href="commands.html">Commands and shortcuts</a>.</p>
+<p>An existing name is replaced. Built-in commands: <a href="commands.html">Commands and shortcuts</a>.</p>
 
             <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/options.md">Edit this page on GitHub</a></p>
             </div></div>

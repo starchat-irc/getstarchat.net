@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Embedding with login | StarChat documentation</title>
-    <meta name="description" content="A site that already knows its users can log them into the chat with a token instead of the login dialog. The chat sends the token to its primary server with...">
+    <meta name="description" content="A site that knows its users can log them into the chat with a token. The chat sends it to the primary server with SASL IRCV3BEARER, never to another server....">
     <link rel="canonical" href="https://getstarchat.net/docs/embedding.html">
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="StarChat">
     <meta property="og:title" content="Embedding with login | StarChat documentation">
-    <meta property="og:description" content="A site that already knows its users can log them into the chat with a token instead of the login dialog. The chat sends the token to its primary server with...">
+    <meta property="og:description" content="A site that knows its users can log them into the chat with a token. The chat sends it to the primary server with SASL IRCV3BEARER, never to another server....">
     <meta property="og:url" content="https://getstarchat.net/docs/embedding.html">
     <meta property="og:image" content="https://getstarchat.net/img/og.png">
     <meta property="og:image:width" content="1200">
@@ -57,15 +57,14 @@
         <main class="col-lg-9">
             <div class="card doc"><div class="card-body p-4 p-lg-5">
 <h1 id="embedding-with-login">Embedding with login</h1>
-<p>A site that already knows its users can log them into the chat with a token instead of the login dialog. The chat sends the token to its primary server with SASL <code>IRCV3BEARER</code>, and the server checks it. For Ergo that is a JWT signed with the key from its config. The token is never sent to another server.</p>
+<p>A site that knows its users can log them into the chat with a token. The chat sends it to the primary server with SASL <code>IRCV3BEARER</code>, never to another server. For Ergo the token is a JWT, see <a href="features.html#one-login-for-irc-and-the-api">One login for IRC and the API</a>.</p>
 <h2 id="on-the-same-page">On the same page</h2>
-<p>Pass a function that returns a token:</p>
 <pre><code class="language-js">mountChat(&#39;#chat&#39;, {
     primaryServer: &#39;irc.example.org&#39;,
     bearer: async () =&gt; ({ token: await fetchChatToken() }),
 });
 </code></pre>
-<p>It is called on start and before each reconnect, so short-lived tokens work. Return <code>null</code> to show the login dialog. If the function throws, the last token is used again.</p>
+<p>The function is called on start and before each reconnect. Return <code>null</code> to show the login dialog.</p>
 <h2 id="in-an-iframe">In an iframe</h2>
 <p>The chat page asks its parent window:</p>
 <pre><code class="language-js">import { mountChat, bearerFromParent } from &#39;starchat&#39;;
@@ -75,8 +74,8 @@ mountChat(&#39;#chat&#39;, {
     bearer: bearerFromParent({ allowedOrigins: [&#39;https://game.example.net&#39;] }),
 });
 </code></pre>
-<p>The chat posts <code>{ type: &#39;get-token&#39; }</code> to the parent and only takes the answer from the direct parent window and from the listed origins (its own origin is always allowed). <code>allowedOrigins</code> is set by whoever serves the chat page, not by the embedding site. <code>*</code> and origins with a path are rejected. Without an answer within 10 seconds (option <code>timeout</code>, in milliseconds) the login dialog is shown.</p>
-<p>The embedding page answers with the token. Check the origin and send the answer to that origin only, never to <code>&#39;*&#39;</code>:</p>
+<p>Only answers from the direct parent and the listed origins count. <code>*</code> is rejected. Without an answer within 10 seconds (<code>timeout</code>) the login dialog is shown.</p>
+<p>The embedding page answers, to the chat&#39;s origin only:</p>
 <pre><code class="language-js">const CHAT_ORIGIN = &#39;https://chat.example.org&#39;;
 
 window.addEventListener(&#39;message&#39;, async (event) =&gt; {
@@ -85,7 +84,7 @@ window.addEventListener(&#39;message&#39;, async (event) =&gt; {
     event.source.postMessage({ type: &#39;token-response&#39;, token }, CHAT_ORIGIN);
 });
 </code></pre>
-<p>Fetch a new token for every <code>get-token</code>. The chat asks again before each reconnect, and an old token may have expired by then.</p>
+<p>Fetch a new token each time, an old one may have expired. Limit who may frame the chat with <code>Content-Security-Policy: frame-ancestors</code>, using the same origins as <code>allowedOrigins</code>.</p>
 <h2 id="fields-of-the-answer">Fields of the answer</h2>
 <div class="table-responsive"><table class="table">
 <thead>
@@ -103,24 +102,19 @@ window.addEventListener(&#39;message&#39;, async (event) =&gt; {
 <tr>
 <td><code>account</code></td>
 <td>no</td>
-<td>Authorization identity. Leave it out and the server takes the account from the token.</td>
+<td>Authorization identity, otherwise taken from the token.</td>
 </tr>
 <tr>
 <td><code>nickname</code></td>
 <td>no</td>
-<td>Nick for the registration. Without it the account name is used.</td>
+<td>Nick, the account name by default.</td>
 </tr>
 <tr>
 <td><code>tokenType</code></td>
 <td>no</td>
-<td>Token type sent to the server, default <code>jwt</code>.</td>
+<td>Default <code>jwt</code>.</td>
 </tr>
 </tbody></table></div>
-<h2 id="notes">Notes</h2>
-<ul>
-<li>The token only goes to the primary server. If the user picked another network in the login dialog before, the chat switches back to the primary server. Logging in as a guest or with a password drops the token.</li>
-<li>The server of the chat page should limit who may frame it, with <code>Content-Security-Policy: frame-ancestors https://game.example.net</code>. Use the same list as <code>allowedOrigins</code>.</li>
-</ul>
 
             <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/embedding.md">Edit this page on GitHub</a></p>
             </div></div>
