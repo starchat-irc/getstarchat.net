@@ -358,10 +358,8 @@ import{a as e,i as t,o as n,s as r,t as i}from"./preload-helper-DVqdrzjW.js";(fu
             </template>
 
             <div class="chat-header-actions">
-                <!-- Voice chat of the channel -->
-        
-    </template>
-    <template x-if="hasFeature('voice')">
+            <!-- Voice chat of the channel -->
+            <template x-if="hasFeature('voice')">
             <button class="chat-header-btn"
                     :class="{ 'is-active': isInVoice(currentChannel), 'chat-header-btn--voice-live': isInVoice(currentChannel) }"
                     x-show="currentChannel?.startsWith('#') && (canJoinVoice(currentChannel) || isInVoice(currentChannel))"
@@ -426,7 +424,8 @@ import{a as e,i as t,o as n,s as r,t as i}from"./preload-helper-DVqdrzjW.js";(fu
                 <i class="bi bi-people-fill"></i>
             </button>
         </div>
-    </div>
+        </div>
+    </template>
     <template x-if="hasFeature('voice') && layout.header">
         <div>{{> voice-bar }}</div>
     </template>
