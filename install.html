@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Install | StarChat</title>
-    <meta name="description" content="How to use, host and embed StarChat, and how to make an IRC network work with it.">
+    <meta name="description" content="How to install, host and embed StarChat, and how to make an IRC network work with it.">
     <link rel="canonical" href="https://getstarchat.net/install.html">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="StarChat">
     <meta property="og:title" content="Install | StarChat">
-    <meta property="og:description" content="How to use, host and embed StarChat, and how to make an IRC network work with it.">
+    <meta property="og:description" content="How to install, host and embed StarChat, and how to make an IRC network work with it.">
     <meta property="og:url" content="https://getstarchat.net/install.html">
     <meta property="og:image" content="https://getstarchat.net/img/og.png">
     <meta property="og:image:width" content="1200">
@@ -41,9 +41,10 @@
             <nav class="docs-nav sticky-lg-top">
                 <ul class="nav flex-column">
                     <li class="nav-item"><a class="nav-link" href="#use">Just use it</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#desktop">Desktop app</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#android">Android</a></li>
                     <li class="nav-item"><a class="nav-link" href="#host">Host the web client</a></li>
                     <li class="nav-item"><a class="nav-link" href="#embed">Embed it in your site</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#desktop">Desktop client</a></li>
                     <li class="nav-item"><a class="nav-link" href="#network">For network operators</a></li>
                 </ul>
             </nav>
@@ -56,42 +57,39 @@
 
             <h2 id="use">Just use it</h2>
 
-            <p>Open the <a href="demo/">web demo</a>. It connects to ST-City and the channel <code>#starchat</code> by default. Under "Advanced settings" in the login dialog you can pick another network from the list or enter any domain.</p>
+            <p>Open the <a href="demo/">web demo</a>. It connects to <code>#starchat</code> on ST-City. Under "Advanced settings" in the login dialog you can pick another network. As with any IRC client, the network sees your IP address.</p>
 
-            <p>Connecting shares your IP address with the network you choose, as with every IRC client.</p>
+            <h2 id="desktop">Desktop app</h2>
+
+            <p>For Windows, Linux and macOS on the <a href="https://github.com/starchat-irc/starchat/releases/latest">releases page</a>. The app updates itself. The installers are not signed yet, so Windows and macOS warn on the first start.</p>
+
+            <h2 id="android">Android</h2>
+
+            <p>The app is in testing for Google Play. Until then there is a <a href="https://github.com/starchat-irc/starchat/releases/download/latest-dev/starchat-android-dev.apk">test build</a> as APK.</p>
 
             <h2 id="host">Host the web client yourself</h2>
 
-            <p>The web client is a static page. It needs no server of its own, any web host works (GitHub Pages, Cloudflare Pages, nginx, a shared host).</p>
+            <p>The web client is a static page, any web host works.</p>
 
             <ol>
-                <li>Download <code>starchat-web-dev.zip</code> (or <code>.tar.gz</code>) from the <a href="https://github.com/starchat-irc/starchat/releases/tag/latest-dev">development build</a>. After the first release it is on the <a href="https://github.com/starchat-irc/starchat/releases">releases page</a>.</li>
-                <li>Unpack it and open <code>starchat-web/config.json</code>. Set at least your network:</li>
+                <li>Download <code>starchat-web-&lt;version&gt;.zip</code> from the <a href="https://github.com/starchat-irc/starchat/releases/latest">releases page</a>.</li>
+                <li>Unpack it and set your network in <code>starchat-web/config.json</code>:</li>
             </ol>
 
 <pre><code>{
     "primaryServer": "irc.example.org",
-    "defaultChannel": "#lobby",
-    "serverList": "default",
-    "appName": "Example Chat",
-    "links": [
-        { "label": "Privacy", "url": "https://example.org/privacy" }
-    ]
+    "defaultChannel": "#lobby"
 }</code></pre>
 
             <ol start="3">
-                <li>Upload the folder to your web host, at the root of a domain or in a subfolder.</li>
+                <li>Upload the folder to your web host.</li>
             </ol>
 
-            <p>All keys of <code>config.json</code> are listed under <a href="docs/hosting.html">Hosting the web client</a>. Your IRC server has to accept WebSocket connections from the address of the page, see <a href="#network">For network operators</a>.</p>
-
-            <p>To build it yourself instead (<a href="https://nodejs.org/">Node.js</a> 22.12 or newer): clone the repository, run <code>npm install</code> and <code>npm run build:web</code>. The page is in <code>dist-web/</code>, <code>npm run web</code> starts it locally.</p>
+            <p>All settings are under <a href="docs/hosting.html">Hosting the web client</a>.</p>
 
             <h2 id="embed">Embed it in your site</h2>
 
-            <p>If your site has its own build (Vite, webpack, Rollup), use StarChat as a library. Until the npm release, build it from the cloned repository with <code>npm run build</code> (output in <code>dist/</code>).</p>
-
-            <p>The chat needs Bootstrap 5 and Bootstrap Icons for its layout, plus its own theme:</p>
+            <p><code>npm install starchat</code>, then:</p>
 
 <pre><code>import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.min.css';
@@ -103,29 +101,18 @@ mountChat('#chat', {
     defaultChannel: '#lobby',
 });</code></pre>
 
-            <p>The element <code>#chat</code> should have a fixed height or fill its container, the chat uses all space it gets. If your page already runs Alpine.js (for example through Livewire), pass it as <code>Alpine</code> so there is only one instance.</p>
+            <p>See <a href="docs/options.html">mountChat() options</a> and <a href="docs/embedding.html">Embedding with login</a>.</p>
 
-            <p>All options are listed under <a href="docs/options.html">mountChat() options</a>. To log in users of your site without the login dialog, see <a href="docs/embedding.html">Embedding with login</a>.</p>
+            <h2 id="network">For network operators</h2>
 
-            <h2 id="desktop">Desktop client</h2>
+            <p>The desktop app works with any network over TCP. For the web client your server needs:</p>
 
-            <p>The desktop client is built with Electron and will be offered for Windows, Linux and macOS. It is being moved into the repository right now. Downloads will be on the <a href="https://github.com/starchat-irc/starchat/releases">releases page</a>.</p>
+            <ol>
+                <li><strong>WebSocket over TLS</strong> (<code>wss://</code>). Ergo, UnrealIRCd 6 and InspIRCd (<code>m_websocket</code>) support it.</li>
+                <li><strong>Allowed origins</strong>, if your server checks them (Ergo: <code>server.websockets.allowed-origins</code>). Add the pages your users chat from, for the demo <code>https://getstarchat.net</code>.</li>
+            </ol>
 
-            <h2 id="network">Make your network work with StarChat</h2>
-
-            <p>Without any changes, StarChat works with your network on the desktop over TCP. For the web client a few more things are needed.</p>
-
-            <h3>1. WebSocket endpoint</h3>
-
-            <p>Browsers cannot open TCP connections, so the web client speaks IRC over WebSocket. Ergo, UnrealIRCd 6 and InspIRCd (module <code>m_websocket</code>) support this. Serve it over TLS (<code>wss://</code>), directly or behind a reverse proxy.</p>
-
-            <h3>2. Allowed origins</h3>
-
-            <p>Some servers only accept WebSocket connections from listed origins (in Ergo: <code>server.websockets.allowed-origins</code>). If you set such a list, add the origins of the pages your users chat from, for example <code>https://getstarchat.net</code> for the demo.</p>
-
-            <h3>3. Discovery file (optional)</h3>
-
-            <p>Serve <code>https://&lt;your-domain&gt;/.well-known/starchat.json</code> with the header <code>Access-Control-Allow-Origin: *</code>. The smallest useful file:</p>
+            <p>Optional: a <a href="docs/discovery.html">discovery file</a> at <code>https://&lt;your-domain&gt;/.well-known/starchat.json</code>, served with <code>Access-Control-Allow-Origin: *</code>, so users only need to type your domain:</p>
 
 <pre><code>{
     "schemaVersion": 1,
@@ -133,11 +120,7 @@ mountChat('#chat', {
     "websocketUrl": "wss://irc.example.org/webirc"
 }</code></pre>
 
-            <p>With it, users can type your domain and StarChat finds the WebSocket address. All fields are described under <a href="docs/discovery.html">Discovery file</a>.</p>
-
-            <h3>4. Public server list (optional)</h3>
-
-            <p class="mb-0">To show up in the network list of every StarChat, open a pull request that adds an entry to <a href="https://github.com/starchat-irc/starchat/blob/main/servers/servers.json"><code>servers/servers.json</code></a>. The format is described under <a href="docs/servers.html">Server list</a>.</p>
+            <p class="mb-0">To appear in the network list of every StarChat, add your network to <a href="https://github.com/starchat-irc/starchat/blob/main/servers/servers.json"><code>servers/servers.json</code></a> by pull request (<a href="docs/servers.html">format</a>).</p>
             </div></div>
         </main>
     </div>
