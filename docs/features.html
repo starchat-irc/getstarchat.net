@@ -169,12 +169,12 @@
 </tr>
 <tr>
 <td><code>voice</code></td>
-<td>Voice chat per channel (experimental, switched on in the settings). Push to talk or voice activation, mic test, volume per participant, optional noise filter. Needs a <a href="https://livekit.io">LiveKit</a> server.</td>
+<td>Voice chat per channel. Push to talk or voice activation, mic test, volume per participant, optional noise filter. Needs a <a href="https://livekit.io">LiveKit</a> server.</td>
 <td>yes</td>
 </tr>
 <tr>
 <td><code>calls</code></td>
-<td>Voice calls between friends from the direct message window (experimental). Needs <code>voice</code> and <code>friends</code>.</td>
+<td>Voice calls between friends from the direct message window. Needs <code>voice</code> and <code>friends</code>.</td>
 <td>yes</td>
 </tr>
 <tr>
@@ -333,6 +333,7 @@ room:
 <h3 id="calls"><code>calls</code></h3>
 <p>Calls use the LiveKit server of <code>voice</code>. <a href="api.html#calls"><code>POST chat/voice/call-token</code></a> checks that both accounts are friends and returns a token for a room both sides get the same way, for example <code>dm:</code> plus both account names in lower case and sorted. Ringing runs over IRC (see <a href="ircv3.html#client-tags">IRCv3 support</a>).</p>
 <p><code>POST chat/voice/call-ring</code> is optional and rings app builds in the background. With the push relay above, the network sends an FCM data message with <code>call</code> (<code>invite</code> or <code>cancel</code>), <code>call_id</code>, <code>nick</code> and <code>account</code> to the friend&#39;s installs and returns how many it reached. A network without app builds answers <code>{ &quot;pushed&quot;: 0 }</code>.</p>
+<p>Users can switch private calls off in the voice settings. Their chat then answers every invite with <code>unavailable</code> and hides the call button, and the Android app drops call pushes in the background.</p>
 <p>An app build that receives the ring opens the chat with <code>openPushTarget(&#39;call:id=…&amp;nick=…&amp;account=…&amp;answer=accept|decline&#39;)</code> (<code>answer</code> optional, without it the chat rings). In the background a browser or desktop chat shows a system notification and sends <code>call-incoming</code> with <code>{ nick }</code> to <code>onHostMessage</code>, so a desktop shell can flash its window.</p>
 <h3 id="spotify"><code>spotify</code></h3>
 <p>Register an app in the Spotify developer dashboard with the redirect URL of your API. <code>GET spotify/auth-url</code> returns the authorization link (scope <code>user-read-currently-playing</code>) with a one-time <code>state</code> tied to the account. The callback stores the refresh token. <code>GET spotify/current-track</code> asks Spotify for the playing track with a fresh access token and returns title and artist.</p>
