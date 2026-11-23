@@ -241,6 +241,27 @@ keyPassword=...
 <li><p><code>npm run aab</code> and upload <code>mobile/dist/&lt;appId&gt;-&lt;version&gt;.aab</code> in the Play Console.</p>
 </li>
 </ol>
+<p>Google Play App Signing keeps the key the app is signed with, the upload key only proves that a bundle comes from you. If it gets lost or leaks, Google can reset it.</p>
+<h3 id="release-builds-in-github-actions">Release builds in GitHub Actions</h3>
+<p>On a tag <code>v*</code>, <code>.github/workflows/android.yml</code> builds the App Bundle with the version of the tag and attaches it to the release as <code>starchat-android-&lt;version&gt;-play.aab</code>. Download it there and upload it in the Play Console. Users cannot install an <code>.aab</code> directly, the release notes should point them to the store.</p>
+<p>The upload key lives in a GitHub environment named <code>play</code>, not in the repository secrets, so only tag builds can use it. Settings → Environments → New environment <code>play</code>, under &quot;Deployment branches and tags&quot; allow only tags <code>v*</code>, optionally with required reviewers. Its secrets:</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Secret</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ANDROID_UPLOAD_KEYSTORE</code></td>
+<td>The upload key, base64 encoded: <code>base64 -w0 upload.jks</code></td>
+</tr>
+<tr>
+<td><code>ANDROID_UPLOAD_KEYSTORE_PASSWORD</code></td>
+<td>Its password. Key and store need the same one.</td>
+</tr>
+</tbody></table></div>
+<p>The repository secret <code>GOOGLE_SERVICES_JSON</code> must then contain the Android app <code>appId</code> as well as <code>devAppId</code>. Firebase puts every Android app of a project into one <code>google-services.json</code>. Without the upload key the job is skipped.</p>
 
             <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/mobile.md">Edit this page on GitHub</a></p>
             </div></div>
@@ -252,7 +273,8 @@ keyPassword=...
     <div class="container d-flex flex-wrap gap-3">
         <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">MIT License</a>.</span>
         <a href="https://github.com/starchat-irc/starchat">GitHub</a>
-        <a href="https://st-city.net/impressum">Imprint</a>
+        <a href="https://getstarchat.net/imprint.html">Imprint</a>
+        <a href="https://getstarchat.net/privacy.html">Privacy</a>
     </div>
 </footer>
 </body>
