@@ -42,10 +42,13 @@
                 <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
                 <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
                 <li class="nav-item"><a class="nav-link" href="hosting.html">Hosting the web client</a></li>
+                <li class="nav-item"><a class="nav-link" href="desktop.html">Desktop app</a></li>
+                <li class="nav-item"><a class="nav-link" href="mobile.html">Mobile app</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="options.html">mountChat() options</a></li>
                 <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
                 <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
                 <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="api.html">API reference</a></li>
                 <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
                 <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
                 </ul>
@@ -97,6 +100,16 @@ const { connection, servers } = await mountChat(&#39;#chat&#39;, {
 <td>Connect right away with this nick instead of showing the login dialog.</td>
 </tr>
 <tr>
+<td><code>password</code></td>
+<td></td>
+<td>SASL PLAIN password used with <code>nickname</code>.</td>
+</tr>
+<tr>
+<td><code>saslAccount</code></td>
+<td>the nick</td>
+<td>Account name for SASL PLAIN when it differs from the nick.</td>
+</tr>
+<tr>
 <td><code>bearer</code></td>
 <td></td>
 <td>Function that returns a login token, see <a href="embedding.html">Embedding with login</a>.</td>
@@ -145,6 +158,31 @@ const { connection, servers } = await mountChat(&#39;#chat&#39;, {
 <td><code>onHostMessage</code></td>
 <td></td>
 <td><code>(type, data) =&gt; {}</code>. Messages from the chat for the page around it, for example unread counts.</td>
+</tr>
+<tr>
+<td><code>shellMessages</code></td>
+<td></td>
+<td><code>(listener) =&gt; {}</code>. Called once with a <code>listener(type, data)</code> for messages from the app around the chat: <code>settings-state</code>, <code>set-theme</code>, <code>open-settings</code>, <code>tab-activated</code>, <code>set-playing</code>, <code>app-resumed</code>. Other types go to the modules (hook <code>shellMessage</code>). Used by the <a href="desktop.html">desktop app</a>.</td>
+</tr>
+<tr>
+<td><code>shell</code></td>
+<td></td>
+<td><code>&#39;desktop&#39;</code> or <code>&#39;mobile&#39;</code> when the chat runs inside an app that keeps some settings itself.</td>
+</tr>
+<tr>
+<td><code>allowInsecureWebsocket</code></td>
+<td><code>false</code></td>
+<td>Only inside a <code>primaryServer</code> entry: accept a <code>ws://</code> address (no TLS) for this server. Server lists cannot switch it on. The desktop app sets it for servers the user set up with <code>ws://</code>.</td>
+</tr>
+<tr>
+<td><code>storageScope</code></td>
+<td>server id</td>
+<td>Suffix of the keys under which settings and drafts of this connection are stored in the browser. The desktop app passes the id of the connection profile, so two connections to one server keep their own settings.</td>
+</tr>
+<tr>
+<td><code>nativeSocket</code></td>
+<td></td>
+<td>IRC over TCP for apps that can open sockets: <code>nativeSocketConnector({ send, listen })</code>, see <code>src/core/native-socket.js</code>. Used for servers that have <code>irc</code> but no <code>websocket</code> in their entry.</td>
 </tr>
 <tr>
 <td><code>pushWorker</code></td>
@@ -201,7 +239,7 @@ registerNotificationSound(&#39;/sounds/ping.ogg&#39;);
 </tr>
 </tbody></table></div>
 <p>The user turns push on under Settings → Notifications, which also asks for the browser permission. Muted channels and ignored users stay silent, the chat sends that list to the worker. Logging out unregisters the device.</p>
-<p>No network API is needed for this. Only app builds (FCM) need the network&#39;s relay, the <code>push</code> feature of the <a href="discovery.html#push">discovery file</a>.</p>
+<p>No network API is needed for this. Only app builds (FCM) need the network&#39;s relay, the feature <a href="features.html#push"><code>push</code></a>.</p>
 <h2 id="own-commands">Own commands</h2>
 <p>Slash commands are a plain object keyed by name. Add your own before mounting:</p>
 <pre><code class="language-js">import { registerCommand } from &#39;starchat&#39;;
@@ -220,7 +258,7 @@ registerCommand(&#39;shrug&#39;, (args, ctx) =&gt; {
 
 <footer class="border-top py-4 text-body-secondary small">
     <div class="container d-flex flex-wrap gap-3">
-        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>.</span>
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">MIT License</a>.</span>
         <a href="https://github.com/starchat-irc/starchat">GitHub</a>
         <a href="https://st-city.net/impressum">Imprint</a>
     </div>

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Desktop app | StarChat documentation</title>
+    <meta name="description" content="The desktop app lives in desktop/. It is an Electron shell around the chat: one tab per connection profile, IRC over TCP or WebSocket, chat logs on disk,...">
+    <link rel="canonical" href="https://getstarchat.net/docs/desktop.html">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="StarChat">
+    <meta property="og:title" content="Desktop app | StarChat documentation">
+    <meta property="og:description" content="The desktop app lives in desktop/. It is an Electron shell around the chat: one tab per connection profile, IRC over TCP or WebSocket, chat logs on disk,...">
+    <meta property="og:url" content="https://getstarchat.net/docs/desktop.html">
+    <meta property="og:image" content="https://getstarchat.net/img/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
+    <link rel="stylesheet" href="../vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="../">StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2">
+            <li class="nav-item"><a class="nav-link" href="../">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="../install.html">Install</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="./">Docs</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row g-4 g-lg-5">
+        <aside class="col-lg-3">
+            <nav class="docs-nav sticky-lg-top">
+                <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
+                <li class="nav-item"><a class="nav-link" href="hosting.html">Hosting the web client</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="desktop.html">Desktop app</a></li>
+                <li class="nav-item"><a class="nav-link" href="mobile.html">Mobile app</a></li>
+                <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
+                <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
+                <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
+                <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="api.html">API reference</a></li>
+                <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
+                <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="col-lg-9">
+            <div class="card doc"><div class="card-body p-4 p-lg-5">
+<h1 id="desktop-app">Desktop app</h1>
+<p>The desktop app lives in <code>desktop/</code>. It is an Electron shell around the chat: one tab per connection profile, IRC over TCP or WebSocket, chat logs on disk, notifications, a media player and updates. Each tab runs the chat page (<code>desktop/chat/</code>) in its own iframe and talks to the shell through <code>postMessage</code>.</p>
+<h2 id="building">Building</h2>
+<pre><code>npm install
+cd desktop
+npm install
+npm start            # development run
+npm run dist -- --win    # installers in desktop/dist/ (also --linux, --mac)
+npm test
+</code></pre>
+<p><code>npm start</code> and <code>npm run dist</code> first run <code>npm run prepare:app</code>. It checks the edition, builds the chat page with Vite and writes everything the app needs to <code>desktop/generated/</code>.</p>
+<h2 id="editions">Editions</h2>
+<p>Name, ids, icon, servers and texts of the app are set at build time by an edition. The bundled edition in <code>desktop/edition/</code> builds StarChat. To build your own app, create a folder with an <code>edition.json</code> and your icon, and point the build to it:</p>
+<pre><code>node scripts/build.mjs dist --win --edition ../my-edition
+STARCHAT_EDITION=editions/my-network npm run dist -- --linux
+</code></pre>
+<p>The edition is copied into the app package. Users cannot change it after the installation.</p>
+<p>If you fork this repository, keep your edition in its own folder (for example <code>desktop/editions/my-network/</code>) instead of changing <code>desktop/edition/</code>, so merging upstream changes stays free of conflicts. In GitHub Actions, set the repository variable <code>STARCHAT_EDITION</code> to that folder.</p>
+<h3 id="editionjson">edition.json</h3>
+<pre><code class="language-json">{
+    &quot;$schema&quot;: &quot;../edition.schema.json&quot;,
+    &quot;appName&quot;: &quot;Example Chat&quot;,
+    &quot;appId&quot;: &quot;org.example.chat&quot;,
+    &quot;executableName&quot;: &quot;example-chat&quot;,
+    &quot;icon&quot;: &quot;icon.png&quot;,
+    &quot;chat&quot;: {
+        &quot;primaryServer&quot;: &quot;irc.example.org&quot;,
+        &quot;defaultChannel&quot;: &quot;#lobby&quot;
+    },
+    &quot;updates&quot;: { &quot;provider&quot;: &quot;github&quot;, &quot;owner&quot;: &quot;example&quot;, &quot;repo&quot;: &quot;example-chat&quot; }
+}
+</code></pre>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Field</th>
+<th>Required</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>appName</code></td>
+<td>yes</td>
+<td>Name in window titles, installers and chat texts (<code>:app</code>).</td>
+</tr>
+<tr>
+<td><code>appId</code></td>
+<td>yes</td>
+<td>Reverse domain id, for example <code>org.example.chat</code>. Never change it after the first release.</td>
+</tr>
+<tr>
+<td><code>executableName</code></td>
+<td>yes</td>
+<td>Name of the installers, the install folder and the Linux program: lower case letters, digits and <code>-</code>. On Windows and macOS the program is named after <code>appName</code>.</td>
+</tr>
+<tr>
+<td><code>icon</code></td>
+<td>yes</td>
+<td>Square PNG with at least 512x512 pixels. The Windows and macOS icons are made from it.</td>
+</tr>
+<tr>
+<td><code>dataDir</code></td>
+<td>no</td>
+<td>Folder in the user&#39;s app data, <code>executableName</code> by default.</td>
+</tr>
+<tr>
+<td><code>formerDataDirs</code></td>
+<td>no</td>
+<td>Folders of older versions of your app. While <code>dataDir</code> does not exist, the first of these that exists is used, so profiles and logs stay.</td>
+</tr>
+<tr>
+<td><code>publisher</code></td>
+<td>no</td>
+<td>Copyright and vendor in the installers.</td>
+</tr>
+<tr>
+<td><code>splashImage</code></td>
+<td>no</td>
+<td>Image on the start screen, the icon by default.</td>
+</tr>
+<tr>
+<td><code>chat.primaryServer</code></td>
+<td>no</td>
+<td>Domain of your network. The app then has a &quot;Home Server&quot; tab for new connections, starts with a connection to it, and takes login, API and features from its <a href="discovery.html">discovery file</a>. Without it (the StarChat app) the user picks the first network from the directory or sets up a server, like in other desktop IRC clients.</td>
+</tr>
+<tr>
+<td><code>chat.networkName</code></td>
+<td>no</td>
+<td>Name of the primary network in tabs and the connections list, the domain by default.</td>
+</tr>
+<tr>
+<td><code>chat.serverList</code></td>
+<td>no</td>
+<td>Directory of networks for new connections: <code>&#39;default&#39;</code> (the public list), an https URL of your own list, or <code>false</code>. The build bundles the list (<code>&#39;default&#39;</code>: the version in this checkout, a URL: downloaded during the build), the app loads newer versions at runtime, so new networks need no app update.</td>
+</tr>
+<tr>
+<td><code>chat.defaultChannel</code></td>
+<td>no</td>
+<td>Channel joined after login on the primary server.</td>
+</tr>
+<tr>
+<td><code>chat.theme</code></td>
+<td>no</td>
+<td><code>auto</code>, <code>dark</code> or <code>light</code>.</td>
+</tr>
+<tr>
+<td><code>chat.themeCss</code></td>
+<td>no</td>
+<td>CSS file loaded after the bundled theme, see <a href="options.html#theme">Theme</a>.</td>
+</tr>
+<tr>
+<td><code>chat.modules</code></td>
+<td>no</td>
+<td>Names of the feature modules to ship, all by default.</td>
+</tr>
+<tr>
+<td><code>chat.ctcpVersion</code>, <code>chat.defaultQuitMessage</code></td>
+<td>no</td>
+<td>As in <a href="options.html">mountChat()</a>.</td>
+</tr>
+<tr>
+<td><code>texts</code></td>
+<td>no</td>
+<td>Texts that replace bundled ones, per language: <code>{ &quot;de&quot;: { &quot;key&quot;: &quot;Text&quot; } }</code>. Keys of the chat (<code>src/i18n/</code>) and of the app windows (<code>desktop/locales/</code>).</td>
+</tr>
+<tr>
+<td><code>updates</code></td>
+<td>no</td>
+<td>Where the app looks for new versions: <code>{ &quot;provider&quot;: &quot;github&quot;, &quot;owner&quot;, &quot;repo&quot; }</code> or <code>{ &quot;provider&quot;: &quot;generic&quot;, &quot;url&quot; }</code>. Without it the app does not update itself.</td>
+</tr>
+<tr>
+<td><code>chatBundles</code></td>
+<td>no</td>
+<td>Signed chat updates without a new installer: <code>{ &quot;manifestUrl&quot;, &quot;publicKey&quot; }</code> (PEM file in the edition folder).</td>
+</tr>
+</tbody></table></div>
+<p>All file paths are relative to the edition folder and must stay inside it. The full schema is <code>desktop/edition.schema.json</code>.</p>
+<h3 id="features-of-the-primary-server">Features of the primary server</h3>
+<p>Only for editions with <code>chat.primaryServer</code>. Some parts of the app need an API on the primary server and turn on only when its discovery file offers them. The Spotify link, for example, needs the feature <a href="api.html#spotify"><code>spotify</code></a>. Without a discovery file the app is a plain IRC client.</p>
+<h2 id="connections">Connections</h2>
+<p>Each tab is a connection profile: the primary server of the edition (if it has one) or another server, over TCP (with or without TLS) or a secure WebSocket. TCP sockets are opened by the app, the chat page reaches them through <code>nativeSocket</code> (see <a href="options.html">mountChat() options</a>). Profiles are managed under Settings, Connections. Passwords and tokens are stored encrypted with the system keychain (Electron <code>safeStorage</code>) and never shown again. They only go to the server they were stored for: a connection to the primary server remembers that server (older connections without it are bound on the first start). In an edition with another or no primary server it becomes a normal connection to its network when the directory knows that network, otherwise it is kept aside unused and the app says so; an edition with that primary server takes it back, and changing the address of another connection, or switching TLS off, drops its stored password and token. &quot;Remember me&quot; in the login dialog keeps the API token of a password login for the next start.</p>
+<h2 id="irc-links">IRC links</h2>
+<p>Installed apps register as handler for <code>irc://</code> and <code>ircs://</code> links, for example <code>ircs://irc.libera.chat:6697/#libera</code>. A link to a server that has a connection opens its tab and the channel. Links to other servers open the dialog for a new connection with the server filled in, nothing connects without the user.</p>
+<h2 id="chat-updates-without-a-new-installer">Chat updates without a new installer</h2>
+<p>With <code>chatBundles</code> in the edition, installed apps fetch a signed chat page from <code>manifestUrl</code> and use it from the next start. A chat that does not start within 20 seconds is dropped and the built-in one is used again. Updates that need a newer app (<code>starchat.nativeApi</code> in <code>desktop/package.json</code>) are skipped.</p>
+<p>Create a key pair once and keep the private key secret:</p>
+<pre><code>openssl ecparam -name prime256v1 -genkey -noout | openssl pkcs8 -topk8 -nocrypt -out chat-signing-key.pem
+openssl ec -in chat-signing-key.pem -pubout -out edition/chat-bundle-public.pem
+</code></pre>
+<p>Build and sign the chat page of your edition, then upload the folder so that <code>manifest.json</code> is reachable at <code>manifestUrl</code>:</p>
+<pre><code>cd desktop
+npm run chat-bundle -- --key ../chat-signing-key.pem --out ../chat-update --edition editions/my-network
+</code></pre>
+<h2 id="releases">Releases</h2>
+<p>The workflow <code>.github/workflows/desktop.yml</code> builds Windows, Linux and macOS. A push to <code>main</code> replaces the installers on the pre-release <code>latest-dev</code>. A tag <code>v*</code> attaches installers and update files to the release of the tag, next to the web package. The builds are not signed yet, so Windows SmartScreen and macOS Gatekeeper warn on the first start.</p>
+
+            <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/desktop.md">Edit this page on GitHub</a></p>
+            </div></div>
+        </main>
+    </div>
+</div>
+
+<footer class="border-top py-4 text-body-secondary small">
+    <div class="container d-flex flex-wrap gap-3">
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">MIT License</a>.</span>
+        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
+        <a href="https://st-city.net/impressum">Imprint</a>
+    </div>
+</footer>
+</body>
+</html>

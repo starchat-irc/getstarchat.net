@@ -42,10 +42,13 @@
                 <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="features.html">Features</a></li>
                 <li class="nav-item"><a class="nav-link" href="hosting.html">Hosting the web client</a></li>
+                <li class="nav-item"><a class="nav-link" href="desktop.html">Desktop app</a></li>
+                <li class="nav-item"><a class="nav-link" href="mobile.html">Mobile app</a></li>
                 <li class="nav-item"><a class="nav-link" href="options.html">mountChat() options</a></li>
                 <li class="nav-item"><a class="nav-link" href="embedding.html">Embedding with login</a></li>
                 <li class="nav-item"><a class="nav-link" href="servers.html">Server list</a></li>
                 <li class="nav-item"><a class="nav-link" href="discovery.html">Discovery file</a></li>
+                <li class="nav-item"><a class="nav-link" href="api.html">API reference</a></li>
                 <li class="nav-item"><a class="nav-link" href="commands.html">Commands and shortcuts</a></li>
                 <li class="nav-item"><a class="nav-link" href="ircv3.html">IRCv3 support</a></li>
                 </ul>
@@ -100,7 +103,7 @@
 </tr>
 </tbody></table></div>
 <h2 id="with-an-api">With an API</h2>
-<p>Features below need <code>apiBaseUrl</code> and the feature name in <code>features</code>. Most also need a token, so guests do not see them. The endpoints of each feature are described under <a href="discovery.html#api">API</a>.</p>
+<p>Features below need <code>apiBaseUrl</code> and the feature name in <code>features</code>. Most also need a token, so guests do not see them. The endpoints of each feature are in the <a href="api.html">API reference</a>, how to set them up is described <a href="#setting-up-the-features">below</a>.</p>
 <div class="table-responsive"><table class="table">
 <thead>
 <tr>
@@ -166,12 +169,17 @@
 </tr>
 <tr>
 <td><code>voice</code></td>
-<td>Voice chat per channel (experimental, switched on in the settings). Push to talk or voice activation, mic test, volume per participant, optional noise filter. Needs a <a href="https://livekit.io">LiveKit</a> server.</td>
+<td>Voice chat per channel. Push to talk or voice activation, mic test, volume per participant, optional noise filter. Needs a <a href="https://livekit.io">LiveKit</a> server.</td>
 <td>yes</td>
 </tr>
 <tr>
 <td><code>calls</code></td>
-<td>Voice calls between friends from the direct message window (experimental). Needs <code>voice</code> and <code>friends</code>.</td>
+<td>Voice calls between friends from the direct message window. Needs <code>voice</code> and <code>friends</code>.</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>spotify</code></td>
+<td>Desktop app: the track playing on the linked Spotify account becomes the now-playing status.</td>
 <td>yes</td>
 </tr>
 </tbody></table></div>
@@ -189,6 +197,146 @@
 </tr>
 </tbody></table></div>
 <p>A page can leave out modules it does not want with the <code>modules</code> option of <a href="options.html"><code>mountChat()</code></a>. A feature is only active when its module is loaded and the network offers it.</p>
+<h2 id="setting-up-the-features">Setting up the features</h2>
+<p>The examples use <a href="https://ergo.chat">Ergo</a> as IRC server. The API can be written in any language. It only has to answer the requests in the <a href="api.html">API reference</a> and send CORS headers (see <a href="discovery.html#api">API</a>). Start with a discovery file that lists only what is there, and add features one by one:</p>
+<pre><code class="language-json">{
+  &quot;schemaVersion&quot;: 1,
+  &quot;name&quot;: &quot;Example Net&quot;,
+  &quot;websocketUrl&quot;: &quot;wss://irc.example.org/webirc&quot;,
+  &quot;apiBaseUrl&quot;: &quot;https://example.org/api&quot;,
+  &quot;auth&quot;: [&quot;bearer&quot;, &quot;guest&quot;],
+  &quot;features&quot;: [&quot;profiles&quot;, &quot;friends&quot;]
+}
+</code></pre>
+<h3 id="one-login-for-irc-and-the-api">One login for IRC and the API</h3>
+<p>With <code>bearer</code> in <code>auth</code> the user logs in once and the same token works on IRC and in the API. The API checks name and password in <a href="api.html#login"><code>POST login</code></a> and answers with a JWT. Ergo checks the JWT itself, the account name comes from a claim:</p>
+<pre><code class="language-yaml">accounts:
+    jwt-auth:
+        enabled: true
+        # create the IRC account on the first login with a valid token
+        autocreate: true
+        tokens:
+            -
+                algorithm: &quot;hmac&quot;
+                key: &quot;&lt;long random secret, the API signs with the same one&gt;&quot;
+                account-claims: [&quot;sub&quot;]
+</code></pre>
+<p>The token is signed with HS256, with the account name in <code>sub</code> and an expiry in <code>exp</code>. The client does not renew tokens. When one expires, the login fails and the user logs in again, so pick a lifetime that fits your network (days rather than minutes). The API checks the same signature for <code>Authorization: Bearer</code>.</p>
+<p>A website that already has logged-in users can hand them a token directly, see <a href="embedding.html">Embedding with login</a>.</p>
+<h3 id="profiles"><code>profiles</code></h3>
+<p>The network stores avatar and status per account and links further settings with <code>settings_url</code>. Avatars are only shown when their URL is on the same origin as <code>apiBaseUrl</code>, so serve them from there. The client also publishes avatar and status as IRCv3 metadata, which Ergo allows by default (<code>metadata.enabled</code>).</p>
+<h3 id="friends"><code>friends</code></h3>
+<p>Friendships are stored per account in the network&#39;s database, IRC knows nothing about them. Online state comes from IRC (<code>MONITOR</code>, which Ergo supports). The client polls the list every 10 seconds, so keep <code>GET friends</code> cheap.</p>
+<h3 id="uploads"><code>uploads</code></h3>
+<p>The network stores the files and serves them from a public <code>https</code> URL with the right <code>Content-Type</code>. Answer files that are too large with <code>413</code>. Uploads are public links, so the network decides how long they stay.</p>
+<h3 id="gifs"><code>gifs</code></h3>
+<p>The API forwards the search to a GIF service. The service&#39;s API key stays on the server, and when the API also proxies the images, the service does not see the users&#39; addresses. Fill <code>provider</code> with the name and link the service asks to show.</p>
+<h3 id="reports"><code>reports</code></h3>
+<p>Reports are stored and shown to the moderators, for example on an admin page or as a message in a staff channel. Limit them per address or account and answer with <code>429</code> above the limit. Link your rules with <code>links.reportPolicy</code>.</p>
+<h3 id="explore"><code>explore</code></h3>
+<p>A list of channel groups from the network&#39;s website, for example the communities a site lists publicly. No token is needed, guests see the directory too.</p>
+<h3 id="chatstate"><code>chatState</code></h3>
+<p>One JSON document per account. <code>POST chat-state</code> replaces the lists and merges <code>settings_patch</code> into the stored settings: a key with <code>null</code> is removed, keys the server does not know are kept.</p>
+<h3 id="alwayson"><code>alwaysOn</code></h3>
+<p>Ergo keeps always-on clients connected while the user is away. Let users opt in:</p>
+<pre><code class="language-yaml">accounts:
+    multiclient:
+        enabled: true
+        always-on: &quot;opt-in&quot;
+        auto-away: &quot;opt-in&quot;
+</code></pre>
+<p>The API changes the setting through Ergo&#39;s HTTP API (Ergo 2.19 or newer for <code>saget</code> and <code>saset</code>). Enable it on localhost only:</p>
+<pre><code class="language-yaml">api:
+    enabled: true
+    listener: &quot;127.0.0.1:8089&quot;
+    bearer-tokens:
+        - &quot;&lt;long random token for the network&#39;s API&gt;&quot;
+</code></pre>
+<p><code>GET chat/always-on</code> reads the setting with <code>POST /v1/ns/saget</code> (<code>{&quot;accountName&quot;: &quot;alice&quot;}</code>, answer field <code>alwaysOn</code>). <code>PUT chat/always-on</code> sets it with <code>POST /v1/ns/saset</code> (<code>{&quot;accountName&quot;: &quot;alice&quot;, &quot;alwaysOn&quot;: &quot;on&quot;, &quot;autoAway&quot;: &quot;on&quot;}</code>). With <code>autoAway</code> the user shows as away while no client is connected. The network also stores whether the user answered the question, which gives <code>ask</code>. Answer with <code>503</code> when Ergo cannot be reached.</p>
+<h3 id="events"><code>events</code></h3>
+<p>Events are planned on the network&#39;s website. The API expands recurring events into single dates (for example the next 30 days, at most 20) and filters by <code>community</code> when the client asks for one.</p>
+<h3 id="communities"><code>communities</code></h3>
+<p>Groups of channels managed on the network&#39;s website. <code>GET my-communities</code> returns the groups the user belongs to. Register the channels on IRC, so the group&#39;s owners keep control of them. With <code>slug</code> and <code>links.communityInvite</code> users can share an invite page of the group.</p>
+<h3 id="push"><code>push</code></h3>
+<p>Browsers get push notifications from Ergo directly (<code>draft/webpush</code>). App builds cannot receive Web Push, so the network relays it to Firebase Cloud Messaging (FCM). Enable Web Push in Ergo:</p>
+<pre><code class="language-yaml">webpush:
+    enabled: true
+    subscriber: &quot;https://example.org/&quot;
+</code></pre>
+<p>How a push reaches an app:</p>
+<ol>
+<li>The app gets an FCM token and creates its own Web Push keys. The chat sends the FCM token to <a href="api.html#push"><code>POST chat/push-devices</code></a>.</li>
+<li>The network stores the token and answers with an endpoint URL that is unique and hard to guess, for example <code>https://example.org/push/&lt;random&gt;</code>.</li>
+<li>The chat registers this endpoint and the app&#39;s keys with Ergo (<code>WEBPUSH REGISTER</code>).</li>
+<li>Ergo sends encrypted pushes (<code>Content-Encoding: aes128gcm</code>, at most 4096 bytes) to the endpoint. The network does not decrypt them. It sends the body base64 encoded as FCM data message <code>{ &quot;webpush&quot;: &quot;&lt;body&gt;&quot; }</code> to the token and answers <code>201</code>.</li>
+<li>The app decrypts the push with its keys and shows it.</li>
+</ol>
+<p>The endpoint needs no login, the URL itself is the secret. It answers <code>404</code> for unknown endpoints and <code>410</code> when FCM reports the token as unregistered, so Ergo drops the subscription.</p>
+<p>App and chat talk through <code>onHostMessage</code> and methods of the chat component:</p>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Direction</th>
+<th>Message</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>chat → app</td>
+<td><code>push-subscribe</code></td>
+<td>Asks for <code>{ fcmToken, p256dh, auth }</code>.</td>
+</tr>
+<tr>
+<td>app → chat</td>
+<td><code>receivePushSubscription(data)</code></td>
+<td>The answer, or <code>{ error }</code>. Without answer after 15 seconds the attempt fails.</td>
+</tr>
+<tr>
+<td>chat → app</td>
+<td><code>push-filter</code></td>
+<td><code>{ muted, ignored }</code>: channels and nicks whose pushes the app drops.</td>
+</tr>
+<tr>
+<td>chat → app</td>
+<td><code>push-unsubscribe</code></td>
+<td>Logout, the app deletes its keys.</td>
+</tr>
+<tr>
+<td>app → chat</td>
+<td><code>openPushTarget(target)</code></td>
+<td>A tapped notification: channel or nick to open.</td>
+</tr>
+</tbody></table></div>
+<h3 id="voice"><code>voice</code></h3>
+<p>Voice chat runs on a self-hosted <a href="https://livekit.io">LiveKit</a> server. Create a key pair with <code>docker run --rm livekit/livekit-server generate-keys</code> and a config:</p>
+<pre><code class="language-yaml">port: 7880
+rtc:
+  tcp_port: 7881          # fallback when UDP is blocked
+  udp_port: 7882          # all audio over one UDP port
+  use_external_ip: true
+keys:
+  &lt;API key&gt;: &quot;&lt;API secret&gt;&quot;
+room:
+  empty_timeout: 300
+  max_participants: 50
+</code></pre>
+<p>Put the signalling port 7880 behind a reverse proxy with TLS (<code>wss://voice.example.org</code>). The audio ports 7881/tcp and 7882/udp go directly to LiveKit, not through the proxy. Users behind strict firewalls also need LiveKit&#39;s TURN server (<code>turn</code> in the config). LiveKit&#39;s <a href="https://livekit.io/connection-test">connection test</a> shows what is reachable.</p>
+<p><a href="api.html#voice"><code>POST chat/voice/token</code></a> checks that the nick belongs to the account of the token and is in the channel. With Ergo&#39;s HTTP API (see <a href="#alwayson"><code>alwaysOn</code></a>), <code>POST /v1/whois</code> with <code>{&quot;nickname&quot;: &quot;alice&quot;}</code> returns <code>account</code> and <code>channels</code>. Then the API issues a LiveKit access token with the LiveKit server SDK of its language:</p>
+<ul>
+<li>Room: one per channel, for example <code>irc:#bridge</code>.</li>
+<li>Identity: the account name. Name: the nick.</li>
+<li>Grants: join, publish and subscribe. Room admin for channel operators (<code>mode</code> in <code>channels</code>), also returned as <code>is_moderator</code>.</li>
+<li>Lifetime: a few minutes. The token is only needed to join, a running call stays up.</li>
+</ul>
+<p>Who is in a voice chat is published as metadata <code>voice</code>, which Ergo allows by default.</p>
+<p>For the RNNoise filter in the voice settings, host the WebAssembly files of <a href="https://github.com/sapphi-red/web-noise-suppressor"><code>@sapphi-red/web-noise-suppressor</code></a> 0.4.1 (<code>rnnoise.wasm</code>, <code>rnnoise_simd.wasm</code>) with <code>Content-Type: application/wasm</code> and <code>Access-Control-Allow-Origin: *</code>, and list them in <code>GET chat/voice/filters</code>.</p>
+<h3 id="calls"><code>calls</code></h3>
+<p>Calls use the LiveKit server of <code>voice</code>. <a href="api.html#calls"><code>POST chat/voice/call-token</code></a> checks that both accounts are friends and returns a token for a room both sides get the same way, for example <code>dm:</code> plus both account names in lower case and sorted. Ringing runs over IRC (see <a href="ircv3.html#client-tags">IRCv3 support</a>).</p>
+<p><code>POST chat/voice/call-ring</code> is optional and rings app builds in the background. With the push relay above, the network sends an FCM data message with <code>call</code> (<code>invite</code> or <code>cancel</code>), <code>call_id</code>, <code>nick</code> and <code>account</code> to the friend&#39;s installs and returns how many it reached. A network without app builds answers <code>{ &quot;pushed&quot;: 0 }</code>.</p>
+<p>Users can switch private calls off in the voice settings. Their chat then answers every invite with <code>unavailable</code> and hides the call button, and the Android app drops call pushes in the background.</p>
+<p>An app build that receives the ring opens the chat with <code>openPushTarget(&#39;call:id=…&amp;nick=…&amp;account=…&amp;answer=accept|decline&#39;)</code> (<code>answer</code> optional, without it the chat rings). In the background a browser or desktop chat shows a system notification and sends <code>call-incoming</code> with <code>{ nick }</code> to <code>onHostMessage</code>, so a desktop shell can flash its window.</p>
+<h3 id="spotify"><code>spotify</code></h3>
+<p>Register an app in the Spotify developer dashboard with the redirect URL of your API. <code>GET spotify/auth-url</code> returns the authorization link (scope <code>user-read-currently-playing</code>) with a one-time <code>state</code> tied to the account. The callback stores the refresh token. <code>GET spotify/current-track</code> asks Spotify for the playing track with a fresh access token and returns title and artist.</p>
 
             <p class="text-body-secondary small mt-5 mb-0"><a href="https://github.com/starchat-irc/starchat/blob/main/docs/features.md">Edit this page on GitHub</a></p>
             </div></div>
@@ -198,7 +346,7 @@
 
 <footer class="border-top py-4 text-body-secondary small">
     <div class="container d-flex flex-wrap gap-3">
-        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">AGPL-3.0</a>.</span>
+        <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">MIT License</a>.</span>
         <a href="https://github.com/starchat-irc/starchat">GitHub</a>
         <a href="https://st-city.net/impressum">Imprint</a>
     </div>
