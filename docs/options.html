@@ -135,6 +135,11 @@ const { connection, servers } = await mountChat(&#39;#chat&#39;, {
 <td>Texts that replace bundled ones, by key (see <code>src/i18n/en.json</code>).</td>
 </tr>
 <tr>
+<td><code>layout</code></td>
+<td><code>&#39;full&#39;</code></td>
+<td>Parts of the chat that are shown. <code>&#39;headless&#39;</code> leaves only the messages and the input line, see <a href="#chat-box-without-frame">Chat box without frame</a>.</td>
+</tr>
+<tr>
 <td><code>appName</code></td>
 <td><code>&#39;StarChat&#39;</code></td>
 <td>Name shown in texts that mention the app.</td>
@@ -190,6 +195,51 @@ const { connection, servers } = await mountChat(&#39;#chat&#39;, {
 <td>URL of the push service worker on your origin, see <a href="#push-notifications">Push notifications</a>. Without it there is no push in the browser.</td>
 </tr>
 </tbody></table></div>
+<h2 id="chat-box-without-frame">Chat box without frame</h2>
+<p>A game or app that only wants a chat box passes <code>layout: &#39;headless&#39;</code>. Then only the messages of the current channel and the input line are shown: no header, no channel list, no user list, no join and part lines, no logout button. The chat also leaves the keys of the page alone (Ctrl+P, Ctrl+F, Alt+Up/Down and <code>?</code> are not taken).</p>
+<pre><code class="language-js">await mountChat(&#39;#chatbox&#39;, {
+    primaryServer: &#39;irc.example.org&#39;,
+    defaultChannel: &#39;#village&#39;,
+    layout: &#39;headless&#39;,
+    bearer: async () =&gt; ({ token: await fetchChatToken() }),
+});
+</code></pre>
+<p>An object switches single parts off, everything not named stays:</p>
+<pre><code class="language-js">layout: { userList: false, joinPart: false }
+</code></pre>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Part</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>header</code></td>
+<td>Channel name, topic, buttons and the message search. The reconnect notice stays.</td>
+</tr>
+<tr>
+<td><code>channelList</code></td>
+<td>Icon rail and channel list, with them the friends and upload views.</td>
+</tr>
+<tr>
+<td><code>userList</code></td>
+<td>Nick list of the channel.</td>
+</tr>
+<tr>
+<td><code>joinPart</code></td>
+<td>Join and part lines. Kicks, nick changes and topics stay.</td>
+</tr>
+<tr>
+<td><code>logout</code></td>
+<td>Logout button of the input line.</td>
+</tr>
+<tr>
+<td><code>shortcuts</code></td>
+<td>Keyboard shortcuts on the whole page.</td>
+</tr>
+</tbody></table></div>
+<p>Without the channel list the user stays in the channel they see. <code>/join</code> and <code>/query</code> still switch to the new window, but there is no way back other than another command. Direct messages from others arrive without being shown, so a chat box should set a <code>defaultChannel</code>. Settings for hidden parts are not offered.</p>
 <h2 id="theme">Theme</h2>
 <p><code>starchat/theme.css</code> contains the default theme for dark and light mode. It is built on Bootstrap 5 and Bootstrap Icons, both have to be loaded before it.</p>
 <p>The colors are CSS custom properties on the chat element (<code>--chat-bg</code>, <code>--chat-text</code>, <code>--chat-accent</code> and so on, see <code>src/ui/theme.css</code>). Override them in your own stylesheet to change the look without touching the layout:</p>
