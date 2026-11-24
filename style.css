@@ -122,16 +122,6 @@ pre {
     margin-bottom: .75rem;
 }
 
-.feature h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: .35rem;
-}
-
-.feature p {
-    margin-bottom: 0;
-}
-
 .docs-nav {
     top: 1.5rem;
     font-size: .95rem;
@@ -328,17 +318,33 @@ pre {
     line-height: 1.4;
 }
 
-.feature-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    margin-bottom: .9rem;
-    font-size: 1.25rem;
+.shot-note {
+    margin-bottom: 3rem;
+}
+
+.feature-list {
+    max-width: 60rem;
+    padding-left: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.feature-list li {
+    margin-bottom: .6rem;
+}
+
+.feature-list li::marker {
     color: var(--site-accent);
-    background: var(--site-icon-bg);
-    border-radius: .75rem;
+}
+
+@media (min-width: 992px) {
+    .feature-list {
+        columns: 2;
+        column-gap: 3rem;
+    }
+
+    .feature-list li {
+        break-inside: avoid;
+    }
 }
 
 .band {
