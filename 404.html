@@ -1,35 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Page not found | StarChat</title>
     <meta name="robots" content="noindex">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
     <link rel="stylesheet" href="/vendor/bootstrap.min.css">
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <nav class="navbar navbar-expand border-bottom">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="/">StarChat</a>
-        <ul class="navbar-nav ms-auto gap-2">
+        <a class="navbar-brand fw-bold" href="/"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#star-fill"></use></svg>StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2 align-items-center">
             <li class="nav-item"><a class="nav-link" href="/">About</a></li>
             <li class="nav-item"><a class="nav-link" href="/install.html">Install</a></li>
             <li class="nav-item"><a class="nav-link" href="/docs/">Docs</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+            <li class="nav-item"><a class="nav-link nav-github" href="https://github.com/starchat-irc/starchat" title="StarChat on GitHub"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#github"></use></svg><span class="visually-hidden">StarChat on GitHub</span></a></li>
         </ul>
     </div>
 </nav>
 
 <main class="container py-5">
-    <div class="card doc">
-        <div class="card-body p-4 p-lg-5">
+    <div class="doc">
             <h1>Page not found</h1>
             <p>This page does not exist or has moved.</p>
             <p class="mb-0">Go to the <a href="/">start page</a>, the <a href="/docs/">documentation</a> or the <a href="/demo/">web demo</a>.</p>
-        </div>
     </div>
 </main>
 

@@ -1,41 +1,28 @@
 /* Additions to Bootstrap for getstarchat.net and the docs. */
 
-/* Bootstrap's grays are semi-transparent and too faint for longer text, so both themes
-   get solid colors with more contrast. */
+/* All pages are light. Bootstrap's grays are semi-transparent and too faint for longer
+   text, so they get solid colors with more contrast. */
 [data-bs-theme="light"] {
     --site-surface: #ffffff;
-    --bs-body-bg: #f1f2f4;
-    --bs-body-bg-rgb: 241, 242, 244;
+    --bs-body-bg: #ffffff;
+    --bs-body-bg-rgb: 255, 255, 255;
     --bs-body-color: #16191d;
     --bs-body-color-rgb: 22, 25, 29;
     --bs-emphasis-color: #000000;
     --bs-emphasis-color-rgb: 0, 0, 0;
-    --bs-secondary-color: #454c57;
-    --bs-secondary-color-rgb: 69, 76, 87;
-    --bs-tertiary-bg: #eef0f2;
-    --bs-border-color: #d6dae0;
-    --bs-link-color: #1a4fbf;
-    --bs-link-color-rgb: 26, 79, 191;
-    --bs-link-hover-color: #123a8e;
-    --bs-link-hover-color-rgb: 18, 58, 142;
-}
-
-[data-bs-theme="dark"] {
-    --site-surface: #1b1e23;
-    --bs-body-bg: #111316;
-    --bs-body-bg-rgb: 17, 19, 22;
-    --bs-body-color: #eceef1;
-    --bs-body-color-rgb: 236, 238, 241;
-    --bs-emphasis-color: #ffffff;
-    --bs-emphasis-color-rgb: 255, 255, 255;
-    --bs-secondary-color: #bcc2cc;
-    --bs-secondary-color-rgb: 188, 194, 204;
-    --bs-tertiary-bg: #262a31;
-    --bs-border-color: #33383f;
-    --bs-link-color: #8cb4ff;
-    --bs-link-color-rgb: 140, 180, 255;
-    --bs-link-hover-color: #b5cfff;
-    --bs-link-hover-color-rgb: 181, 207, 255;
+    --bs-secondary-color: #4a4f57;
+    --bs-secondary-color-rgb: 74, 79, 87;
+    --bs-tertiary-bg: #f7f3ee;
+    --bs-border-color: #e4dfd8;
+    --bs-link-color: #b4410c;
+    --bs-link-color-rgb: 180, 65, 12;
+    --bs-link-hover-color: #8a3209;
+    --bs-link-hover-color-rgb: 138, 50, 9;
+    --site-accent: #c2410c;
+    --site-accent-hover: #9a3412;
+    --site-accent-text: #ffffff;
+    --site-tint: #fff6ec;
+    --site-icon-bg: #ffe8d4;
 }
 
 body {
@@ -49,6 +36,19 @@ body {
     --bs-navbar-active-color: var(--bs-emphasis-color);
     --bs-navbar-brand-color: var(--bs-emphasis-color);
     --bs-navbar-brand-hover-color: var(--bs-emphasis-color);
+}
+
+.btn-primary {
+    --bs-btn-color: var(--site-accent-text);
+    --bs-btn-bg: var(--site-accent);
+    --bs-btn-border-color: var(--site-accent);
+    --bs-btn-hover-color: var(--site-accent-text);
+    --bs-btn-hover-bg: var(--site-accent-hover);
+    --bs-btn-hover-border-color: var(--site-accent-hover);
+    --bs-btn-active-color: var(--site-accent-text);
+    --bs-btn-active-bg: var(--site-accent-hover);
+    --bs-btn-active-border-color: var(--site-accent-hover);
+    --bs-btn-focus-shadow-rgb: var(--bs-link-color-rgb);
 }
 
 .btn-outline-secondary {
@@ -137,22 +137,38 @@ pre {
     font-size: .95rem;
 }
 
+.docs-nav .nav {
+    gap: .15rem;
+}
+
 .docs-nav .nav-link {
-    padding: .3rem .75rem;
+    padding: .4rem .85rem;
     color: var(--bs-secondary-color);
-    border-left: 2px solid var(--bs-border-color);
+    border-radius: .6rem;
 }
 
 .docs-nav .nav-link:hover {
     color: var(--bs-body-color);
+    background: var(--bs-tertiary-bg);
 }
 
 .docs-nav .nav-link.active {
-    color: var(--bs-body-color);
-    border-left-color: var(--bs-body-color);
+    color: var(--site-accent-hover);
+    background: var(--site-icon-bg);
     font-weight: 600;
 }
 
+.page-head {
+    background: var(--site-tint);
+    border-bottom: 1px solid var(--bs-border-color);
+    padding: 1rem 0;
+    font-weight: 600;
+    color: var(--site-accent-hover);
+}
+
+.edit-link {
+    color: var(--bs-secondary-color);
+}
 .doc {
     max-width: 56rem;
 }
@@ -188,4 +204,162 @@ pre {
     .doc .table td:first-child {
         white-space: nowrap;
     }
+}
+
+/* Icons come from img/icons.svg. */
+.icon {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    vertical-align: -.125em;
+    flex-shrink: 0;
+}
+
+.navbar-brand .icon {
+    color: var(--site-accent);
+    margin-right: .35rem;
+}
+
+.nav-github {
+    font-size: 1.25rem;
+}
+
+/* Start page */
+
+.hero {
+    background: var(--site-tint);
+    padding: 4.5rem 0 0;
+}
+
+.hero h1 {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+}
+
+.hero .lead {
+    max-width: 36rem;
+}
+
+.hero-shot {
+    position: relative;
+    margin: 3.5rem 0 -6rem;
+}
+
+.hero-shot img {
+    box-shadow: 0 1.25rem 3rem rgba(60, 35, 15, .14);
+}
+
+.shot-phone {
+    position: absolute;
+    right: -.5rem;
+    bottom: -2rem;
+    width: 22%;
+    max-width: 17rem;
+    height: auto;
+    border: .4rem solid #1b1e23;
+    border-radius: 1.75rem;
+}
+
+/* The desktop screenshot is unreadable on a phone, so only the app is shown there. */
+@media (max-width: 767.98px) {
+    .shot-desktop {
+        display: none;
+    }
+
+    .shot-phone {
+        position: static;
+        display: block;
+        width: 75%;
+        max-width: 18rem;
+        margin: 0 auto;
+    }
+}
+
+.section.after-hero {
+    padding-top: 9.5rem;
+}
+
+.section {
+    padding: 4rem 0;
+}
+
+.section h2 {
+    font-weight: 700;
+    letter-spacing: -.01em;
+}
+
+.platform {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    height: 100%;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    text-decoration: none;
+    color: var(--bs-body-color);
+    background: var(--site-surface);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    transition: border-color .15s, transform .15s;
+}
+
+.platform:hover {
+    color: var(--bs-body-color);
+    border-color: var(--site-accent);
+    transform: translateY(-2px);
+}
+
+.platform .icon {
+    font-size: 2rem;
+    margin-bottom: .25rem;
+}
+
+.platform strong {
+    font-weight: 600;
+}
+
+.platform span {
+    font-size: .875rem;
+    color: var(--bs-secondary-color);
+    line-height: 1.4;
+}
+
+.feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: .9rem;
+    font-size: 1.25rem;
+    color: var(--site-accent);
+    background: var(--site-icon-bg);
+    border-radius: .75rem;
+}
+
+.band {
+    background: var(--site-tint);
+}
+
+.github-box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem 2rem;
+    padding: 2rem;
+    background: var(--site-surface);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+}
+
+.github-box > .icon {
+    font-size: 3rem;
+}
+
+.github-box p {
+    margin-bottom: 0;
 }

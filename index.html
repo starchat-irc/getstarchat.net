@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,152 +18,159 @@
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="StarChat with a conversation in an IRC channel">
     <meta name="twitter:card" content="summary_large_image">
-    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
     <link rel="stylesheet" href="vendor/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <nav class="navbar navbar-expand border-bottom">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="./">StarChat</a>
-        <ul class="navbar-nav ms-auto gap-2">
+        <a class="navbar-brand fw-bold" href="./"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#star-fill"></use></svg>StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2 align-items-center">
             <li class="nav-item"><a class="nav-link active" aria-current="page" href="./">About</a></li>
             <li class="nav-item"><a class="nav-link" href="install.html">Install</a></li>
             <li class="nav-item"><a class="nav-link" href="docs/">Docs</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+            <li class="nav-item"><a class="nav-link nav-github" href="https://github.com/starchat-irc/starchat" title="StarChat on GitHub"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#github"></use></svg><span class="visually-hidden">StarChat on GitHub</span></a></li>
         </ul>
     </div>
 </nav>
 
 <main>
-    <section class="container py-5">
-        <div class="row g-4 g-lg-5 align-items-start">
-            <div class="col-lg-7">
-                <h1 class="display-5 fw-bold mb-4">A modern chat that nobody owns.</h1>
-                <p class="lead">StarChat is an open source IRC client for the browser, the desktop and Android.</p>
-                <p>IRC has been around since 1988 and no company owns it. Anyone can run a network. IRCv3 added history, reactions, replies and read markers, and StarChat uses them on every network that supports them.</p>
-                <div class="d-flex flex-wrap gap-2 mt-4">
-                    <a class="btn btn-primary btn-lg" href="demo/">Try the web demo</a>
-                    <a class="btn btn-outline-secondary btn-lg" href="install.html">Install</a>
+    <section class="hero">
+        <div class="container">
+            <h1>Chat on IRC, the easy way.</h1>
+            <p class="lead">StarChat is a free IRC client for your browser, your computer and Android. With history, replies and reactions, on any network.</p>
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <a class="btn btn-primary btn-lg" href="demo/">Try it in the browser</a>
+                <a class="btn btn-outline-secondary btn-lg" href="#download">Download</a>
+            </div>
+            <p class="small text-body-secondary mt-3 mb-0">No sign-up needed. You can join the demo as a guest.</p>
+
+            <div class="hero-shot">
+                <img class="screenshot shot-desktop img-fluid" src="img/chat-light.png" width="1440" height="870" alt="StarChat in a channel with replies, reactions, colors and a link, the channel list on the left and the nick list on the right">
+                <img class="shot-phone" src="img/chat-mobile.png" width="600" height="1298" alt="The StarChat Android app in a channel with replies and reactions">
+            </div>
+        </div>
+    </section>
+
+    <section class="section after-hero" id="download">
+        <div class="container">
+            <h2 class="mb-2">Get StarChat</h2>
+            <p class="text-body-secondary mb-4">Use it in the browser or install the app.</p>
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+                <div class="col">
+                    <a class="platform" href="demo/">
+                        <svg class="icon" aria-hidden="true"><use href="img/icons.svg#globe2"></use></svg>
+                        <strong>Browser</strong>
+                        <span>Nothing to install</span>
+                    </a>
                 </div>
-                <div class="mt-4">
-                    <p class="small text-body-secondary mb-2">Downloads:</p>
-                    <div class="d-flex flex-wrap gap-2">
-                        <a class="btn btn-outline-primary" href="https://github.com/starchat-irc/starchat/releases/latest">Desktop (Windows, Linux, macOS)</a>
-                        <a class="btn btn-outline-primary" href="https://github.com/starchat-irc/starchat/releases/latest">Web (self-hosted)</a>
-                        <a class="btn btn-outline-primary" href="install.html#android">Android (test on Google Play)</a>
-                    </div>
+                <div class="col">
+                    <a class="platform" href="https://github.com/starchat-irc/starchat/releases/latest">
+                        <svg class="icon" aria-hidden="true"><use href="img/icons.svg#windows"></use></svg>
+                        <strong>Windows</strong>
+                        <span>Installer</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a class="platform" href="https://github.com/starchat-irc/starchat/releases/latest">
+                        <svg class="icon" aria-hidden="true"><use href="img/icons.svg#apple"></use></svg>
+                        <strong>macOS</strong>
+                        <span>Disk image</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a class="platform" href="https://github.com/starchat-irc/starchat/releases/latest">
+                        <svg class="icon" aria-hidden="true"><use href="img/icons.svg#terminal-fill"></use></svg>
+                        <strong>Linux</strong>
+                        <span>AppImage</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a class="platform" href="install.html#android">
+                        <svg class="icon" aria-hidden="true"><use href="img/icons.svg#android2"></use></svg>
+                        <strong>Android</strong>
+                        <span>Closed test, testers welcome</span>
+                    </a>
                 </div>
             </div>
-            <div class="col-lg-5">
-                <div class="card">
-                    <dl class="card-body p-4 facts mb-0">
-                        <dt>Runs on</dt>
-                        <dd>Any modern browser, Windows, Linux and macOS. Android is in a closed test on Google Play, <a href="install.html#android">testers welcome</a>.</dd>
-                        <dt>Networks</dt>
-                        <dd>Any IRC network. The web version needs WebSocket support (Ergo, UnrealIRCd 6, InspIRCd).</dd>
-                        <dt>License</dt>
-                        <dd class="mb-0">MIT. <a href="https://github.com/starchat-irc/starchat">Source code on GitHub</a>.</dd>
-                    </dl>
+            <p class="small text-body-secondary mt-3 mb-0">Want to run the web client on your own server or put it into your site? See <a href="install.html">Install</a>.</p>
+        </div>
+    </section>
+
+    <section class="section pt-0">
+        <div class="container">
+            <h2 class="mb-4">What you get</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 g-lg-5">
+                <div class="col feature">
+                    <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#hdd-network"></use></svg></div>
+                    <h3>Any IRC network</h3>
+                    <p>Pick one from the list or type in an address. No StarChat account and no central server.</p>
+                </div>
+                <div class="col feature">
+                    <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#clock-history"></use></svg></div>
+                    <h3>Pick up where you left off</h3>
+                    <p>History and read markers carry over between your devices.</p>
+                </div>
+                <div class="col feature">
+                    <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#reply-fill"></use></svg></div>
+                    <h3>Replies and reactions</h3>
+                    <p>Answer a message directly or react to it, like in other chat apps. You can delete your own messages.</p>
+                </div>
+                <div class="col feature">
+                    <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#keyboard"></use></svg></div>
+                    <h3>Quick with the keyboard</h3>
+                    <p><code>Ctrl+P</code> jumps to any channel, <code>Ctrl+F</code> searches. The usual slash commands work.</p>
+                </div>
+                <div class="col feature">
+                    <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#code-slash"></use></svg></div>
+                    <h3>On your own site</h3>
+                    <p>Embed the chat with one function call. Your site can log its users in.</p>
+                </div>
+                <div class="col feature">
+                    <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#circle-half"></use></svg></div>
+                    <h3>Light and dark</h3>
+                    <p>In English and German.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section>
-        <figure class="container pb-5 mb-0">
-            <picture>
-                <source srcset="img/chat-dark.png" media="(prefers-color-scheme: dark)">
-                <img class="screenshot img-fluid" src="img/chat-light.png" width="1440" height="870" alt="StarChat in a channel with replies, reactions, colors and a link, the channel list on the left and the nick list on the right">
-            </picture>
-            <figcaption class="small text-body-secondary mt-2">The web demo. The conversation was generated by a script with test users.</figcaption>
-        </figure>
-    </section>
-
-    <section>
-        <div class="container pb-5">
-            <h2 class="mb-4">What it does</h2>
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                <div class="col">
-                    <div class="card h-100 feature">
-                        <div class="card-body">
-                            <h3>Any IRC network</h3>
-                            <p>Pick one from the server list or type in a domain. The desktop app also connects over plain TCP.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 feature">
-                        <div class="card-body">
-                            <h3>IRCv3</h3>
-                            <p>History, reactions, replies, read markers shared between devices, deleting your own messages.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 feature">
-                        <div class="card-body">
-                            <h3>Accounts</h3>
-                            <p>Log in with your account or join as a guest.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 feature">
-                        <div class="card-body">
-                            <h3>Keyboard</h3>
-                            <p><code>Ctrl+P</code> jumps to any channel, <code>Ctrl+F</code> searches. The usual slash commands work.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 feature">
-                        <div class="card-body">
-                            <h3>Embeddable</h3>
-                            <p>Put the chat into your own site with one function call. Your users can be logged in by the site.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 feature">
-                        <div class="card-body">
-                            <h3>Light and dark</h3>
-                            <p>In English and German.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section>
-        <div class="container pb-5">
+    <section class="section band">
+        <div class="container">
             <div class="row g-4 g-lg-5">
                 <div class="col-lg-6">
-                    <div class="card h-100"><div class="card-body p-4">
-                    <h2 class="mb-3">Networks can offer more</h2>
-                    <p>With a small file on its domain, a network can add profiles, friends, uploads, voice chat and push notifications. Networks without it work as plain IRC. There is no central StarChat server.</p>
+                    <h2 class="h3 mb-3">Networks can offer more</h2>
+                    <p>With a small file on its domain, a network can add profiles, friends, uploads, voice chat and push notifications. Networks without it work as plain IRC.</p>
                     <p class="mb-0"><a href="docs/discovery.html">How the discovery file works</a></p>
-                    </div></div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="card h-100"><div class="card-body p-4">
-                    <h2 class="mb-3">Where it comes from</h2>
-                    <p>StarChat started as the chat client of <a href="https://st-city.net">ST-City</a>, a German chat community, and was made neutral so any network can use it.</p>
-                    <p class="mb-0">Questions and feedback on <a href="https://github.com/starchat-irc/starchat">GitHub</a> or in <code>#starchat</code> on ST-City, where the demo connects.</p>
-                    </div></div>
+                    <h2 class="h3 mb-3">Where it comes from</h2>
+                    <p class="mb-0">StarChat started as the chat of <a href="https://st-city.net">ST-City</a>, a German chat community, and was made neutral so any network can use it. Come say hi in <code>#starchat</code> on ST-City, that is also where the demo connects.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="github-box">
+                <svg class="icon" aria-hidden="true"><use href="img/icons.svg#github"></use></svg>
+                <div class="flex-grow-1">
+                    <h2 class="h4 mb-1">Open source</h2>
+                    <p class="text-body-secondary">StarChat is MIT licensed. Code, releases and issues are on GitHub.</p>
+                </div>
+                <a class="btn btn-outline-secondary" href="https://github.com/starchat-irc/starchat">View on GitHub</a>
             </div>
         </div>
     </section>
 </main>
 
 <footer class="border-top py-4 text-body-secondary small">
-    <div class="container d-flex flex-wrap gap-3">
+    <div class="container d-flex flex-wrap align-items-center gap-3">
         <span>StarChat is licensed under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">MIT License</a>.</span>
-        <a href="https://github.com/starchat-irc/starchat">GitHub</a>
         <a href="imprint.html">Imprint</a>
         <a href="privacy.html">Privacy</a>
+        <a class="ms-auto fs-5 text-body-secondary" href="https://github.com/starchat-irc/starchat" title="StarChat on GitHub"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#github"></use></svg><span class="visually-hidden">StarChat on GitHub</span></a>
     </div>
 </footer>
 </body>

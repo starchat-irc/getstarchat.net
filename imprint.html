@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="de" data-bs-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,26 +8,24 @@
     <link rel="canonical" href="https://getstarchat.net/imprint.html">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
     <link rel="stylesheet" href="vendor/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <nav class="navbar navbar-expand border-bottom">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="./">StarChat</a>
-        <ul class="navbar-nav ms-auto gap-2">
+        <a class="navbar-brand fw-bold" href="./"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#star-fill"></use></svg>StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2 align-items-center">
             <li class="nav-item"><a class="nav-link" href="./">About</a></li>
             <li class="nav-item"><a class="nav-link" href="install.html">Install</a></li>
             <li class="nav-item"><a class="nav-link" href="docs/">Docs</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+            <li class="nav-item"><a class="nav-link nav-github" href="https://github.com/starchat-irc/starchat" title="StarChat on GitHub"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#github"></use></svg><span class="visually-hidden">StarChat on GitHub</span></a></li>
         </ul>
     </div>
 </nav>
 
 <main class="container py-5">
-    <div class="card doc">
-        <div class="card-body p-4 p-lg-5">
+    <div class="doc">
             <h1>Impressum</h1>
             <p><a href="#english">English version below</a></p>
 
@@ -77,7 +75,6 @@
                 <p>StarChat is a non-commercial open source project under the <a href="https://github.com/starchat-irc/starchat/blob/main/LICENSE">MIT License</a>. StarChat runs no chat network of its own: the apps connect to IRC networks run by others. Their operators are responsible for the content on those networks.</p>
                 <p>We are responsible for our own content on these pages under general law. The providers of linked pages are responsible for their content. If we learn of an infringement, we remove the content or link concerned.</p>
             </div>
-        </div>
     </div>
 </main>
 

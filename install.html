@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,22 +18,25 @@
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="StarChat with a conversation in an IRC channel">
     <meta name="twitter:card" content="summary_large_image">
-    <script>document.documentElement.dataset.bsTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script>
     <link rel="stylesheet" href="vendor/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <nav class="navbar navbar-expand border-bottom">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="./">StarChat</a>
-        <ul class="navbar-nav ms-auto gap-2">
+        <a class="navbar-brand fw-bold" href="./"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#star-fill"></use></svg>StarChat</a>
+        <ul class="navbar-nav ms-auto gap-2 align-items-center">
             <li class="nav-item"><a class="nav-link" href="./">About</a></li>
             <li class="nav-item"><a class="nav-link active" aria-current="page" href="install.html">Install</a></li>
             <li class="nav-item"><a class="nav-link" href="docs/">Docs</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://github.com/starchat-irc/starchat">GitHub</a></li>
+            <li class="nav-item"><a class="nav-link nav-github" href="https://github.com/starchat-irc/starchat" title="StarChat on GitHub"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#github"></use></svg><span class="visually-hidden">StarChat on GitHub</span></a></li>
         </ul>
     </div>
 </nav>
+
+<div class="page-head">
+    <div class="container">Install</div>
+</div>
 
 <div class="container py-5">
     <div class="row g-4 g-lg-5">
@@ -50,8 +53,7 @@
             </nav>
         </aside>
 
-        <main class="col-lg-9">
-            <div class="card doc"><div class="card-body p-4 p-lg-5">
+        <main class="col-lg-9 doc">
             <h1>Install</h1>
 
 
@@ -129,7 +131,6 @@ mountChat('#chat', {
 }</code></pre>
 
             <p class="mb-0">To appear in the network list of every StarChat, add your network to <a href="https://github.com/starchat-irc/starchat/blob/main/servers/servers.json"><code>servers/servers.json</code></a> by pull request (<a href="docs/servers.html">format</a>).</p>
-            </div></div>
         </main>
     </div>
 </div>
