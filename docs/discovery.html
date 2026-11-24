@@ -62,7 +62,7 @@
 <p>A network tells StarChat its WebSocket address and extra services with a JSON file on its own domain:</p>
 <pre><code>https://&lt;domain&gt;/.well-known/starchat.json
 </code></pre>
-<p><code>&lt;domain&gt;</code> is the <code>domain</code> from the <a href="servers.html">server list</a> or what the user typed. Every field except <code>schemaVersion</code> is optional. Example: <a href="discovery.example.json"><code>discovery.example.json</code></a>, schema: <a href="discovery.schema.json"><code>discovery.schema.json</code></a>.</p>
+<p><code>&lt;domain&gt;</code> is the <code>domain</code> from the <a href="servers.html">server list</a> or what the user typed. For a network in the list the client only looks when its entry does not say <code>&quot;discovery&quot;: false</code>. Every field except <code>schemaVersion</code> is optional. Example: <a href="discovery.example.json"><code>discovery.example.json</code></a>, schema: <a href="discovery.schema.json"><code>discovery.schema.json</code></a>.</p>
 <h2 id="rules">Rules</h2>
 <ul>
 <li>The file is fetched over <code>https</code> without cookies. Serve it with <code>Access-Control-Allow-Origin: *</code>.</li>

@@ -72,7 +72,8 @@
             &quot;description&quot;: { &quot;en&quot;: &quot;What your network is about.&quot; },
             &quot;languages&quot;: [&quot;en&quot;],
             &quot;websocket&quot;: &quot;wss://irc.example.org/webirc&quot;,
-            &quot;irc&quot;: { &quot;host&quot;: &quot;irc.example.org&quot;, &quot;port&quot;: 6697, &quot;tls&quot;: true }
+            &quot;irc&quot;: { &quot;host&quot;: &quot;irc.example.org&quot;, &quot;port&quot;: 6697, &quot;tls&quot;: true },
+            &quot;discovery&quot;: false
         }
     ]
 }
@@ -122,12 +123,12 @@
 </tr>
 <tr>
 <td><code>discovery</code></td>
-<td>no</td>
-<td>Discovery URL on <code>domain</code> or a subdomain, if not at the default place.</td>
+<td>yes</td>
+<td><code>true</code> if the network serves a <a href="discovery.html">discovery file</a>, <code>false</code> if not. The client only looks for the file when it is not <code>false</code>. A URL on <code>domain</code> or a subdomain if the file is not at the default place.</td>
 </tr>
 </tbody></table></div>
 <h2 id="adding-a-network">Adding a network</h2>
-<p>Open a pull request against <code>servers/servers.json</code> and check it first:</p>
+<p>Open a pull request against <code>servers/servers.json</code>. Networks with a discovery file come first, then all entries are sorted by name. Check it first:</p>
 <pre><code>npm install
 npm run validate:servers
 </code></pre>
