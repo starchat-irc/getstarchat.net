@@ -118,13 +118,13 @@
 </tr>
 <tr>
 <td><code>draft/metadata-3</code>, <code>draft/metadata-2</code></td>
-<td>Avatars, status and the voice chat a user is in (key <code>voice</code>).</td>
-</tr>
-<tr>
-<td><code>draft/webpush</code>, <code>soju.im/webpush</code></td>
-<td>Push while no client is connected. Browsers need <a href="options.html#push-notifications"><code>pushWorker</code></a>, apps the network feature <code>push</code>.</td>
+<td>Avatars, status, display names (key <code>display-name</code>) and the voice chat a user is in (key <code>voice</code>).</td>
 </tr>
 </tbody></table></div>
+<h3 id="display-names">Display names</h3>
+<p>StarChat reads and sets the key <code>display-name</code> from the <a href="https://ircv3.net/specs/extensions/metadata#key-registry">metadata key registry</a>. A display name is one line of at most 32 characters; control characters and invisible direction marks are dropped. It is shown in messages, the nick list, DMs and the profile card. The nick stays visible next to it in messages and in the profile card, and mentions, completion and commands keep using the nick.</p>
+<p>On connect the client asks the server for its own value first (<code>METADATA &lt;nick&gt; GET display-name</code>). A value there wins, so a name changed on another device is kept. Only when the server has none, the value stored on this device is published.
+| <code>draft/webpush</code>, <code>soju.im/webpush</code> | Push while no client is connected. Browsers need <a href="options.html#push-notifications"><code>pushWorker</code></a>, apps the network feature <code>push</code>. |</p>
 <h2 id="client-tags">Client tags</h2>
 <div class="table-responsive"><table class="table">
 <thead>
