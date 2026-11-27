@@ -92,7 +92,12 @@ const { connection, servers } = await mountChat(&#39;#chat&#39;, {
 <tr>
 <td><code>defaultChannel</code></td>
 <td></td>
-<td>Channel joined after login on the primary server.</td>
+<td>Channel joined after login on the primary server, unless the user chose another start channel before.</td>
+</tr>
+<tr>
+<td><code>channels</code></td>
+<td></td>
+<td>Channels the page asks for, e.g. from an invite link (<code>&#39;#a,#b&#39;</code> or a list). On the primary server the first one is shown, winning over the remembered start channel and the last active channel of the account, and all are joined. The login dialog shows them as an invitation.</td>
 </tr>
 <tr>
 <td><code>nickname</code></td>
