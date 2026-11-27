@@ -168,6 +168,11 @@ npm test
 <td>As in <a href="options.html">mountChat()</a>.</td>
 </tr>
 <tr>
+<td><code>chat.startScript</code></td>
+<td>no</td>
+<td>JavaScript module run before the chat starts, see <a href="#start-script">Start script</a>.</td>
+</tr>
+<tr>
 <td><code>texts</code></td>
 <td>no</td>
 <td>Replaced texts per language, keys from <code>src/i18n/</code> and <code>desktop/locales/</code>.</td>
@@ -184,6 +189,40 @@ npm test
 </tr>
 </tbody></table></div>
 <p>Paths are relative to the edition folder. The schema is <code>desktop/edition.schema.json</code>.</p>
+<h3 id="start-script">Start script</h3>
+<p><code>chat.startScript</code> names a module (<code>.js</code> or <code>.mjs</code>) whose default export runs in the chat page of every connection before the chat starts. The mobile app runs it the same way. A typical use is migrating settings of an older app of your edition stored under different keys.</p>
+<pre><code class="language-js">// edition/start.mjs
+export default async function start({ shell, appName, version, storageScope, primary }) {
+    if (!primary || localStorage.getItem(`myapp.migrated:${storageScope}`)) return;
+    // copy old keys to chat.&lt;key&gt;:&lt;storageScope&gt; here
+    localStorage.setItem(`myapp.migrated:${storageScope}`, &#39;1&#39;);
+}
+</code></pre>
+<div class="table-responsive"><table class="table">
+<thead>
+<tr>
+<th>Context</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>shell</code></td>
+<td><code>desktop</code> or <code>mobile</code>.</td>
+</tr>
+<tr>
+<td><code>appName</code>, <code>version</code></td>
+<td>Of the edition build.</td>
+</tr>
+<tr>
+<td><code>storageScope</code></td>
+<td>Suffix of the settings keys of this connection (<code>chat.highlightWords:&lt;storageScope&gt;</code>), empty when there is none.</td>
+</tr>
+<tr>
+<td><code>primary</code></td>
+<td>The connection goes to <code>chat.primaryServer</code>.</td>
+</tr>
+</tbody></table></div>
+<p>The file is copied into the build on its own, so it cannot import other files of the edition. On the desktop several connections start at the same time, so the script may run in parallel and has to be safe to run more than once. Errors are logged and a script that takes longer than 5 seconds is given up, the chat starts in both cases. With chat updates (below) the script is part of the signed chat page.</p>
 <h2 id="connections">Connections</h2>
 <p>Each tab is a profile, over TCP, TLS or WebSocket, managed under Settings, Connections. Passwords and tokens are encrypted with the system keychain and only go to the server they were stored for. Changing the address drops them.</p>
 <p>The app opens <code>irc://</code> and <code>ircs://</code> links. A link to a known server opens its tab and channel, any other opens the new connection dialog.</p>
